@@ -10,18 +10,18 @@
     <meta name="dtb:maxPageNumber" content="0"/>
   </head>
   <docTitle>
-    <text>Blog</text>
+    <text>Blogs</text>
   </docTitle>
   <navMap>
     <navPoint id="navPoint-1" playOrder="1">
       <navLabel>
-        <text>XGBoost 简介（1）</text>
+        <text>2020-09-25 XGBoost 简介（1）</text>
       </navLabel>
       <content src="Text/Section0002.xhtml"/>
     </navPoint>
     <navPoint id="navPoint-2" playOrder="2">
       <navLabel>
-        <text>调整正负样本比对模型评估指标的影响</text>
+        <text>2020-10-30 调整正负样本比对模型评估指标的影响</text>
       </navLabel>
       <content src="Text/Section0001.xhtml"/>
     </navPoint>
