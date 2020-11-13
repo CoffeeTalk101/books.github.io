@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+<link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>XGBoost 简介（1）</h1>
+
+<p>XGBoost是目前近年来在各类机器学习竞赛中非常热门的一个模型，在Kaggle上是公认的高分算法，在工业界也有广泛的使用。XGBoost最大的特点在于对性能的提升，例如在向模型中添加决策树时，XGBoost可以利用多核CPU计算，而传统的Bosting算法的实现则是逐一排队添加；XGBoost还优化了数据的存储结构，提高了查找的效率和硬盘吞吐率。相比于sklearn内置的Gradient Boosting的实现，XGBoost的性能常常可以提升十倍以上。</p>
+
+<p>为了更好的理解XGBoost，首先可以从它的源头出发，了解Bosting和AdaBoost算法，以及Greadient Boosting算法。</p>
+
+<h2 class="sigil_not_in_toc">Boosting</h2>
+
+<p>Boosting算法的核心思想是，利用一系列弱学习器的串联，最终得到强学习器。属于集成学习（ensemble learning）中的一种。</p>
+
+<p><b>弱学习器</b>，一般指泛化性能仅仅略好于随机猜测的学习器。很显然，如果单独使用一个弱学习器，预测的效果是很差的。Boosting算法之所以成立，基于这样一个观点：数据集当中常常有一些样本是比较容易预测的，有一些则比较难以预测。那么使用弱学习器，首先解决最容易预测的部分；对于预测错误的样本，提高它们的权重，再输入进下一个弱学习器。通过弱学习器不断<b>序列化地叠加</b>，提高模型的效果。</p>
+
+<p>为什么Boosting使用弱学习器（而非强学习器），我个人的理解是这样的：</p>
+<ul>
+    <li>首先，从模型学习的难度上讲，弱学习器容易构造，而要一步到位构造强学习器比较困难.</li>
+    <li>针对Boosting中使用决策树而言，结点的划分方式一般会基于贪心方法，因此复杂的强学习器会更容易过拟合.</li>
+    <li>强学习器学到的模型往往趋同，而弱学习器之间的差异较大，综合弱学习器的结果能使模型获得更好的泛化性能.</li>
+</ul>
+
+<h2 class="sigil_not_in_toc">AdaBoost</h2>
+
+<p>AdaBoost（Adaptive Boosting）是对Boosting思想的第一个实现。AdaBoost当中使用的每个决策树只做一次划分。每次循环，被错误分类的样本会获得更高的权重，而已被正确分类的样本的权重会被降低。</p>
+
+<blockquote>
+    <p>This means that samples that are difficult to classify receive icreasing larger weights until the algorithm identifies a model that correctly classifies these samples.</p>
+
+<p>——Applied Predictive Modeling, 2013</p>
+</blockquote>
+
+
+<p>AdaBoost模型最终的预测结果是由每个弱学习器加权投票产生的，权重与每个弱学习器的准确率相关。因为AdaBoost当中使用的决策树很简单，它擅长处理的基本限于二分类问题。</p>
+
+<h2 class="sigil_not_in_toc">Gradient Boosting</h2>
+
+<p>Greadient Boosting，或者称GBDT（梯度提升决策数，Gradient Boosting Decision Tree），是对Boosting的进一步发展。它的主要改变在于：</p>
+
+<ul>
+    <li>将Boosting的过程翻译为一个数值优化的问题，这样就可以定义损失函数，并且使用类似梯度下降的方式求解.</li>
+    <li>在向模型中添加新树时，不改变已存在的弱学习器（在AdaBoost中，添加新的学习器的同时旧的学习器也会更新）.</li>
+</ul>
+
+
+<blockquote>
+    <p>Note that this stagewise trategy is different from stepwise approaches that readjust previously entered terms when new ones are added.</p>
+
+<p>——Greedy Function Approximation: A Gradient Boosting Machine, 1999</p>
+</blockquote>
+
+<ul>
+    <li>支持层数和结点数更多的决策树.</li>
+</ul>
+
+<p>在Greadient Boosting当中，Boosting的方法和损失函数之间是没有依赖关系的，也就是说，使用同一套Boosting的框架，可以自选合适的损失函数。例如对于回归问题使用均方误差，对于分类问题使用对数损失函数等等。</p>
+
+<p>决策树在Greadient Boosting中被参数化表示，从而使得用梯度下降方法优化损失函数成为可能。每一棵添加的新树，其参数取梯度下降最快的方向，就能够不断优化模型。这种将决策树参数化后梯度下降的方法称为函数空间的梯度下降（Functional Gradient Descent）。</p>
+
+<h2 class="sigil_not_in_toc">Gradient Boosting的优化</h2>
+
+<p>要取得最优的模型效果，Gradient Boosting有一些基本的优化方法。</p>
+
+<ul>
+    <li>首先从决策树的属性上，<b>树的深度一般不建议太深</b>，保证模型由弱学习器组成；树的<b>个数则通常没有特别的限制，可以持续增加到模型效果不再提升为止</b>。因为一般来说，随着树棵树的增加，模型过拟合程度的增加是比较缓慢的。另外，基于划分的精度和结点的成员个数等，可以对决策树做<b>剪枝</b>处理，降低过拟合的风险、提高性能.</li>
+    <li>最终的预测是通过每棵树的预测乘以树的权重，之后求和得到的。每棵树的权重就是Gradient Boosting中的学习率（learning rate）。学习率设置得越低，每棵树对最终结果的影响也就越小，学习的过程越长，最终模型中树的个数也越多.</li>
+    <li>随机采样（Stochastic Gradient Boosting），吸收了随机森林的思想，在每次迭代时不使用全部的训练数据，而是从训练数据中随机采样来训练新的弱学习器。除了对样本（行）的采样，还可以随机对数据当中的列作采样。一般来说，可以首先尝试50%的采样率。.</li>
+</ul>
+
+<blockquote>
+    <p>According to user feedback, using column sub-sampling prevents over-fitting even more so than the traditional row sub-sampling.</p>
+
+<p>——XGBoost: A Scalable Tree Boosting System, 2016</p>
+</blockquote>
+
+<ul>
+    <li>加入正则化项，限制模型的复杂度，平滑各节点的预测值，防止过拟合。例如Gradient Boosting中可以加入L1或L2正则项。.</li>
+</ul>
+
+<blockquote>
+    <p>The additional regularization term helps to smooth the final learnt weights to avoid over-fitting. Intuitively, the regularized objective will tend to select a model employing simple and predictive functions.</p>
+
+<p>——XGBoost: A Scalable Tree Boosting System, 2016</p>
+</blockquote>
+
+
+<p>参考资料</p>
+
+<ul>
+    <li>Jason Brownlee, XGBoost With Python.</li>
+    <li>慕容然, zhuanlan.zhihu.com/p/139534721</li>
+    <li>zhihu.com/quesiton/296676708</li>
+    <li>massquantity, cnblogs.com/massquantity/p/9063033.html</li>
+</ul>
+</body>
+</html>
