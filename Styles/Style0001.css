@@ -1,9 +1,136 @@
+/* BB eBooks BoilerPlate EPUB */
+/* Modify as Needed */
+/* NOT SUITABLE for Kindle */
+/* visit us @ http://bbebooksthailand.com/developers.html */
+
+/* This adds margins around every page to stop ADE's line numbers from being superimposed over content  */
+@page {margin: 10px;}
+
+h1
+{
+  text-indent: 0;
+  text-align: center;
+  margin: 50px 0 0 0;
+  font-size: 2.0em;
+  font-weight: bold;
+  page-break-before: always;
+  line-height: 150%; /*gets squished otherwise on ADE */
+}
+
+h2
+{
+  text-indent: 0;
+  margin: 20px 0 0 0;
+  font-size: 1.5em;
+  font-weight: bold;
+  page-break-before: always;
+  line-height: 135%; /*get squished otherwise on ADE */
+}
+
+h3
+{
+  text-indent: 0;
+  text-align: left;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+h4
+{
+  text-indent: 0;
+  text-align: left;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+h5
+{
+  text-indent: 0;
+  text-align: left;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+h6
+{
+  text-indent: 0;
+  text-align: left;
+  font-size: 1.0em;
+  font-weight: bold;
+}
+
+/* Hyphen and pagination Fixer */
+/* Note: Do not try on the Kindle, it does not recognize the hyphens property */
+h1, h2, h3, h4, h5, h6
+{
+  -webkit-hyphens: none !important;
+  hyphens: none;
+  page-break-after: avoid;
+  page-break-inside: avoid;
+}
+
+p
+{
+  text-indent: 0;
+  margin: 1.0em 0 0 0;
+  widows: 2;
+  orphans: 2;
+}
+
+/*==IMAGES==*/
+img
+{
+  max-width: 100%;
+}
+
+/*==TABLES==*/
+table
+{
+  margin: 1.0em auto;
+}
+
+/*==eBook Specific Formatting Below Here==*/
+body {
+  /*background-color: lightblue;*/
+  margin-left: 2%;
+  margin-right:2%;
+}
+
+@media screen and (min-width: 500px) {
+  body {
+    /*background-color: lightgreen;*/
+    margin-left: 8%;
+    margin-right:8%;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  body {
+    /*background-color: lavender;*/
+    margin-left: 20%;
+    margin-right:20%;
+  }
+}
+
+@media screen and (min-width: 1300px) {
+  body {
+    /*background-color: lightgray;*/
+    margin-left: 25%;
+    margin-right:25%;
+  }
+}
+
+
+a{
+  color: inherit
+}
+
 .red{
   color: red;
 }
 
-body{
-  padding-left: 8%;
-  padding-right:8%;
-} 
+p.footer{
+  text-align: center;
+  color: gray;
+}
 
