@@ -90,33 +90,43 @@ table
 }
 
 /*==eBook Specific Formatting Below Here==*/
+
+/* media query */
+/* https://getbootstrap.com/docs/4.5/layout/overview/#responsive-breakpoints */
 body {
-  /*background-color: lightblue;*/
   margin-left: 2%;
   margin-right:2%;
 }
-
-@media screen and (min-width: 500px) {
-  body {
-    /*background-color: lightgreen;*/
+@media (min-width: 576px)
+{
+  body 
+  {
+    margin-left: 2%;
+    margin-right:2%;
+  }
+}
+@media (min-width: 768px)
+{
+  body
+  {    
     margin-left: 8%;
     margin-right:8%;
   }
 }
-
-@media screen and (min-width: 800px) {
-  body {
-    /*background-color: lavender;*/
+@media (min-width: 992px)
+{
+  body
+  {
     margin-left: 20%;
     margin-right:20%;
   }
 }
-
-@media screen and (min-width: 1300px) {
-  body {
-    /*background-color: lightgray;*/
-    margin-left: 25%;
-    margin-right:25%;
+@media (min-width: 1200px)
+{
+  body
+  {
+    margin-left: 23%;
+    margin-right:23%;
   }
 }
 
