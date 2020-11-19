@@ -147,7 +147,7 @@ pre
   }
   pre
   {
-    font-size: 1em;
+    font-size: 1.1em;
   }
 }
 
@@ -162,6 +162,12 @@ a
   color: red;
 }
 
+p.date
+{
+  text-align:center;
+  color:gray;
+}
+
 p.footer
 {
   text-align: center;
@@ -171,4 +177,10 @@ p.footer
 div
 {
   margin: 1.0em 0 0 0;
+}
+
+img.github
+{
+  max-width: 3%;
+  height:auto;
 }
