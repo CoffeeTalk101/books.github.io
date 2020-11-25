@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+<link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>快速了解Python Typing</h1>
+
+<p class="date">2020-11-25</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>首先需要明确的一点是，typing是提供给IDE或者各种插件检查的，实际typing与声明不一致并不会导致python的解释器报错。</p>
+
+<p>下面例子中使用的语法需要python 3.6以上的版本。</p>
+
+<h2 class="sigil_not_in_toc">内置变量类型</h2>
+
+<p>简单的内置类型，直接用引号加类型名称作注解。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">x: <span style="color: #007020">int</span> <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>
+x: <span style="color: #007020">float</span> <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">1.0</span>
+x: <span style="color: #007020">bool</span> <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">True</span>
+x: <span style="color: #007020">str</span> <span style="color: #333333">=</span> <span style="background-color: #fff0f0">"test"</span>
+x: <span style="color: #007020">bytes</span> <span style="color: #333333">=</span> b<span style="background-color: #fff0f0">"test"</span>
+</pre>
+</div>
+
+<p>可以只声明类型而不给变量赋值。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">a: <span style="color: #007020">int</span>
+</pre>
+</div>
+
+<p>集合类型，将集合内变量的类型放在中括号中。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">typing</span> <span style="color: #008800; font-weight: bold">import</span> List, Set, Dict, Tuple, Optional, Union, Any
+
+x: List[<span style="color: #007020">int</span>] <span style="color: #333333">=</span> [<span style="color: #0000DD; font-weight: bold">1</span>]
+x: Set[<span style="color: #007020">int</span>] <span style="color: #333333">=</span> {<span style="color: #0000DD; font-weight: bold">6</span>, <span style="color: #0000DD; font-weight: bold">7</span>}
+x: Dict[<span style="color: #007020">str</span>, <span style="color: #007020">float</span>] <span style="color: #333333">=</span> {<span style="background-color: #fff0f0">'field'</span>: <span style="color: #6600EE; font-weight: bold">2.0</span>}
+
+<span style="color: #888888"># 固定长度的Tuple，指定所有类型</span>
+x: Tuple[<span style="color: #007020">int</span>, <span style="color: #007020">str</span>, <span style="color: #007020">float</span>] <span style="color: #333333">=</span> (<span style="color: #0000DD; font-weight: bold">3</span>, <span style="background-color: #fff0f0">"yes"</span>, <span style="color: #6600EE; font-weight: bold">7.5</span>)
+
+<span style="color: #888888"># 变量长度的Tuple，使用省略号</span>
+x: Tuple[<span style="color: #007020">int</span>, <span style="color: #333333">...</span>] <span style="color: #333333">=</span> (<span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #0000DD; font-weight: bold">2</span>, <span style="color: #0000DD; font-weight: bold">3</span>)
+</pre>
+</div>
+
+
+<p>可以为None的值，使用Optional注解：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">x: Optional[<span style="color: #007020">str</span>] <span style="color: #333333">=</span> some_function()
+</pre>
+</div>
+
+<p>同时可以存在多种类型的时候，使用Union进行注解：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">x: List[Union[<span style="color: #007020">int</span>, <span style="color: #007020">str</span>]] <span style="color: #333333">=</span> [<span style="color: #0000DD; font-weight: bold">3</span>, <span style="color: #0000DD; font-weight: bold">5</span>, <span style="background-color: #fff0f0">"test"</span>, <span style="background-color: #fff0f0">"fun"</span>]
+</pre>
+</div>
+
+<p>使用Any表示可以为任意类型</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">x: Any <span style="color: #333333">=</span> mystery_function()
+</pre>
+</div>
+
+<h2 class="sigil_not_in_toc">函数</h2>
+
+<p>对于没有返回值的函数，可以指定返回类型为None</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">play</span>(player_name: <span style="color: #007020">str</span>) <span style="color: #333333">-&gt;</span> <span style="color: #008800; font-weight: bold">None</span>:
+    <span style="color: #007020">print</span>(f<span style="background-color: #fff0f0">"{player_name} plays"</span>)
+</pre>
+</div>
+
+<p>定义函数时注解变量和返回值类型：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">typing</span> <span style="color: #008800; font-weight: bold">import</span> Callable, Iterator, Union, Optional, List
+
+<span style="color: #888888"># 定义函数</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">stringify</span>(num: <span style="color: #007020">int</span>) <span style="color: #333333">-&gt;</span> <span style="color: #007020">str</span>:
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">str</span>(num)
+
+<span style="color: #888888"># 多个输入变量</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">plus</span>(num1: <span style="color: #007020">int</span>, num2: <span style="color: #007020">int</span>) <span style="color: #333333">-&gt;</span> <span style="color: #007020">int</span>:
+    <span style="color: #008800; font-weight: bold">return</span> num1 <span style="color: #333333">+</span> num2
+
+<span style="color: #888888"># 指定默认值</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">f</span>(num1: <span style="color: #007020">int</span>, my_float: <span style="color: #007020">float</span> <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">3.5</span>) <span style="color: #333333">-&gt;</span> <span style="color: #007020">float</span>:
+    <span style="color: #008800; font-weight: bold">return</span> num1 <span style="color: #333333">+</span> my_float
+</pre>
+</div>
+
+<p>将函数赋值给变量</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">x: Callable[[<span style="color: #007020">int</span>, <span style="color: #007020">float</span>], <span style="color: #007020">float</span>] <span style="color: #333333">=</span> f
+</pre>
+</div>
+
+
+<p>对 Generator 函数使用 Iterator 作注解</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">g</span>(n: <span style="color: #007020">int</span>) <span style="color: #333333">-&gt;</span> Iterator[<span style="color: #007020">int</span>]:
+    i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>
+    <span style="color: #008800; font-weight: bold">while</span> i <span style="color: #333333">&lt;</span> n:
+        <span style="color: #008800; font-weight: bold">yield</span> i
+        i <span style="color: #333333">+=</span> <span style="color: #0000DD; font-weight: bold">1</span>
+</pre>
+</div>
+
+<p>对涉及系统输入输出的可以使用 IO 注解</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #888888"># Use IO[] for functions that should accept or return any</span>
+<span style="color: #888888"># object that comes from an open() call (IO[] does not</span>
+<span style="color: #888888"># distinguish between reading, writing or other modes)</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">get_sys_IO</span>(mode: <span style="color: #007020">str</span> <span style="color: #333333">=</span> <span style="background-color: #fff0f0">'w'</span>) <span style="color: #333333">-&gt;</span> IO[<span style="color: #007020">str</span>]:
+    <span style="color: #008800; font-weight: bold">if</span> mode <span style="color: #333333">==</span> <span style="background-color: #fff0f0">'w'</span>:
+        <span style="color: #008800; font-weight: bold">return</span> sys<span style="color: #333333">.</span>stdout
+    <span style="color: #008800; font-weight: bold">elif</span> mode <span style="color: #333333">==</span> <span style="background-color: #fff0f0">'r'</span>:
+        <span style="color: #008800; font-weight: bold">return</span> sys<span style="color: #333333">.</span>stdin
+    <span style="color: #008800; font-weight: bold">else</span>:
+        <span style="color: #008800; font-weight: bold">return</span> sys<span style="color: #333333">.</span>stdout
+</pre>
+</div>
+
+
+<h2 class="sigil_not_in_toc">Duck Types</h2>
+
+<p>对于 Iterators （实现了__iter__()和__next__()方法的对象），可以使用 Iterable 注解。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">typing</span> <span style="color: #008800; font-weight: bold">import</span> Mapping, MutableMapping, Sequence, Iterable, List, Set
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">f</span>(ints: Iterable[<span style="color: #007020">int</span>]) <span style="color: #333333">-&gt;</span> List[<span style="color: #007020">str</span>]:
+    <span style="color: #008800; font-weight: bold">return</span> [<span style="color: #007020">str</span>(x) <span style="color: #008800; font-weight: bold">for</span> x <span style="color: #000000; font-weight: bold">in</span> ints]
+
+f(<span style="color: #007020">range</span>(<span style="color: #0000DD; font-weight: bold">1</span>, <span style="color: #0000DD; font-weight: bold">3</span>))
+</pre>
+</div>
+
+
+<p>对于序列对象（实现了__len__()和__getitem()__方法的对象），可以使用 Sequence 注解。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">str_len</span>(seq: Sequence) <span style="color: #333333">-&gt;</span> <span style="color: #007020">str</span>:
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">str</span>(<span style="color: #007020">len</span>(seq))
+</pre>
+</div>
+
+<p>可以使用 Mapping 注解类似于字典（键值对）形式，且不需要改变其内容的类型。使用 MutableMapping 注解有必要改变内容的类型。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">f</span>(my_mapping: Mapping[<span style="color: #007020">int</span>, <span style="color: #007020">str</span>]) <span style="color: #333333">-&gt;</span> List[<span style="color: #007020">int</span>]:
+    my_mapping[<span style="color: #0000DD; font-weight: bold">5</span>] <span style="color: #333333">=</span> <span style="background-color: #fff0f0">'maybe'</span>  <span style="color: #888888"># 这是与Mapping注解相悖的</span>
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">list</span>(my_mapping<span style="color: #333333">.</span>keys())
+
+f({<span style="color: #0000DD; font-weight: bold">3</span>: <span style="background-color: #fff0f0">'yes'</span>, <span style="color: #0000DD; font-weight: bold">4</span>: <span style="background-color: #fff0f0">'no'</span>})
+
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">f</span>(my_mapping: MutableMapping[<span style="color: #007020">int</span>, <span style="color: #007020">str</span>]) <span style="color: #333333">-&gt;</span> Set[<span style="color: #007020">str</span>]:
+    my_mapping[<span style="color: #0000DD; font-weight: bold">5</span>] <span style="color: #333333">=</span> <span style="background-color: #fff0f0">'maybe'</span>  <span style="color: #888888"># 这是符合MutableMapping注解的</span>
+    <span style="color: #008800; font-weight: bold">return</span> <span style="color: #007020">set</span>(my_mapping<span style="color: #333333">.</span>values())
+
+f({<span style="color: #0000DD; font-weight: bold">3</span>: <span style="background-color: #fff0f0">'yes'</span>, <span style="color: #0000DD; font-weight: bold">4</span>: <span style="background-color: #fff0f0">'no'</span>})
+</pre>
+</div>
+
+<h2 class="sigil_not_in_toc">类</h2>
+
+<p>用户自定义的类可以作为类型被注解。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">x: MyClass <span style="color: #333333">=</span> MyClass()
+</pre>
+</div>
+
+<p>需要注意的是，如果我们在一个类被定义前使用类名作为注解，是不通过的。如果要和类的位置无关，可以使用类名的字符串。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">f</span>(foo: A) <span style="color: #333333">-&gt;</span> <span style="color: #007020">int</span>:  <span style="color: #888888"># This will fail</span>
+    <span style="color: #333333">...</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">A</span>:
+    <span style="color: #333333">...</span>
+
+<span style="color: #888888"># If you use the string literal 'A', it will pass as long as there is a</span>
+<span style="color: #888888"># class of that name later on in the file</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">f</span>(foo: <span style="background-color: #fff0f0">'A'</span>) <span style="color: #333333">-&gt;</span> <span style="color: #007020">int</span>:  <span style="color: #888888"># Ok</span>
+    <span style="color: #333333">...</span>
+</pre>
+</div>
+
+
+<p>可以用 ClassVar 注解禁止在实例里设置的类的属性。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Starship</span>:
+    stats: ClassVar[<span style="color: #007020">dict</span>[<span style="color: #007020">str</span>, <span style="color: #007020">int</span>]] <span style="color: #333333">=</span> {} <span style="color: #888888"># class variable</span>
+    damage: <span style="color: #007020">int</span> <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">10</span>                     <span style="color: #888888"># instance variable</span>
+
+enterprise_d <span style="color: #333333">=</span> Starship(<span style="color: #0000DD; font-weight: bold">3000</span>)
+enterprise_d<span style="color: #333333">.</span>stats <span style="color: #333333">=</span> {} <span style="color: #888888"># 与注解相悖</span>
+Starship<span style="color: #333333">.</span>stats <span style="color: #333333">=</span> {}     <span style="color: #888888"># 这样是可以的</span>
+</pre>
+</div>
+
+<p>可以用 Final 来注解不能在子类中修改的属性。也可以直接将变量注解为 Final。<span class="red">(New in v3.8)</span></p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">MAX_SIZE: Final <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">9000</span>
+
+<span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Connection</span>:
+    TIMEOUT: Final[<span style="color: #007020">int</span>] <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">10</span>
+</pre>
+</div>
+
+
+<h2 class="sigil_not_in_toc">其它</h2>
+
+<p>可以用 Literal 来枚举一个变量所有有效的值。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">validate_simple</span>(data: Any) <span style="color: #333333">-&gt;</span> Literal[<span style="color: #008800; font-weight: bold">True</span>]:  <span style="color: #888888"># always returns True</span>
+    <span style="color: #333333">...</span>
+
+MODE <span style="color: #333333">=</span> Literal[<span style="background-color: #fff0f0">'r'</span>, <span style="background-color: #fff0f0">'rb'</span>, <span style="background-color: #fff0f0">'w'</span>, <span style="background-color: #fff0f0">'wb'</span>]
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">open_helper</span>(file: <span style="color: #007020">str</span>, mode: MODE) <span style="color: #333333">-&gt;</span> <span style="color: #007020">str</span>:
+    <span style="color: #333333">...</span>
+</pre>
+</div>
+
+<p>定义类型别名可以有两种方式，直接赋值：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">typing</span> <span style="color: #008800; font-weight: bold">import</span> List, Tuple
+
+Card <span style="color: #333333">=</span> Tuple[<span style="color: #007020">str</span>, <span style="color: #007020">str</span>]
+Deck <span style="color: #333333">=</span> List[Card]
+</pre>
+</div>
+
+<p>或者用NewType：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">typing</span> <span style="color: #008800; font-weight: bold">import</span> NewType
+
+UserId <span style="color: #333333">=</span> NewType(<span style="background-color: #fff0f0">'UserId'</span>, <span style="color: #007020">int</span>)
+ProUserId <span style="color: #333333">=</span> NewType(<span style="background-color: #fff0f0">'ProUserId'</span>, UserId)
+</pre>
+</div>
+
+<p>这两者的区别在于，直接赋值，相当于声明这两个类型之间完全等价。因此类型别名和类型本身是可以互换的。而使用NewType，是从原类型中衍生出了一个子类型，因此在注解了需要子类型变量的地方，使用原类型的变量，是无法通过的。如下面这个例子：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">t1 <span style="color: #333333">=</span> <span style="color: #007020">int</span>
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">f1</span>(x: t1):
+    <span style="color: #008800; font-weight: bold">pass</span>
+f1(<span style="color: #0000DD; font-weight: bold">99</span>)    <span style="color: #888888"># OK</span>
+
+t2 <span style="color: #333333">=</span> NewType(<span style="background-color: #fff0f0">'t2'</span>, <span style="color: #007020">int</span>)
+<span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">f2</span>(x: t2):
+    <span style="color: #008800; font-weight: bold">pass</span>
+f2(<span style="color: #0000DD; font-weight: bold">99</span>)    <span style="color: #888888"># Can not pass</span>
+
+a <span style="color: #333333">=</span> t2(<span style="color: #0000DD; font-weight: bold">99</span>)
+f2(a)    <span style="color: #888888"># OK</span>
+</pre>
+</div>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

@@ -31,5 +31,11 @@
       </navLabel>
       <content src="Text/Section0003.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-4" playOrder="4">
+      <navLabel>
+        <text>快速了解Python Typing</text>
+      </navLabel>
+      <content src="Text/Section0004.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
