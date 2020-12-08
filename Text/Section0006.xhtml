@@ -15,13 +15,15 @@
 
 <a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
 
-<p>首先说一个小知识点：在Scala中，递归函数的返回值是必须指定的。因为编译器会尝试从函数的右侧表达式找这个函数的返回值，但是对递归韩式，它会找到这个函数本身，导致返回值无法确定。</p>
+<p>首先说一个小知识点：在Scala中，递归函数的返回值类型是必须指定的（而其它函数则不必，当然从代码风格的角度，全都写明会更加清楚）。因为编译器会尝试从函数的右侧表达式找这个函数的返回值，但是对递归函数，它会找到这个函数本身，导致返回值无法确定。</p>
 
 <p>尾递归：如果一个函数的递归调用仅仅是调用其本身，那么就是一个尾递归。Scala的编译器会对尾递归进行优化，使其在执行时只占用恒量的内存，因此可以达到和循环一致的执行效率。</p>
 
 <p>类似的，尾调用的定义是，如果一个函数最后的动作仅仅是对（本身或另一个）函数的调用，那么调用栈就不会动态增大。</p>
 
-<p>非尾递归的例子，阶乘：</p>
+<p>这里值得一提的是，并非所有语言都对尾递归、尾调用有优化，例如Python（CPython）就不提供原生的尾递归优化。关于具体的理由可以参见 <a href="http://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html">Final Words on Tail Calls</a></p>
+
+<p>而在Scala这样的语言中，尾递归的执行效率会比非尾递归更高。一个非尾递归的例子，阶乘：</p>
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> factorial<span style="color: #555555">(</span>n<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span> <span style="color: #555555">=</span>
   <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>n <span style="color: #555555">==</span> <span style="color: #FF6600">0</span><span style="color: #555555">)</span> <span style="color: #FF6600">1</span> <span style="color: #006699; font-weight: bold">else</span> n <span style="color: #555555">*</span> factorial<span style="color: #555555">(</span>n <span style="color: #555555">-</span> <span style="color: #FF6600">1</span><span style="color: #555555">)</span>
@@ -36,7 +38,7 @@
 <span style="color: #555555">}</span>
 </pre></div>
 
-<p>思路是用参数来传递计算的中间结果，而不是将表达式暂存在调用栈中。这里我们把递归函数外面又包装了一层函数，是为了对参数做内部初始化，不暴露在外面。这是一种比较好用的写法。</p>
+<p>思路是用参数来传递计算的中间结果，而不是将表达式保存在调用栈中。这里我们把递归函数外面又包装了一层函数，是为了对参数做内部初始化，不把它暴露在外面。在递归中需要初始化时，这是一种比较好用的写法。</p>
 
 <p>还可以用非递归的循环写法来写，比较一下：</p>
 
@@ -60,7 +62,7 @@ f(n, acc) = f(n * acc, n - 1) (when n > 0)
 
 <p>而程序的执行过程，实际上是对这个函数层层代入进行求值的过程。也就是所谓的代换模型（substitution model）</p>
 
-<p>上面这个循环的例子是典型的指令式写法，用变量来存储数据，用流程控制来规定程序的执行逻辑：</p>
+<p>而上面循环的例子是典型的指令式写法，用变量来存储数据，用流程控制来规定程序的执行逻辑：</p>
 
 <pre>
 f(n) = ( (((1 * 2) * 3) * 4) * ...*(n-1)) * n
