@@ -43,5 +43,11 @@
       </navLabel>
       <content src="Text/Section0005.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-6" playOrder="6">
+      <navLabel>
+        <text>递归、尾递归 in Scala</text>
+      </navLabel>
+      <content src="Text/Section0006.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
