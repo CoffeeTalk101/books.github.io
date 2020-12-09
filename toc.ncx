@@ -15,41 +15,47 @@
   <navMap>
     <navPoint id="navPoint-1" playOrder="1">
       <navLabel>
+        <text>MapReduce中SecondarySort的实现</text>
+      </navLabel>
+      <content src="Text/Section0008.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-2" playOrder="2">
+      <navLabel>
         <text>XGBoost 简介（1）</text>
       </navLabel>
       <content src="Text/Section0002.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-2" playOrder="2">
+    <navPoint id="navPoint-3" playOrder="3">
       <navLabel>
         <text>XGBoost 简介（2）</text>
       </navLabel>
       <content src="Text/Section0007.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-3" playOrder="3">
+    <navPoint id="navPoint-4" playOrder="4">
       <navLabel>
         <text>调整正负样本比对模型评估指标的影响</text>
       </navLabel>
       <content src="Text/Section0001.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-4" playOrder="4">
+    <navPoint id="navPoint-5" playOrder="5">
       <navLabel>
         <text>Scala和Java混合开发和编译</text>
       </navLabel>
       <content src="Text/Section0003.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-5" playOrder="5">
+    <navPoint id="navPoint-6" playOrder="6">
       <navLabel>
         <text>快速了解Python Type Hint</text>
       </navLabel>
       <content src="Text/Section0004.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-6" playOrder="6">
+    <navPoint id="navPoint-7" playOrder="7">
       <navLabel>
         <text>AI项目规划中值得考虑的非技术因素</text>
       </navLabel>
       <content src="Text/Section0005.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-7" playOrder="7">
+    <navPoint id="navPoint-8" playOrder="8">
       <navLabel>
         <text>递归、尾递归 in Scala</text>
       </navLabel>

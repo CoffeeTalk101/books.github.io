@@ -5,6 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>递归、尾递归 in Scala</title>
+  <meta name="keywords" content="Scala" />
 <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
 </head>
 
@@ -34,11 +35,13 @@
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> factorial<span style="color: #555555">(</span>n<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span> <span style="color: #555555">={</span>
   <span style="color: #006699; font-weight: bold">def</span> doFactorial<span style="color: #555555">(</span>n<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span><span style="color: #555555">,</span> acc<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span> <span style="color: #555555">=</span>
-    <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>n <span style="color: #555555">==</span> <span style="color: #FF6600">0</span><span style="color: #555555">)</span> acc <span style="color: #006699; font-weight: bold">else</span> doFactorial<span style="color: #555555">(</span>n <span style="color: #555555">-</span> <span style="color: #FF6600">1</span><span style="color: #555555">,</span> n <span style="color: #555555">*</span> acc<span style="color: #555555">)</span>
+    <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>n <span style="color: #555555">==</span> <span style="color: #FF6600">0</span><span style="color: #555555">)</span> acc
+    <span style="color: #006699; font-weight: bold">else</span> doFactorial<span style="color: #555555">(</span>n <span style="color: #555555">-</span> <span style="color: #FF6600">1</span><span style="color: #555555">,</span> n <span style="color: #555555">*</span> acc<span style="color: #555555">)</span>
   doFactorial<span style="color: #555555">(</span>n<span style="color: #555555">,</span> <span style="color: #FF6600">1</span><span style="color: #555555">)</span>
 <span style="color: #555555">}</span>
 </pre>
 </div>
+
 
 <p>思路是用参数来传递计算的中间结果，而不是将表达式保存在调用栈中。这里我们把递归函数外面又包装了一层函数，是为了对参数做内部初始化，不把它暴露在外面。在递归中需要初始化时，这是一种比较好用的写法。</p>
 
@@ -70,6 +73,19 @@
 </pre>
 
 <p>从直观的感受来讲，这种写法的抽象程度没有递归写法的高。</p>
+
+<p>不过是不是递归写法就一定要求更高的抽象程度呢，其实也不一定。上面提到，写尾递归的时候，我们用函数的参数代替了变量对中间值的存储。其实这个思路可以用来把循环“暴力”改写成递归：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> factorial<span style="color: #555555">(</span>n<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span> <span style="color: #555555">={</span>
+  <span style="color: #006699; font-weight: bold">def</span> doFactorial<span style="color: #555555">(</span>i<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span><span style="color: #555555">,</span> acc<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span> <span style="color: #555555">=</span>
+    <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>i <span style="color: #555555">&gt;</span> n<span style="color: #555555">)</span> acc
+    <span style="color: #006699; font-weight: bold">else</span> doFactorial<span style="color: #555555">(</span>i <span style="color: #555555">+</span> <span style="color: #FF6600">1</span><span style="color: #555555">,</span> acc <span style="color: #555555">*</span> i<span style="color: #555555">)</span>
+  doFactorial<span style="color: #555555">(</span><span style="color: #FF6600">1</span><span style="color: #555555">,</span> <span style="color: #FF6600">1</span><span style="color: #555555">)</span>
+<span style="color: #555555">}</span>
+</pre>
+</div>
+
+<p>实际上做的操作就是把原来定义的一个循环变量i，变成了一个随着递归不断传递下去的函数参数。和前一个尾递归的写法相比，形式上只是把从后往前算阶乘变成了从前往后算，不过在思路上却有比较大的区别。另外，这也是对递归和循环等价性的一种佐证。</p>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.
