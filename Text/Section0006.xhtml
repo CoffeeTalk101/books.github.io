@@ -11,7 +11,7 @@
 <body>
 <h1>递归、尾递归 in Scala</h1>
 
-<p class="date">2020-12-8</p>
+<p class="date">2020-12-08</p>
 
 <a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
 
@@ -27,7 +27,8 @@
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> factorial<span style="color: #555555">(</span>n<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span> <span style="color: #555555">=</span>
   <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>n <span style="color: #555555">==</span> <span style="color: #FF6600">0</span><span style="color: #555555">)</span> <span style="color: #FF6600">1</span> <span style="color: #006699; font-weight: bold">else</span> n <span style="color: #555555">*</span> factorial<span style="color: #555555">(</span>n <span style="color: #555555">-</span> <span style="color: #FF6600">1</span><span style="color: #555555">)</span>
-</pre></div>
+</pre>
+</div>
 
 <p>改写成尾递归：</p>
 
@@ -36,7 +37,8 @@
     <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>n <span style="color: #555555">==</span> <span style="color: #FF6600">0</span><span style="color: #555555">)</span> acc <span style="color: #006699; font-weight: bold">else</span> doFactorial<span style="color: #555555">(</span>n <span style="color: #555555">-</span> <span style="color: #FF6600">1</span><span style="color: #555555">,</span> n <span style="color: #555555">*</span> acc<span style="color: #555555">)</span>
   doFactorial<span style="color: #555555">(</span>n<span style="color: #555555">,</span> <span style="color: #FF6600">1</span><span style="color: #555555">)</span>
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 <p>思路是用参数来传递计算的中间结果，而不是将表达式保存在调用栈中。这里我们把递归函数外面又包装了一层函数，是为了对参数做内部初始化，不把它暴露在外面。在递归中需要初始化时，这是一种比较好用的写法。</p>
 
@@ -51,12 +53,12 @@
   <span style="color: #555555">}</span>
   acc
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 <p>可以感受到，函数式（递归）的写法，相当于定义了如下的数学函数：</p>
 
-<pre>
-f(n, acc) = f(n * acc, n - 1) (when n > 0)
+<pre>f(n, acc) = f(n * acc, n - 1) (when n &gt; 0)
           = acc (when n = 0)
 </pre>
 
@@ -64,8 +66,7 @@ f(n, acc) = f(n * acc, n - 1) (when n > 0)
 
 <p>而上面循环的例子是典型的指令式写法，用变量来存储数据，用流程控制来规定程序的执行逻辑：</p>
 
-<pre>
-f(n) = ( (((1 * 2) * 3) * 4) * ...*(n-1)) * n
+<pre>f(n) = ( (((1 * 2) * 3) * 4) * ...*(n-1)) * n
 </pre>
 
 <p>从直观的感受来讲，这种写法的抽象程度没有递归写法的高。</p>
