@@ -15,47 +15,77 @@
   <navMap>
     <navPoint id="navPoint-1" playOrder="1">
       <navLabel>
+        <text>PyCharm连接到远程python interpreter时的问题排查</text>
+      </navLabel>
+      <content src="Text/Section0013.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-2" playOrder="2">
+      <navLabel>
         <text>MapReduce中SecondarySort的实现</text>
       </navLabel>
       <content src="Text/Section0008.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-2" playOrder="2">
+    <navPoint id="navPoint-3" playOrder="3">
+      <navLabel>
+        <text>log4j和log4j2依赖冲突的解决办法</text>
+      </navLabel>
+      <content src="Text/Section0009.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-4" playOrder="4">
+      <navLabel>
+        <text>离线为PyCharm配置Anaconda虚拟环境</text>
+      </navLabel>
+      <content src="Text/Section0010.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-5" playOrder="5">
       <navLabel>
         <text>XGBoost 简介（1）</text>
       </navLabel>
       <content src="Text/Section0002.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-3" playOrder="3">
+    <navPoint id="navPoint-6" playOrder="6">
       <navLabel>
         <text>XGBoost 简介（2）</text>
       </navLabel>
       <content src="Text/Section0007.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-4" playOrder="4">
+    <navPoint id="navPoint-7" playOrder="7">
+      <navLabel>
+        <text>实验：缺失值的处理对XGBoost模型效果的影响</text>
+      </navLabel>
+      <content src="Text/Section0011.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-8" playOrder="8">
+      <navLabel>
+        <text>MapReduce任务两种OOM问题的排查处理</text>
+      </navLabel>
+      <content src="Text/Section0012.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-9" playOrder="9">
       <navLabel>
         <text>调整正负样本比对模型评估指标的影响</text>
       </navLabel>
       <content src="Text/Section0001.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-5" playOrder="5">
+    <navPoint id="navPoint-10" playOrder="10">
       <navLabel>
         <text>Scala和Java混合开发和编译</text>
       </navLabel>
       <content src="Text/Section0003.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-6" playOrder="6">
+    <navPoint id="navPoint-11" playOrder="11">
       <navLabel>
         <text>快速了解Python Type Hint</text>
       </navLabel>
       <content src="Text/Section0004.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-7" playOrder="7">
+    <navPoint id="navPoint-12" playOrder="12">
       <navLabel>
         <text>AI项目规划中值得考虑的非技术因素</text>
       </navLabel>
       <content src="Text/Section0005.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-8" playOrder="8">
+    <navPoint id="navPoint-13" playOrder="13">
       <navLabel>
         <text>递归、尾递归 in Scala</text>
       </navLabel>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>log4j和log4j2依赖冲突的解决办法</title>
+  <meta name="keywords" content="Java"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>log4j和log4j2依赖冲突的解决办法</h1>
+
+<p class="date">2020-08-22</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>log4j是一个功能强大的日志组件，利用log4j，我们可以将日志信息记录在控制台、文件、GUI组件、服务器等等位置，还可以方便地自定义日志的显示格式。在2015年，log4j 1.x停止更新，而log4j2相比于log4j 1.x有显著的性能和吞吐量的提升。</p>
+
+<p>如果需要在项目中使用log4j2，有时会遇到这样的情况：项目引入的一些jar包是依赖于log4j 1.x的，直接使用Maven打包后，运行时会报错：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">java.lang.NoClassDefFoundError: org/apache/log4j/LogManager
+</pre>
+</div>
+
+<p>这是因为log4j的1和2版本同时引入，存在依赖冲突。只靠Maven的优先级管理，是无法用log4j2覆盖掉log4j 1.x的。</p>
+
+<p>这时我们可以通过log4j-1.2-api将老版本的日志输出桥接到新版本的log4j2。在pom文件中添加以下依赖：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #330099; font-weight: bold">&lt;dependency&gt;</span>
+   <span style="color: #330099; font-weight: bold">&lt;groupId&gt;</span>org.apache.logging.log4j<span style="color: #330099; font-weight: bold">&lt;/groupId&gt;</span>
+   <span style="color: #330099; font-weight: bold">&lt;artifactId&gt;</span>log4j-1.2-api<span style="color: #330099; font-weight: bold">&lt;/artifactId&gt;</span>
+   <span style="color: #330099; font-weight: bold">&lt;version&gt;</span>2.9.1<span style="color: #330099; font-weight: bold">&lt;/version&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;/dependency&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;dependency&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;groupId&gt;</span>org.apache.logging.log4j<span style="color: #330099; font-weight: bold">&lt;/groupId&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;artifactId&gt;</span>log4j-api<span style="color: #330099; font-weight: bold">&lt;/artifactId&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;version&gt;</span>2.9.1<span style="color: #330099; font-weight: bold">&lt;/version&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;/dependency&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;dependency&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;groupId&gt;</span>org.apache.logging.log4j<span style="color: #330099; font-weight: bold">&lt;/groupId&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;artifactId&gt;</span>log4j-core<span style="color: #330099; font-weight: bold">&lt;/artifactId&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;version&gt;</span>2.9.1<span style="color: #330099; font-weight: bold">&lt;/version&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;/dependency&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;dependency&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;groupId&gt;</span>org.apache.logging.log4j<span style="color: #330099; font-weight: bold">&lt;/groupId&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;artifactId&gt;</span>log4j-slf4j-impl<span style="color: #330099; font-weight: bold">&lt;/artifactId&gt;</span>
+  <span style="color: #330099; font-weight: bold">&lt;version&gt;</span>2.9.1<span style="color: #330099; font-weight: bold">&lt;/version&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;/dependency&gt;</span>
+</pre>
+</div>
+
+<p>之后，在项目中就可以使用log4j2了，而依赖于log4j 1.x的包也能够正常地输出日志。</p>
+
+<p>官方对于相关问题的说明可以在<a href="logging.apache.org/log4j/2.x/faq.html">此处</a>找到。</p>
+
+<p>附：log4j 1.x 和 log4j2.x 的配置文件格式示例</p>
+
+<p>因为log4j 1 和 2 的配置文件是互相不兼容的，搜索相关资料时两种版本相互混杂，分辨比较麻烦。这里给两个版本各列出一个配置文件，可以用于格式的参考和对应：</p>
+
+<p>log4j 1.x 的配置文件格式：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #009999">&lt;!DOCTYPE log4j:configuration SYSTEM "log4j.dtd"&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;log4j:configuration</span> <span style="color: #330099">debug=</span><span style="color: #CC3300">"false"</span><span style="color: #330099; font-weight: bold">&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;appender</span> <span style="color: #330099">name=</span><span style="color: #CC3300">"console"</span> <span style="color: #330099">class=</span><span style="color: #CC3300">"org.apache.log4j.ConsoleAppender"</span><span style="color: #330099; font-weight: bold">&gt;</span>
+        <span style="color: #330099; font-weight: bold">&lt;param</span> <span style="color: #330099">name=</span><span style="color: #CC3300">"Target"</span> <span style="color: #330099">value=</span><span style="color: #CC3300">"System.out"</span><span style="color: #330099; font-weight: bold">/&gt;</span>
+        <span style="color: #330099; font-weight: bold">&lt;layout</span> <span style="color: #330099">class=</span><span style="color: #CC3300">"org.apache.log4j.PatternLayout"</span><span style="color: #330099; font-weight: bold">&gt;</span>
+            <span style="color: #330099; font-weight: bold">&lt;param</span> <span style="color: #330099">name=</span><span style="color: #CC3300">"ConversionPattern"</span> <span style="color: #330099">value=</span><span style="color: #CC3300">"%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"</span> <span style="color: #330099; font-weight: bold">/&gt;</span>
+        <span style="color: #330099; font-weight: bold">&lt;/layout&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;/appender&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;root&gt;</span>
+        <span style="color: #330099; font-weight: bold">&lt;priority</span> <span style="color: #330099">value =</span><span style="color: #CC3300">"debug"</span><span style="color: #330099; font-weight: bold">/&gt;</span>
+        <span style="color: #330099; font-weight: bold">&lt;appender-ref</span> <span style="color: #330099">ref=</span><span style="color: #CC3300">"console"</span><span style="color: #330099; font-weight: bold">/&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;/root&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;/log4j:configuration&gt;</span>
+</pre>
+</div>
+
+<p>log4j 2.x 的配置文件格式：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #330099; font-weight: bold">&lt;Configuration</span> <span style="color: #330099">status=</span><span style="color: #CC3300">"WARN"</span> <span style="color: #330099">monitorInterval=</span><span style="color: #CC3300">"300"</span><span style="color: #330099; font-weight: bold">&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;Appenders&gt;</span>
+          <span style="color: #330099; font-weight: bold">&lt;Console</span> <span style="color: #330099">name=</span><span style="color: #CC3300">"Console"</span> <span style="color: #330099">target=</span><span style="color: #CC3300">"SYSTEM_OUT"</span><span style="color: #330099; font-weight: bold">&gt;</span>
+            <span style="color: #330099; font-weight: bold">&lt;PatternLayout</span> <span style="color: #330099">pattern=</span><span style="color: #CC3300">"%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"</span> <span style="color: #330099; font-weight: bold">/&gt;</span>
+          <span style="color: #330099; font-weight: bold">&lt;/Console&gt;</span>
+          <span style="color: #330099; font-weight: bold">&lt;File</span> <span style="color: #330099">name=</span><span style="color: #CC3300">"MyFile"</span> <span style="color: #330099">fileName=</span><span style="color: #CC3300">"D:/logs/app.log"</span><span style="color: #330099; font-weight: bold">&gt;</span>
+            <span style="color: #330099; font-weight: bold">&lt;PatternLayout</span> <span style="color: #330099">pattern=</span><span style="color: #CC3300">"%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"</span> <span style="color: #330099; font-weight: bold">/&gt;</span>
+          <span style="color: #330099; font-weight: bold">&lt;/File&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;/Appenders&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;Loggers&gt;</span>
+          <span style="color: #330099; font-weight: bold">&lt;Logger</span> <span style="color: #330099">name=</span><span style="color: #CC3300">"mylog"</span> <span style="color: #330099">level=</span><span style="color: #CC3300">"trace"</span> <span style="color: #330099">additivity=</span><span style="color: #CC3300">"true"</span><span style="color: #330099; font-weight: bold">&gt;</span>
+            <span style="color: #330099; font-weight: bold">&lt;AppenderRef</span> <span style="color: #330099">ref=</span><span style="color: #CC3300">"MyFile"</span> <span style="color: #330099; font-weight: bold">/&gt;</span>
+          <span style="color: #330099; font-weight: bold">&lt;/Logger&gt;</span>
+          <span style="color: #330099; font-weight: bold">&lt;Root</span> <span style="color: #330099">level=</span><span style="color: #CC3300">"error"</span><span style="color: #330099; font-weight: bold">&gt;</span>
+            <span style="color: #330099; font-weight: bold">&lt;AppenderRef</span> <span style="color: #330099">ref=</span><span style="color: #CC3300">"Console"</span> <span style="color: #330099; font-weight: bold">/&gt;</span>
+          <span style="color: #330099; font-weight: bold">&lt;/Root&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;/Loggers&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;/Configuration&gt;</span>
+</pre>
+</div>
+
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>PyCharm连接到远程python interpreter时的问题排查</title>
+  <meta name="keywords" content="Python"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>PyCharm连接到远程python interpreter时的问题排查</h1>
+
+<p class="date">2020-07-21</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>因为本地和服务器的python环境存在差异，本地编写的python代码需要在服务器上通过命令行的方式debug，较为繁琐。我们可以通过将PyCharm连接到服务器的python interpreter，在PyCharm里调用远程的python解释器，方便开发。</p>
+
+<p>正常情况下，连接的方式如下：</p>
+
+<p>首先在项目的右下角点击add interpreter，选择SSH Interpreter，之后输入服务器的ip。</p>
+
+<p>之后为了避免乱码，在项目设置里还需将SSH Terminal的默认编码改为UTF-8。</p>
+
+<p>最后在Tools->Deployment->Configuration里面配置连接到服务器的SFTP设置即可完成配置。</p>
+
+<p>需要注意的是，我们项目的本体还是保存在本地的，而为了调用远程的python interpreter运行程序，PyCharm会把项目同时复制一份到服务器上，复制的地址可以在Project Interpreter->Path Mappings中查看。一般来说PyCharm会自动同步本地和远程的文件，但有时候也会遇到远程项目没有自动更新的情况，这时候可以右键项目->Deployment->sync with deployed to进行同步即可。</p>
+
+<p><b>问题排查</b>：</p>
+
+<p>【1】</p>
+
+<p>如果配置了远程的python interpreter之后出现在connecting to console卡住的问题，可能是由于ssh的端口转发存在问题，因为PyCharm是需要借助ssh的端口转发来连接到远程python的。我们可以手动配置一个ssh localforward，例如使用命令：</p>
+
+<p>ssh -N -L 4444:localhost:22 remote_username@remote_ip -p remote_port(22)</p>
+
+<p>其中4444为指定的本地端口，之后在PyCharm中新增一个python interpreter，地址设置为localhost 4444，用户名密码是服务器的，查看是否能够成功创建。</p>
+
+<p>如果无法连接，可以检查服务器的配置，一是在/etc/hosts中是否给localhost指定了正确的地址。二是/etc/ssh/sshd_config中AllowTcpForwarding是否是yes（改变设置后通过 systemctl reload sshd 来重启服务）。另外可以查看/var/log/secure的日志信息来确定问题。</p>
+
+<p>相关讨论可参考<a href="unix.stackexchange.com/questions/14160">此处</a></p>
+
+<p>【2】</p>
+
+<p>如果在远程调试的时候出现AttributeError: .... AttachDebuggerTracing: symbol not found报错，是由于PyCharm 2019/2020 版本的一个bug，推荐的解决方法是删除~/.pycharm_helpers/目录。之后可以正常调试。（另外应该忽略调试时输出的类似 Expected: /..../attach_linux_amd64.so to exist. 的信息，这是另一个bug。）</p>
+
+<p>相关讨论见<a href="youtrack.jetbrains.com/issue/PY-39242">issue PY 39242</a>以及<a href="youtrack.jetbrains.com/issue/PY-39307">issue PY 39307</a>。</p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>实验：缺失值的处理对XGBoost模型效果的影响</title>
+  <meta name="keywords" content="AI"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>实验：缺失值的处理对XGBoost模型效果的影响</h1>
+
+<p class="date">2020-09-27</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<h2 class="sigil_not_in_toc">背景</h2>
+
+<p>在向XGBoost模型输入的特征矩阵当中，会存在一些缺失值。缺失值的来源主要有两种：</p>
+
+<ul>
+    <li>原始数据的缺失，例如原始交易报文中某些字段为空，或为异常值，无法使用.</li>
+    <li>特征工程的逻辑中，部分特征不适用于这条交易。例如，某个特征是判断一张卡在此前是否连续发生过3笔金额相同的交易，是为1，否为0；但实际上这张卡的历史交易数不足三笔.</li>
+</ul>
+
+<p>对于这些缺失值，一般可以考虑的处理方法有：</p>
+
+<ul>
+    <li>全都使用0替换，但是需要考虑的点是正常的特征值也可能为0.</li>
+    <li>全都使用数据集中不会出现的某个数值替换，例如所有的特征值都是非负数，那么使用-1来代表缺失值.</li>
+    <li>全都使用NaN替换（这是XGBoost默认的缺失值表示方法，相当于让模型对缺失值作自动处理）.</li>
+    <li>使用平均数/中位数替换，但是只对连续型的特征有实际意义（如金额）.</li>
+</ul>
+
+
+<p>关于XGBoost模型的输入应该如何处理缺失值，XGBoost模型的提出者陈天奇本人在<a href="github.com/dmlc/xgboost/issues/21">GitHub上</a>表示过：</p>
+
+<blockquote>
+    <p>xgboost naturally accepts sparse feature format, you can directly feed data in as sparse matrix, and only contains non-missing value.</p>
+
+<p>i.e. features that are not presented in the sparse feature matrix are treated as 'missing'. XGBoost will handle it internally and you do not need to do anything on it.</p>
+
+<p>Internally, XGBoost will automatically learn what is the best direction to go when a value is missing. Equivalently, this can be viewed as automatically "learn" what is the best imputation value for missing values based on reduction on training loss.</p>
+
+<p><b>Normally, it is fine that you treat missing and zero all as zero:)</b></p>
+</blockquote>
+
+<p>陈天奇的描述提供了下面这些信息：</p>
+
+<ul>
+    <li>XGBoost模型天生具有处理缺失值的能力，并且模型会对缺失值进行学习，找到对于缺失值的最佳优化方向（称为稀疏感知拆分发现，sparsity-aware split finding算法）.</li>
+    <li>向XGBoost输入一个稀疏矩阵（sparse matrix），XGBoost就可以对矩阵当中的缺失值作自动处理.</li>
+    <li>或者为XGBoost模型的 `missing` 参数指定一个值（默认为NaN），模型也会对缺失值作自动处理.</li>
+    <li>一般来说，就算正常数据中有0值，陈天奇认为用0来表示缺失值也没有问题.</li>
+</ul>
+
+<h2 class="sigil_not_in_toc">实验</h2>
+
+<p>下面对不同的缺失值表示方式做一些实验，比较对模型效果的影响。</p>
+
+<p><a href="https://archive.ics.uci.edu/ml/datasets/Horse+Colic">使用的数据集</a></p>
+
+<p>下面是这个数据集的一部分</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">2	1	530101	38.5	66	28	3	3	?	2	5	4	4	?	?	?	3	5	45	8.4	?	?	2	2	11300	0	0	2
+1	1	534817	39.2	88	20	?	?	4	1	3	4	2	?	?	?	4	2	50	85	2	2	3	2	2208	0	0	2
+2	1	530334	38.3	40	24	1	1	3	1	3	3	1	?	?	?	1	1	33	6.7	?	?	1	2	0	0	0	1
+1	9	5290409	39.1	164	84	4	1	6	2	2	4	4	1	2	5	3	?	48	7.2	3	5.3	2	1	2208	0	0	1
+2	1	530255	37.3	104	35	?	?	6	2	?	?	?	?	?	?	?	?	74	7.4	?	?	2	2	4300	0	0	2
+2	1	528355	?	?	?	2	1	3	1	2	3	2	2	1	?	3	3	?	?	?	?	1	2	0	0	0	2
+1	1	526802	37.9	48	16	1	1	1	1	3	3	3	1	1	?	3	5	37	7	?	?	1	1	3124	0	0	2
+1	1	529607	?	60	?	3	?	?	1	?	4	2	2	1	?	3	4	44	8.3	?	?	2	1	2208	0	0	2
+2	1	530051	?	80	36	3	4	3	1	4	4	4	2	1	?	3	5	38	6.2	?	?	3	1	3205	0	0	2
+2	9	5299629	38.3	90	?	1	?	1	1	5	3	1	2	1	?	3	?	40	6.2	1	2.2	1	2	0	0	0	1
+1	1	528548	38.1	66	12	3	3	5	1	3	3	1	2	1	3	2	5	44	6	2	3.6	1	1	2124	0	0	1
+2	1	527927	39.1	72	52	2	?	2	1	2	1	2	1	1	?	4	4	50	7.8	?	?	1	1	2111	0	0	2
+1	1	528031	37.2	42	12	2	1	1	1	3	3	3	3	1	?	4	5	?	7	?	?	1	2	4124	0	0	2
+2	9	5291329	38	92	28	1	1	2	1	1	3	2	3	?	7.2	1	1	37	6.1	1	?	2	2	0	0	0	1
+1	1	534917	38.2	76	28	3	1	1	1	3	4	1	2	2	?	4	4	46	81	1	2	1	1	2112	0	0	2
+1	1	530233	37.6	96	48	3	1	4	1	5	3	3	2	3	4.5	4	?	45	6.8	?	?	2	1	3207	0	0	2
+1	9	5301219	?	128	36	3	3	4	2	4	4	3	3	?	?	4	5	53	7.8	3	4.7	2	2	1400	0	0	1
+</pre>
+</div>
+
+<p>数据集每行表示一个样本，最后一列是类别标签，前面的所有列都是特征。可以看出，特征中既包含了连续的数值类特征，也包含离散的类别特征。</p>
+
+<p>数据集当中的问号"?"就表示该数据缺失。</p>
+
+<p>使用如下代码进行缺失值替换的实验：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic"># binary classification, missing data</span>
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">numpy</span> <span style="color: #006699; font-weight: bold">as</span> <span style="color: #00CCFF; font-weight: bold">np</span>
+<span style="color: #006699; font-weight: bold">from</span> <span style="color: #00CCFF; font-weight: bold">pandas</span> <span style="color: #006699; font-weight: bold">import</span> read_csv
+<span style="color: #006699; font-weight: bold">from</span> <span style="color: #00CCFF; font-weight: bold">xgboost</span> <span style="color: #006699; font-weight: bold">import</span> XGBClassifier
+<span style="color: #006699; font-weight: bold">from</span> <span style="color: #00CCFF; font-weight: bold">sklearn.model_selection</span> <span style="color: #006699; font-weight: bold">import</span> train_test_split
+<span style="color: #006699; font-weight: bold">from</span> <span style="color: #00CCFF; font-weight: bold">sklearn.metrics</span> <span style="color: #006699; font-weight: bold">import</span> accuracy_score
+<span style="color: #006699; font-weight: bold">from</span> <span style="color: #00CCFF; font-weight: bold">sklearn.preprocessing</span> <span style="color: #006699; font-weight: bold">import</span> LabelEncoder
+<span style="color: #0099FF; font-style: italic"># load data</span>
+dataframe <span style="color: #555555">=</span> read_csv(<span style="color: #CC3300">"horse-colic.csv"</span>, delim_whitespace<span style="color: #555555">=</span><span style="color: #006699; font-weight: bold">True</span>, header<span style="color: #555555">=</span><span style="color: #006699; font-weight: bold">None</span>)
+dataset <span style="color: #555555">=</span> dataframe<span style="color: #555555">.</span>values
+<span style="color: #0099FF; font-style: italic"># split data into X and y</span>
+X <span style="color: #555555">=</span> dataset[:,<span style="color: #FF6600">0</span>:<span style="color: #FF6600">27</span>]
+Y <span style="color: #555555">=</span> dataset[:,<span style="color: #FF6600">27</span>]
+<span style="color: #0099FF; font-style: italic"># set missing values to 0</span>
+X[X <span style="color: #555555">==</span> <span style="color: #CC3300">'?'</span>] <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>
+<span style="color: #0099FF; font-style: italic"># convert to numeric</span>
+X <span style="color: #555555">=</span> X<span style="color: #555555">.</span>astype(<span style="color: #CC3300">'float32'</span>)
+<span style="color: #0099FF; font-style: italic"># encode Y class values as integers</span>
+label_encoder <span style="color: #555555">=</span> LabelEncoder()
+label_encoder <span style="color: #555555">=</span> label_encoder<span style="color: #555555">.</span>fit(Y)
+label_encoded_y <span style="color: #555555">=</span> label_encoder<span style="color: #555555">.</span>transform(Y)
+<span style="color: #0099FF; font-style: italic"># split data into train and test sets</span>
+seed <span style="color: #555555">=</span> <span style="color: #FF6600">7</span>
+test_size <span style="color: #555555">=</span> <span style="color: #FF6600">0.33</span>
+X_train, X_test, y_train, y_test <span style="color: #555555">=</span> train_test_split(X, label_encoded_y, test_size<span style="color: #555555">=</span>test_size, random_state<span style="color: #555555">=</span>seed)
+<span style="color: #0099FF; font-style: italic"># fit model on training data</span>
+model <span style="color: #555555">=</span> XGBClassifier()
+model<span style="color: #555555">.</span>fit(X_train, y_train)
+<span style="color: #336666">print</span>(model)
+<span style="color: #0099FF; font-style: italic"># make predictions for test data</span>
+predictions <span style="color: #555555">=</span> model<span style="color: #555555">.</span>predict(X_test)
+<span style="color: #0099FF; font-style: italic"># evaluate predictions</span>
+accuracy <span style="color: #555555">=</span> accuracy_score(y_test, predictions)
+<span style="color: #336666">print</span>(<span style="color: #CC3300">"Accuracy: %.2f%%"</span> <span style="color: #555555">%</span> (accuracy <span style="color: #555555">*</span> <span style="color: #FF6600">100.0</span>))
+</pre>
+</div>
+
+
+<p>在代码中，`X[X == '?'] = 0` 这一条语句指定了缺失值的替换方式。</p>
+
+<p>使用不用的值实验后，结果如下：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">缺失值替换为   预测准确度
+np.nan         85.86%
+0              83.84%
+-1             83.84%
+1              79.80%
+各列平均值     79.80%
+</pre>
+</div>
+
+
+<p>可以看到，使用会破坏原有数据意义的值（例如会和正常特征产生混淆的值1，以及直接对类别特征求均值的结果），得到的模型效果是最差的。</p>
+
+<p>使用0，或者数据集中不存在的值，如-1作为替代，得到的预测效果更好。</p>
+
+<p>而使预测效果最好的替代值是np.nan，推测这和陈天奇提到的，XGBoost能够自动处理缺失值有关。XGBoost模型有一个 `missing` 参数，默认值就是np.nan。指定这个参数，让模型来处理缺失值，看起来会比我们自己替换缺失值的效果更好。</p>
+
+<p>为了验证，使用-1作为替换值，并且将-1作为参数传递给模型。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">X[X <span style="color: #555555">==</span> <span style="color: #CC3300">'?'</span>] <span style="color: #555555">=</span> <span style="color: #555555">-</span><span style="color: #FF6600">1</span>
+<span style="color: #555555">..........</span>
+model <span style="color: #555555">=</span> XGBClassifier(missing<span style="color: #555555">=-</span><span style="color: #FF6600">1</span>)
+</pre>
+</div>
+
+<p>再次运行，能够获得85.86%最高准确率。</p>
+
+<h2 class="sigil_not_in_toc">结论</h2>
+
+<p>XGBoost模型本身具有处理缺失值的能力，一般来说直接使用np.nan作为缺失值，或者使用一个数据集中不会出现的值，再通过 `missing` 参数传递给模型，得到的效果是最好的。</p>
+
+<p>直接使用数据集中不存在的值，或者直接使用0，效果相对会差一些，但是差距不大，在遇到具体问题时也值得进行实验。</p>
+
+<p>使用会破坏原有数据集意义的值作为缺失值，会导致模型效果下降，应该避免。</p>
+
+<p>参考：</p>
+
+<p><a href="https://machinelearningmastery.com/xgboost-with-python/">Jason Brownlee, XGBoost With Python</a></p>
+
+<p><a href="https://github.com/dmlc/xgboost/issues/21">What are the ways of treatng missing values in XGboost?</a></p>
+
+<p><a href="https://stackoverflow.com/questions/42136276/how-to-use-missing-parameter-of-xgbregressor-of-scikit-learn">How to use missing parameter of XGBRegressor of scikit-learn</a></p>
+
+<p><a href="programming.vip/docs/problems-caused-by-missing-xgboost-values-and-their-depth-analysis.html">关于稀疏矩阵</a></p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>
