@@ -91,5 +91,11 @@
       </navLabel>
       <content src="Text/Section0006.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-14" playOrder="14">
+      <navLabel>
+        <text>SBT编译的注意点</text>
+      </navLabel>
+      <content src="Text/Section0014.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
