@@ -93,9 +93,9 @@
 
 <p>这种思路写出来的递归，很有可能是尾递归，是对同一段逻辑的重复利用。这种递归在工程开发中用处是比较大的，比如对字符串、文件之类的处理上面，用到比较多。它的好处是，比起在循环里使用循环变量（循环变量的边界问题常常比较麻烦），而递归里只考虑单次的逻辑+停止条件，思路上常常会更加清晰，写起来也更顺手一些。当然，这类递归要改成循环也是比较方便的。</p>
 
-<p>那么另一种思路，就是函数式的递归。用指令式的思路去看这种递归，第一眼常常会觉得有点神奇。<a href="https://oi-wiki.org/basic/divide-and-conquer/">这篇文章</a>里有一个很形象的说法“写递归的要点：明白一个函数的作用并相信它能完成这个任务，千万不要跳进这个函数里面企图探究更多细节”。这是一种很直觉的理解，也是很正确的。跳进调用栈里去尝试理解这类递归是很难的，不过比起单纯的“相信它能完成这个任务”，我们其实可以抓住这类递归的原理，用类似于推导数学公式的方法。</p>
+<p>那么另一种思路，就是函数式的递归。用指令式的思路去看这种递归，第一眼常常会觉得有点神奇。<a href="https://oi-wiki.org/basic/divide-and-conquer/">这篇文章</a>里有一个很形象的说法“写递归的要点：明白一个函数的作用并相信它能完成这个任务，千万不要跳进这个函数里面企图探究更多细节”。这是一种很直觉的理解，也是很正确的。跳进调用栈里去尝试理解这类递归是很难的。</p>
 
-<p>写这类递归，其实有点类似于写数列的通项公式，需要我们用代换模型去把需要求解的项目不断向已经定义的逻辑去替换。这样说比较抽象，看一个具体的例子：</p>
+<p>不过比起单纯的“相信它能完成这个任务”，我们可以抓住这类递归的原理，用类似于推导数学公式的方法来写这类递归。其实过程有点像写数列的通项公式，需要我们用代换模型去把需要求解的项目不断向已经定义的逻辑作替换。这样说比较抽象，看一个具体的例子：</p>
 
 <p>问题是给一个整数数组和一个整数，求数组元素相加得到给定整数的组合一共有多少种。用递归的方式来写。</p>
 
@@ -105,7 +105,8 @@
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">  solve([1,2,3], 17)
 = solve([2,3],17) + solve([2,3],16) + ... + solve([2,3],0)
-</pre></div>
+</pre>
+</div>
 
 <p>这里我们已经考虑了一个停止条件，也就是 solve() 的第二个参数小于0的时候，停止递归，并且返回0（减到负数，说明组合不能成立）；当它等于0的时候，停止递归，并且返回1（刚好减到0，说明组合成立）。</p>
 
@@ -113,13 +114,15 @@
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">  solve([2,3],16) + ... + solve([2,3],0)
 = solve([1,2,3],16)
-</pre></div>
+</pre>
+</div>
 
 <p>因此原式就可以进一步写成：</p>
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">  solve([1,2,3], 17)
 = solve([2,3],17) + solve([1,2,3],16)
-</pre></div>
+</pre>
+</div>
 
 <p>OK，到这里我们就成功找到这个问题的“递推公式”了。那么还剩下最后一个问题，就是另一个和数组相关的终止条件。其实从直觉上很容易判断，数组为空的时候 solve() 返回0就可以，也可以选择一个式子，比如 solve([3],17)，来看一下具体的情况：</p>
 
@@ -127,7 +130,8 @@
 = solve([],17) + solve([3],14)
 = solve([],17) + solve([],14) + solve([3],11)
 = ...
-</pre></div>
+</pre>
+</div>
 
 <p>这个式子最终会因为代换到... solve([],2) + solve([3],-1) 而停止，它的最终结果只受最后一项影响，所以前面所有参数为空数组[]的调用，全部返回0即可。</p>
 
@@ -138,7 +142,8 @@
   <span style="color: #006699; font-weight: bold">else</span> <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>coins<span style="color: #555555">.</span>isEmpty <span style="color: #555555">||</span> money <span style="color: #555555">&lt;</span> <span style="color: #FF6600">0</span><span style="color: #555555">)</span> <span style="color: #FF6600">0</span>
   <span style="color: #006699; font-weight: bold">else</span> solve<span style="color: #555555">(</span>money<span style="color: #555555">,</span> coins<span style="color: #555555">.</span>tail<span style="color: #555555">)</span> <span style="color: #555555">+</span> solve<span style="color: #555555">(</span>money <span style="color: #555555">-</span> coins<span style="color: #555555">.</span>head<span style="color: #555555">,</span> coins<span style="color: #555555">)</span>
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 <p>只需要三行代码就能实现。而在这后面作为支撑的，就是函数式编程的代换模型，和数学思维。</p>
 <hr/>

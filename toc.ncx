@@ -97,5 +97,11 @@
       </navLabel>
       <content src="Text/Section0014.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-15" playOrder="15">
+      <navLabel>
+        <text>Scala中的CBN、CBV和Currying</text>
+      </navLabel>
+      <content src="Text/Section0015.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>

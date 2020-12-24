@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Scala中的CBN、CBV和Currying</title>
+  <meta name="keywords" content="Scala"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>Scala中的CBN、CBV和Currying</h1>
+
+<p class="date">2020-12-24</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<h2 class="sigil_not_in_toc">CBN和CBY</h2>
+
+<p>对于scala中的值(value)而言，定义的时候是有三种方式：def, val 和 lazy val。它们的区别在于，def定义的值，只有在调用的时候才会执行，并且不会存储；val定义的值是立刻执行，并且存储；lazy val是在调用的时候才执行，不过执行过一次之后就会存储。</p>
+
+<p>说完了值，下面就是函数。函数式语言里面有两种函数调用方式：call by name(CBN) 和 call by value(CBY)。区别在于，call by name 的调用，会先用代换模型执行这个函数，直到代换停止，再执行（evaluate）函数的参数，最后代入并得到最终结果。</p>
+
+<p>而 call by value 的调用，首先执行（evaluate）所有的参数，之后再将参数代入函数，去开始代换。</p>
+
+<p>举一个例子，定义一个死循环的递归函数loop：</p>
+
+<pre>def loop: Int = loop</pre>
+
+<p>再定义一个函数，它接受两个参数，然后只返回第一个参数：</p>
+
+<pre>def return1st(a: Int, b: Int): Int = a</pre>
+
+<p>那么实际上第二个参数是根本没有用到的。这时候如果用call by value的方式去调用它，会陷入死循环，因为程序会首先执行每个参数；而用call by name的方式，就不会有任何问题，因为程序首先对函数本身作代换，loop在这个过程中被排除掉了。</p>
+
+<p>在Scala中，函数默认的调用方式是call by value，如果要对某个参数作call by name的调用，可以用=&gt;符合来表示：</p>
+
+<pre>def return1st(a: Int, b:=&gt; Int): Int = a</pre>
+
+<h2 class="sigil_not_in_toc">Currying</h2>
+
+<p>作为一个函数式语言，在Scala中，函数当然是一等公民。也就意味着函数可以作为函数的输入和输出。输入和输出函数的函数，叫做高阶函数（high order function），currying就是高阶函数的一种表达方式。不过scala的一个语法糖导致同一个高阶函数可以有几种很相似的写法，略有迷惑性。下面用例子来说明。</p>
+
+<p>定义一个averageDamp()函数，它的作用在输入一个 f(x: Double): Double 后，输出 f() 的一个修改版 g() ，修改版的g(x)会返回x 和 f(x) 的平均值。那么我们可以这样写：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> averageDamp1<span style="color: #555555">(</span>f<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span> <span style="color: #555555">=&gt;</span> <span style="color: #00AA88; font-weight: bold">Double</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span><span style="color: #007788; font-weight: bold">Double</span> <span style="color: #555555">=&gt;</span> <span style="color: #00AA88; font-weight: bold">Double</span> <span style="color: #006699; font-weight: bold">=</span> <span style="color: #555555">{</span>
+  <span style="color: #006699; font-weight: bold">def</span> g<span style="color: #555555">(</span>x<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span><span style="color: #555555">)</span> <span style="color: #006699; font-weight: bold">=</span> <span style="color: #555555">(</span>x <span style="color: #555555">+</span> f<span style="color: #555555">(</span>x<span style="color: #555555">))/</span><span style="color: #FF6600">2</span>
+  g
+<span style="color: #555555">}</span>
+</pre>
+</div>
+
+<p>这里我们在averageDamp()内部定义了一个函数g()，它会以自己的逻辑调用f()。之后再把这个g()作为外层函数的返回。因此 averageDamp() 在定义时，它的返回值类型是 Double =&gt; Double，表示它会返回一个函数。</p>
+
+<p>题外话，这里 Double =&gt; Double 是必须加的，否则编译器会报错（IDEA会认为你是在调用g，但是忘记加参数了），这应该是Scala为了避免隐式bug而做出的一个规定。如果一定不想写，那么可以把最后的 g 改成 "g _" 或者 "g(_)"，来明确表示希望把它作为一个函数返回。</p>
+
+<p>在上面的写法中，g 的参数 x 是不需要从外面一个函数的参数值来接收的，因为它只是一个形式上的参数，用来描述 g() 对 f() 的调用逻辑。</p>
+
+<p>调用的时候是这样的：</p>
+
+<pre>averageDamp1(f)(2)</pre>
+
+<p>先从 averageDamp(f) 得到一个新的函数，之后将2作为参数传递给这个函数。</p>
+
+<p>那么也可以有另一种写法，把 f 和 x 同时作为参数传递给 g：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> averageDamp2<span style="color: #555555">(</span>f<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span> <span style="color: #555555">=&gt;</span> <span style="color: #00AA88; font-weight: bold">Double</span><span style="color: #555555">,</span> x<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span> <span style="color: #555555">=</span> <span style="color: #555555">(</span>f<span style="color: #555555">(</span>x<span style="color: #555555">)</span> <span style="color: #555555">+</span> x<span style="color: #555555">)</span> <span style="color: #555555">/</span> <span style="color: #FF6600">2</span>
+</pre>
+</div>
+
+
+<p>这种写法就比较直观，它返回的是一个Double类型的值，直接在函数体内完成对 f() 的调用，返回调用的结果。</p>
+
+<p>调用的时候是这样的：</p>
+
+<pre>averageDamp2(f, 2)</pre>
+
+<p>最后，一种容易让人搞糊涂的地方是，上面的写法也可以把每个变量分别放到一个括号里，改成这样：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> averageDamp3<span style="color: #555555">(</span>f<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span> <span style="color: #555555">=&gt;</span> <span style="color: #00AA88; font-weight: bold">Double</span><span style="color: #555555">)(</span>x<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span> <span style="color: #555555">=</span> <span style="color: #555555">(</span>f<span style="color: #555555">(</span>x<span style="color: #555555">)</span> <span style="color: #555555">+</span> x<span style="color: #555555">)</span> <span style="color: #555555">/</span> <span style="color: #FF6600">2</span>
+</pre>
+</div>
+
+<p>在调用的时候，是这样的：</p>
+
+<pre>averageDamp3(f)(2)</pre>
+
+<p>看起来调用的方式和第一种写法完全一样，有没有区别呢，可以做这样的验证：</p>
+
+<pre>def f(x:Double) = x  //先随便定义一个f
+
+averageDamp1(f)  //OK
+averageDamp3(f)  //报错
+averageDamp3(f)(_)  //OK</pre>
+
+<p>第一行可以运行，因为它是通过调用 averageDamp1 之后返回的一个独立的函数。而第二行会报错，因为它是对 averageDamp3 的调用，但是这个调用需要两个参数，只提供了一个。这说明 averageDamp3 在调用的时候，和 averageDamp2 是等价的。</p>
+
+<p>不过第三行就比较神奇了，控制台的显示告诉我们 averageDamp3(f)(_) 是一个函数，并且它的类型和 averageDamp1(f) 的返回值一样，都是一个类型为 Double =&gt; Double 的函数。这说明<b>我们在定义 averageDamp3 的时候，实际上隐式地定义了一个和 averageDamp1 一样的函数</b>。再概括一点说，<b>对多参数的函数（包括只有一个参数的），总是可以任意地去掉它的参数，改写成多层调用的形式。</b>举例：</p>
+
+<pre>def sum1(x: Int, y: Int) = x + y</pre>
+
+<p>等价于：</p>
+
+<pre>def sum2(x: Int): Int =&gt; Int = {
+  def g(y: Int) = x + y
+  g
+}</pre>
+
+<p>调用的时候 sum1(1,2) 也就等价于 sum2(1)(2)。</p>
+
+<p>这一点最早是由一个叫Curry的人提出的，所以这种把参数分到不同括号里去的写法叫做Currying。</p>
+
+<p>Scala提供了Currying的语法糖，也就是我们不需要特意像 averageDamp1 和 sum2 那样特地去定义一个返回函数的函数，而只需要像 averageDamp3 那样把每个参数分开到不同的括号中写，Scala就隐式地帮助我们准备好了和 averageDamp1 一样的函数，可以直接拿来用。</p>
+
+<p>这个语法糖有什么用呢，例如程序中有一个 process(a)(b) 函数，而现在发现，实际业务中有很多情况，a都是一个固定值，比如说是1，那么我们就可以定义一个新的函数：</p>
+
+<pre>def processWithOne = precess(1)(_)</pre>
+
+<p>而不需要写成</p>
+
+<pre>def processWithOne(b: Double) = precess(1)(b)</pre>
+
+<p>等于说是通过这个语法糖，能让需要固定某个函数的部分参数不变的时候，写新的函数更加地简单。这可以说是它的作用之一。</p>
+
+<p>另外，函数式编程中会非常频繁地用到高阶函数，这个语法糖使我们可以通过一个简单的定义之后，灵活地使用和它等价的所有高阶函数，提供了很大的方便。</p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>
