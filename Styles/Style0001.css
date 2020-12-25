@@ -101,6 +101,7 @@ body
 pre
 {
   font-size: 1.3em;
+  overflow:auto;
 }
 span.code
 {
