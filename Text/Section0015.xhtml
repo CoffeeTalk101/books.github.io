@@ -20,7 +20,7 @@
 
 <p>对于scala中的值(value)而言，定义的时候是有三种方式：def, val 和 lazy val。它们的区别在于，def定义的值，只有在调用的时候才会执行，并且不会存储；val定义的值是立刻执行，并且存储；lazy val是在调用的时候才执行，不过执行过一次之后就会存储。</p>
 
-<p>说完了值，下面就是函数。函数式语言里面有两种函数调用方式：call by name(CBN) 和 call by value(CBY)。区别在于，call by name 的调用，会先用代换模型执行这个函数，直到代换停止，再执行（evaluate）函数的参数，最后代入并得到最终结果。</p>
+<p>说完了值，下面就是函数。函数式语言里面有两种函数调用方式：call by name(CBN) 和 call by value(CBV)。区别在于，call by name 的调用，会先用代换模型执行这个函数，直到代换停止，再执行（evaluate）函数的参数，最后代入并得到最终结果。</p>
 
 <p>而 call by value 的调用，首先执行（evaluate）所有的参数，之后再将参数代入函数，去开始代换。</p>
 
@@ -34,7 +34,7 @@
 
 <p>那么实际上第二个参数是根本没有用到的。这时候如果用call by value的方式去调用它，会陷入死循环，因为程序会首先执行每个参数；而用call by name的方式，就不会有任何问题，因为程序首先对函数本身作代换，loop在这个过程中被排除掉了。</p>
 
-<p>在Scala中，函数默认的调用方式是call by value，如果要对某个参数作call by name的调用，可以用=&gt;符合来表示：</p>
+<p>在Scala中，函数默认的调用方式是call by value，如果要对某个参数作call by name的调用，可以用=&gt;符号来表示：</p>
 
 <pre>def return1st(a: Int, b:=&gt; Int): Int = a</pre>
 
@@ -42,7 +42,7 @@
 
 <p>作为一个函数式语言，在Scala中，函数当然是一等公民。也就意味着函数可以作为函数的输入和输出。输入和输出函数的函数，叫做高阶函数（high order function），currying就是高阶函数的一种表达方式。不过scala的一个语法糖导致同一个高阶函数可以有几种很相似的写法，略有迷惑性。下面用例子来说明。</p>
 
-<p>定义一个averageDamp()函数，它的作用在输入一个 f(x: Double): Double 后，输出 f() 的一个修改版 g() ，修改版的g(x)会返回x 和 f(x) 的平均值。那么我们可以这样写：</p>
+<p>定义一个averageDamp()函数，它的作用在输入一个 <span class="code">f(x: Double): Double</span> 后，输出 f() 的一个修改版 g() ，修改版的g(x)会返回x 和 f(x) 的平均值。那么我们可以这样写：</p>
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> averageDamp1<span style="color: #555555">(</span>f<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span> <span style="color: #555555">=&gt;</span> <span style="color: #00AA88; font-weight: bold">Double</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span><span style="color: #007788; font-weight: bold">Double</span> <span style="color: #555555">=&gt;</span> <span style="color: #00AA88; font-weight: bold">Double</span> <span style="color: #006699; font-weight: bold">=</span> <span style="color: #555555">{</span>
   <span style="color: #006699; font-weight: bold">def</span> g<span style="color: #555555">(</span>x<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Double</span><span style="color: #555555">)</span> <span style="color: #006699; font-weight: bold">=</span> <span style="color: #555555">(</span>x <span style="color: #555555">+</span> f<span style="color: #555555">(</span>x<span style="color: #555555">))/</span><span style="color: #FF6600">2</span>
@@ -96,7 +96,7 @@ averageDamp3(f)(_)  //OK</pre>
 
 <p>第一行可以运行，因为它是通过调用 averageDamp1 之后返回的一个独立的函数。而第二行会报错，因为它是对 averageDamp3 的调用，但是这个调用需要两个参数，只提供了一个。这说明 averageDamp3 在调用的时候，和 averageDamp2 是等价的。</p>
 
-<p>不过第三行就比较神奇了，控制台的显示告诉我们 averageDamp3(f)(_) 是一个函数，并且它的类型和 averageDamp1(f) 的返回值一样，都是一个类型为 Double =&gt; Double 的函数。这说明<b>我们在定义 averageDamp3 的时候，实际上隐式地定义了一个和 averageDamp1 一样的函数</b>。再概括一点说，<b>对多参数的函数（包括只有一个参数的），总是可以任意地去掉它的参数，改写成多层调用的形式。</b>举例：</p>
+<p>不过第三行就比较神奇了，控制台的显示告诉我们 <span class="code">averageDamp3(f)(_)</span> 是一个函数，并且它的类型和 <span class="code">averageDamp1(f)</span> 的返回值一样，都是一个类型为 Double =&gt; Double 的函数。这说明<b>我们在定义 averageDamp3 的时候，实际上隐式地定义了一个和 averageDamp1 一样的函数</b>。再概括一点说，<b>对多参数的函数（包括只有一个参数的），总是可以任意地去掉它的参数，改写成多层调用的形式。</b>举例：</p>
 
 <pre>def sum1(x: Int, y: Int) = x + y</pre>
 

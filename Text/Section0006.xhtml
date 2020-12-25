@@ -99,18 +99,18 @@
 
 <p>问题是给一个整数数组和一个整数，求数组元素相加得到给定整数的组合一共有多少种。用递归的方式来写。</p>
 
-<p>我们把这个递归函数定义为 solve() ，例如对它的一个调用是 solve([1,2,3], 17) 。接下来，要用已经定义的solve()去对这个调用作代换，只要不断代换下去直到停止条件，那么这个调用就能求解了。</p>
+<p>我们把这个递归函数定义为 <span class="code">solve()</span> ，例如对它的一个调用是 <span class="code">solve([1,2,3], 17)</span> 。接下来，要用已经定义的<span class="code">solve()</span>去对这个调用作代换，只要不断代换下去直到停止条件，那么这个调用就能求解了。</p>
 
-<p>如何代换呢，用简单的思路，把所有可能性遍历一遍。首先不用1，只用2,3去组合，那么可以写成 solve([2,3],17) ；下一种情况，用一次1，之后用2,3去组合16，即 solve([2,3],16)；再下一种情况用两次1……那么就可以写出：</p>
+<p>如何代换呢，用简单的思路，把所有可能性遍历一遍。首先不用1，只用2,3去组合，那么可以写成 <span class="code">solve([2,3],17)</span> ；下一种情况，用一次1，之后用2,3去组合16，即 <span class="code">solve([2,3],16)</span>；再下一种情况用两次1……那么就可以写出：</p>
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">  solve([1,2,3], 17)
 = solve([2,3],17) + solve([2,3],16) + ... + solve([2,3],0)
 </pre>
 </div>
 
-<p>这里我们已经考虑了一个停止条件，也就是 solve() 的第二个参数小于0的时候，停止递归，并且返回0（减到负数，说明组合不能成立）；当它等于0的时候，停止递归，并且返回1（刚好减到0，说明组合成立）。</p>
+<p>这里我们已经考虑了一个停止条件，也就是 <span class="code">solve()</span> 的第二个参数小于0的时候，停止递归，并且返回0（减到负数，说明组合不能成立）；当它等于0的时候，停止递归，并且返回1（刚好减到0，说明组合成立）。</p>
 
-<p>到这一步我们得到了一个代换后的式子，但是实现这个式子需要一个循环的逻辑，因为项数是不确定的。当然可以直接用循环写，也可以更进一步，只用递归——观察从第二项起的后面每一项，以及我们已经写出的代换逻辑，很容易发现从第二项加到最后一项，其实就等于solve([1,2,3],16)：</p>
+<p>到这一步我们得到了一个代换后的式子，但是实现这个式子需要一个循环的逻辑，因为项数是不确定的。当然可以直接用循环写，也可以更进一步，只用递归——观察从第二项起的后面每一项，以及我们已经写出的代换逻辑，很容易发现从第二项加到最后一项，其实就等于<span class="code">solve([1,2,3],16)</span>：</p>
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">  solve([2,3],16) + ... + solve([2,3],0)
 = solve([1,2,3],16)
@@ -124,7 +124,7 @@
 </pre>
 </div>
 
-<p>OK，到这里我们就成功找到这个问题的“递推公式”了。那么还剩下最后一个问题，就是另一个和数组相关的终止条件。其实从直觉上很容易判断，数组为空的时候 solve() 返回0就可以，也可以选择一个式子，比如 solve([3],17)，来看一下具体的情况：</p>
+<p>OK，到这里我们就成功找到这个问题的“递推公式”了。那么还剩下最后一个问题，就是另一个和数组相关的终止条件。其实从直觉上很容易判断，数组为空的时候 solve() 返回0就可以，也可以选择一个式子，比如 <span class="code">solve([3],17)</span>，来看一下具体的情况：</p>
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">  solve([3],17)
 = solve([],17) + solve([3],14)
@@ -133,7 +133,7 @@
 </pre>
 </div>
 
-<p>这个式子最终会因为代换到... solve([],2) + solve([3],-1) 而停止，它的最终结果只受最后一项影响，所以前面所有参数为空数组[]的调用，全部返回0即可。</p>
+<p>这个式子最终会因为代换到<span class="code">... solve([],2) + solve([3],-1)</span> 而停止，它的最终结果只受最后一项影响，所以前面所有参数为空数组[]的调用，全部返回0即可。</p>
 
 <p>归纳一下上面的分析，把它写成Scala代码：</p>
 
