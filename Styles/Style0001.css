@@ -23,7 +23,6 @@ h2
   margin: 20px 0 0 0;
   font-size: 1.5em;
   font-weight: bold;
-  page-break-before: always;
   line-height: 135%; /*get squished otherwise on ADE */
 }
 
@@ -87,6 +86,14 @@ img
 table
 {
   margin: 1.0em auto;
+}
+tr, th, td
+{
+  margin: 0;
+  padding: 2px;
+  border: 1px solid black;
+  font-size: 100%;
+  vertical-align: baseline;
 }
 
 /*==eBook Specific Formatting Below Here==*/

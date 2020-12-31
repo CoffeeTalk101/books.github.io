@@ -103,5 +103,17 @@
       </navLabel>
       <content src="Text/Section0015.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-16" playOrder="16">
+      <navLabel>
+        <text>正则常用规则的备注</text>
+      </navLabel>
+      <content src="Text/Section0017.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-17" playOrder="17">
+      <navLabel>
+        <text>正则的执行方式</text>
+      </navLabel>
+      <content src="Text/Section0016.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
