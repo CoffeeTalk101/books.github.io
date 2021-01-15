@@ -36,7 +36,9 @@
 
 <p>在Scala中，函数默认的调用方式是call by value，如果要对某个参数作call by name的调用，可以用=&gt;符号来表示：</p>
 
-<pre>def return1st(a: Int, b:=&gt; Int): Int = a</pre>
+<pre>def return1st(a: Int, b: =&gt; Int): Int = a</pre>
+
+<p>注意冒号和=>之间必须有一个空格。</p>
 
 <h2 class="sigil_not_in_toc">Currying</h2>
 
