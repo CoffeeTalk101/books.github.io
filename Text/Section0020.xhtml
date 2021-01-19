@@ -18,7 +18,7 @@
 
 <p>对于数据集不平衡的机器学习问题，从不同的基线模型的预测结果计算出的评估指标可能是不同的。例如二分类中，某一类样本远比另一类多的情况，如果选择Accuracy作为评估指标，总是预测多数类的基线模型会比随机预测两类之一的模型得到高得多的分数。如果错误地选择了等概率随机预测的模型作为基线，就无法合理地衡量后续模型的表现。</p>
 
-<p>*这篇笔记中的代码和实验出自<a href="https://machinelearningmastery.com/naive-classifiers-imbalanced-classification-metrics/">Machine Learning Mastery的一篇博客</a>，笔记里只对部分内容做了翻译和重新组织。有需要的可以进一步参考原文。</p>
+<p>*这篇笔记中的代码和实验出自<a href="https://machinelearningmastery.com/naive-classifiers-imbalanced-classification-metrics/">Machine Learning Mastery的一篇博客</a>，笔记里对部分内容做了翻译和重新组织，以及做了一些补充实验。有需要的可以进一步参考原文。</p>
 
 <p>不同基线模型对Accuracy值的影响是很显然的，但其它一些指标，在使用不同的基线模型时分别会取到什么值则不是非常明显。我们可以通过使用scikit-learn库中的DummyClassifier类来进行试验。</p>
 
