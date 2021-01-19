@@ -121,5 +121,17 @@
       </navLabel>
       <content src="Text/Section0018.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-19" playOrder="19">
+      <navLabel>
+        <text>使用状态缓存优化Flink的输出性能</text>
+      </navLabel>
+      <content src="Text/Section0019.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-20" playOrder="20">
+      <navLabel>
+        <text>机器学习中对不平衡数据的基线模型选择</text>
+      </navLabel>
+      <content src="Text/Section0020.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
