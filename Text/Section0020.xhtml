@@ -180,8 +180,6 @@ pyplot<span style="color: #555555">.</span>show()
     <li>少数类（正类）：0.02</li>
 </ul>
 
-<p>可以看出，如果使用F1作为评价指标，且正样本为少数类，应该使用预测少数类为基线模型（虽然均匀随机猜测在实验中得到的F1是一样的，但是它具有随机性，因此还是预测少数类更好）。</p>
-
 <p>调整一下，将正样本作为多数类(交换正负样本比)，则有：</p>
 
 <ul>
@@ -200,7 +198,7 @@ pyplot<span style="color: #555555">.</span>show()
     <li>预测负类：0</li>
 </ul>
 
-<p>因此可以总结出，在以F1为评估指标时，基线模型的选择其实和正负样本的比例无关，而应该选择总是预测正样本。</p>
+<p>因此可以总结出，在以F1为评估指标时，基线模型的选择其实和正负样本的比例无关，而应该选择总是预测正类。</p>
 
 <h2 class="sigil_not_in_toc">ROC AUC</h2>
 
@@ -372,9 +370,11 @@ pyplot<span style="color: #555555">.</span>show()
 
 <p>可以看到，使用AURPC的时候，基线模型也是预测为一个固定类即可。</p>
 
-<p>不过需要注意的时，AURPC的基线值和正负样本比是有关的，因此在不同场景间不能直接进行比较。另外，先验随即猜测的基线值实际上是偏低的：在正样本数量很少时，先验随机猜测的评估值(上面的实验中为0.015)，比起其它基线(0.505)低了很多。</p>
+<p>不过需要注意的时，AURPC的基线值和正负样本比是有关的，因此在不同场景间不能直接进行比较。另外，通过先验随机猜测得到的基线值实际上是偏低的：在正样本数量很少时，先验随机猜测的评估值(上面的实验中为0.015)，比起其它基线(0.505)低了很多。</p>
 
 <p>再结合对其它的几个评估指标的实验，可以发现在对二分类问题的评估中，实际上先验随机猜测这个基线并没有什么作用：它不是任何评估指标的唯一最好基线，而且评估结果的方差很大，稳定性差。建议不要使用。</p>
+
+<p>至于均匀随机猜测，在使用G-Mean (see <a href="https://sci2s.ugr.es/keel/pdf/algorithm/congreso/kubat97addressing.pdf">Kubat and Matwin (1997) Addressing the curse of imbalanced training sets: one-sided selection</a>)作为评测指标的时候，在各个基线中的效果是唯一最好的。在使用AUROC和AUPRC的时候，效果是并列最好的。因此相比先验随机猜测，均匀随机猜测其实要合理很多，即使是对于不平衡数据集，也是均匀随机猜测更加合适。这点其实有点反直觉，值得多加注意。</p>
 <hr/>
 <p class="footer">This blog is written in  EPUB.
 The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
