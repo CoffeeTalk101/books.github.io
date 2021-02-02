@@ -133,5 +133,17 @@
       </navLabel>
       <content src="Text/Section0020.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-21" playOrder="21">
+      <navLabel>
+        <text>Python对大数据文件的读取</text>
+      </navLabel>
+      <content src="Text/Section0021.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-22" playOrder="22">
+      <navLabel>
+        <text>理解快速排序的空间复杂度</text>
+      </navLabel>
+      <content src="Text/Section0022.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Python对大数据文件的读取</title>
+  <meta name="keywords" content="Python, BigData"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>Python对大数据文件的读取</h1>
+
+<p class="date">2021-02-01</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>Python用来做数据分析是十分方便的，不论是程序员还是金融或学术领域的研究者都很喜欢使用它。但是当Python遇到海量数据的时候，语言性能上的局限性就会逐渐浮现。首先，读取数据都会成为一个问题，因为对于庞大的数据文件，机器内存有时候都无法存下，或者可以存下但是速度十分缓慢。这篇笔记就讨论一些Python对于大文件读取的问题。</p>
+
+<p>通常来说对于数据分析任务，我们有三种方式读取数据：Python原生的文件接口、numpy和pandas，下面会分别进行说明。作为例子，我们准备读取的文件大小约是50GB，格式是csv，共有两千多万行，每行有两百多列。</p>
+
+<p>首先通过Python原生的方式进行读取，总的来说有三种处理的思路：逐行读取、分chunk读取、使用memory map，以及多次读取。</p>
+
+<h2 class="sigil_not_in_toc">原生方式</h2>
+
+<h3 class="sigil_not_in_toc">逐行读取</h3>
+
+<p>逐行读取适用于不需要考虑各行之间关联性的情况，最典型的，比如说读取一行数据，然后生成一行对应新数据，保存为一个新的文件。利用file object的generator就可以保证内存中每次只有一行的数据：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">os</span>
+<span style="color: #006699; font-weight: bold">for</span> root, <span style="color: #336666">dir</span>, files <span style="color: #000000; font-weight: bold">in</span> os<span style="color: #555555">.</span>walk(<span style="color: #CC3300">'/path/to/files/'</span>):
+    <span style="color: #006699; font-weight: bold">for</span> filename <span style="color: #000000; font-weight: bold">in</span> files:
+        <span style="color: #006699; font-weight: bold">with</span> <span style="color: #336666">open</span>(os<span style="color: #555555">.</span>path<span style="color: #555555">.</span>join(root, filename)) <span style="color: #006699; font-weight: bold">as</span> f:
+            <span style="color: #006699; font-weight: bold">for</span> line <span style="color: #000000; font-weight: bold">in</span> f:
+                <span style="color: #0099FF; font-style: italic"># process line here</span>
+</pre>
+</div>
+
+<p>这里顺便提一下，上面的代码里面展示了如何读取多个文件，因为有时候我们需要一起处理复数个文件。个人感觉用<span class="code">os.walk()</span>比<span class="code">os.listdir()</span>更加清晰。<span class="code">os.walk()</span>返回的是一个generator，当中的每一项是一个tuple 3，代表一个目录，默认情况下目录的顺序是从顶层到底层。因此上面的代码就可以遍历到所有的子目录中的文件。</p>
+
+<p>如果只希望读顶层目录里的文件，只需要改成：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">root, <span style="color: #336666">dir</span>, files <span style="color: #555555">=</span> <span style="color: #336666">next</span>(os<span style="color: #555555">.</span>walk(<span style="color: #CC3300">'/path/'</span>))
+</pre>
+</div>
+
+<p>就算是只需要读顶层文件，相比于<span class="code">os.listdir()</span>，用<span class="code">os.walk()</span>也会更方便一些，因为它的返回结果很好地区分出了文件和文件夹，不需要我们再做更多的判断。</p>
+
+<h3 class="sigil_not_in_toc">分chunk读取</h3>
+
+<p></p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

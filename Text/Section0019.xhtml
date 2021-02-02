@@ -26,7 +26,8 @@
     <span style="color: #555555">.</span><span style="color: #330099">setParallelism</span><span style="color: #555555">(</span><span style="color: #FF6600">20</span><span style="color: #555555">);</span>
 
 statistics<span style="color: #555555">.</span><span style="color: #330099">addSink</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> CustomRedisSink<span style="color: #555555">()).</span><span style="color: #330099">setParallelism</span><span style="color: #555555">(</span><span style="color: #FF6600">20</span><span style="color: #555555">);</span>
-</pre></div>
+</pre>
+</div>
 
 <p>但这样带来的一个问题是，对于很多交易并不是很活跃的卡片，有大量的窗口计算是重复的，白白浪费了很多资源。</p>
 
@@ -35,6 +36,8 @@ statistics<span style="color: #555555">.</span><span style="color: #330099">addS
 <p>我们之前使用的策略是，在向redis中写数据之前，比较输出值和redis中的已有值是否相同，如果相同则跳过写入。这样虽然避免了重复写入相同数据，但是依然要做非常多次的比较，也就是读redis。在性能测试中，确认了这个实现确实导致了性能瓶颈。</p>
 
 <p>优化后的解决方案是，对输出流使用RichFlatMapFunction进行过滤，RichFlatMapFunction是可以有状态的，可以将之前的输出结果作为状态缓存起来，当判断输出和缓存的状态相同时，直接从输出流中滤去，使得重复的结果不会到达Redis Sink。</p>
+
+<p>这里顺便说一下FlatMap，其实它和Map的区别就是，Map相当于FlatMap的一个特殊情况：Map没法把原来的数据单元拆开来，比如Map的输入是一个Tuple2，因为Map的输出是靠return来传递的，你没法return两次，把Tuple2给拆开来。而FlatMap的输出是用Collector.collect()来传递的，调用两次就能分别传出两个元素。</p>
 
 <p>另外，RichFlatMapFunction的状态是支持过期时间的，我们可以通过配置过期时间来保证旧状态不会无限地占用内存。下面是RichFlatMapFunction的一个示例程序，Flink版本1.12：</p>
 
@@ -62,7 +65,7 @@ statistics<span style="color: #555555">.</span><span style="color: #330099">addS
 
         DataStream<span style="color: #555555">&lt;</span>Tuple2<span style="color: #555555">&lt;</span>String<span style="color: #555555">,</span> String<span style="color: #555555">&gt;&gt;</span> dataStream <span style="color: #555555">=</span> env
                 <span style="color: #555555">.</span><span style="color: #330099">readFile</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> TextInputFormat<span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> Path<span style="color: #555555">()),</span>
-                        <span style="color: #CC3300">&quot;D:\\tmp\\flinktestinput.txt&quot;</span><span style="color: #555555">,</span>
+                        <span style="color: #CC3300">"D:\\tmp\\flinktestinput.txt"</span><span style="color: #555555">,</span>
                         FileProcessingMode<span style="color: #555555">.</span><span style="color: #330099">PROCESS_CONTINUOUSLY</span><span style="color: #555555">,</span>
                         <span style="color: #FF6600">5000</span><span style="color: #555555">)</span>
                 <span style="color: #555555">.</span><span style="color: #330099">map</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> Splitter<span style="color: #555555">())</span>
@@ -70,14 +73,14 @@ statistics<span style="color: #555555">.</span><span style="color: #330099">addS
                 <span style="color: #555555">.</span><span style="color: #330099">flatMap</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> RichFlatMapFilter<span style="color: #555555">(</span><span style="color: #FF6600">10</span><span style="color: #555555">));</span>
         dataStream<span style="color: #555555">.</span><span style="color: #330099">print</span><span style="color: #555555">();</span>
 
-        env<span style="color: #555555">.</span><span style="color: #330099">execute</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;Window WordCount&quot;</span><span style="color: #555555">);</span>
+        env<span style="color: #555555">.</span><span style="color: #330099">execute</span><span style="color: #555555">(</span><span style="color: #CC3300">"Window WordCount"</span><span style="color: #555555">);</span>
     <span style="color: #555555">}</span>
 
     <span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">static</span> <span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Splitter</span> <span style="color: #006699; font-weight: bold">implements</span> MapFunction<span style="color: #555555">&lt;</span>String<span style="color: #555555">,</span> Tuple2<span style="color: #555555">&lt;</span>String<span style="color: #555555">,</span> String<span style="color: #555555">&gt;&gt;</span> <span style="color: #555555">{</span>
         <span style="color: #9999FF">@Override</span>
         <span style="color: #006699; font-weight: bold">public</span> Tuple2<span style="color: #555555">&lt;</span>String<span style="color: #555555">,</span> String<span style="color: #555555">&gt;</span> map<span style="color: #555555">(</span>String s<span style="color: #555555">)</span> <span style="color: #006699; font-weight: bold">throws</span> Exception <span style="color: #555555">{</span>
-            String name <span style="color: #555555">=</span> s<span style="color: #555555">.</span><span style="color: #330099">split</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot; &quot;</span><span style="color: #555555">)[</span><span style="color: #FF6600">0</span><span style="color: #555555">];</span>
-            String value <span style="color: #555555">=</span> s<span style="color: #555555">.</span><span style="color: #330099">split</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot; &quot;</span><span style="color: #555555">)[</span><span style="color: #FF6600">1</span><span style="color: #555555">];</span>
+            String name <span style="color: #555555">=</span> s<span style="color: #555555">.</span><span style="color: #330099">split</span><span style="color: #555555">(</span><span style="color: #CC3300">" "</span><span style="color: #555555">)[</span><span style="color: #FF6600">0</span><span style="color: #555555">];</span>
+            String value <span style="color: #555555">=</span> s<span style="color: #555555">.</span><span style="color: #330099">split</span><span style="color: #555555">(</span><span style="color: #CC3300">" "</span><span style="color: #555555">)[</span><span style="color: #FF6600">1</span><span style="color: #555555">];</span>
             <span style="color: #006699; font-weight: bold">return</span> <span style="color: #006699; font-weight: bold">new</span> Tuple2<span style="color: #555555">&lt;</span>String<span style="color: #555555">,</span> String<span style="color: #555555">&gt;(</span>name<span style="color: #555555">,</span> value<span style="color: #555555">);</span>
         <span style="color: #555555">}</span>
     <span style="color: #555555">}</span>
@@ -93,7 +96,7 @@ statistics<span style="color: #555555">.</span><span style="color: #330099">addS
 
         <span style="color: #9999FF">@Override</span>
         <span style="color: #006699; font-weight: bold">public</span> <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">open</span><span style="color: #555555">(</span>Configuration config<span style="color: #555555">)</span> <span style="color: #555555">{</span>
-            ValueStateDescriptor<span style="color: #555555">&lt;</span>String<span style="color: #555555">&gt;</span> stateDescriptor <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> ValueStateDescriptor<span style="color: #555555">&lt;</span>String<span style="color: #555555">&gt;(</span><span style="color: #CC3300">&quot;output&quot;</span><span style="color: #555555">,</span> String<span style="color: #555555">.</span><span style="color: #330099">class</span><span style="color: #555555">);</span>
+            ValueStateDescriptor<span style="color: #555555">&lt;</span>String<span style="color: #555555">&gt;</span> stateDescriptor <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> ValueStateDescriptor<span style="color: #555555">&lt;</span>String<span style="color: #555555">&gt;(</span><span style="color: #CC3300">"output"</span><span style="color: #555555">,</span> String<span style="color: #555555">.</span><span style="color: #330099">class</span><span style="color: #555555">);</span>
             StateTtlConfig stateTtlConfig <span style="color: #555555">=</span> StateTtlConfig<span style="color: #555555">.</span><span style="color: #330099">newBuilder</span><span style="color: #555555">(</span>Time<span style="color: #555555">.</span><span style="color: #330099">seconds</span><span style="color: #555555">(</span>ttlSeconds<span style="color: #555555">)).</span><span style="color: #330099">build</span><span style="color: #555555">();</span>
             stateDescriptor<span style="color: #555555">.</span><span style="color: #330099">enableTimeToLive</span><span style="color: #555555">(</span>stateTtlConfig<span style="color: #555555">);</span>
             state <span style="color: #555555">=</span> getRuntimeContext<span style="color: #555555">().</span><span style="color: #330099">getState</span><span style="color: #555555">(</span>stateDescriptor<span style="color: #555555">);</span>
@@ -108,12 +111,13 @@ statistics<span style="color: #555555">.</span><span style="color: #330099">addS
                 state<span style="color: #555555">.</span><span style="color: #330099">update</span><span style="color: #555555">(</span>input<span style="color: #555555">.</span><span style="color: #330099">f1</span><span style="color: #555555">);</span>
                 collector<span style="color: #555555">.</span><span style="color: #330099">collect</span><span style="color: #555555">(</span>input<span style="color: #555555">);</span>
             <span style="color: #555555">}</span> <span style="color: #006699; font-weight: bold">else</span> <span style="color: #555555">{</span>
-                collector<span style="color: #555555">.</span><span style="color: #330099">collect</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> Tuple2<span style="color: #555555">&lt;&gt;(</span><span style="color: #CC3300">&quot;Out put of &quot;</span> <span style="color: #555555">+</span> input<span style="color: #555555">.</span><span style="color: #330099">f0</span> <span style="color: #555555">+</span> <span style="color: #CC3300">&quot; &quot;</span> <span style="color: #555555">+</span> input<span style="color: #555555">.</span><span style="color: #330099">f1</span><span style="color: #555555">,</span> <span style="color: #CC3300">&quot;is skiped&quot;</span><span style="color: #555555">));</span>
+                collector<span style="color: #555555">.</span><span style="color: #330099">collect</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> Tuple2<span style="color: #555555">&lt;&gt;(</span><span style="color: #CC3300">"Out put of "</span> <span style="color: #555555">+</span> input<span style="color: #555555">.</span><span style="color: #330099">f0</span> <span style="color: #555555">+</span> <span style="color: #CC3300">" "</span> <span style="color: #555555">+</span> input<span style="color: #555555">.</span><span style="color: #330099">f1</span><span style="color: #555555">,</span> <span style="color: #CC3300">"is skiped"</span><span style="color: #555555">));</span>
             <span style="color: #555555">}</span>
         <span style="color: #555555">}</span>
     <span style="color: #555555">}</span>
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 
 <hr/>
