@@ -18,7 +18,7 @@
 
 <p>Python用来做数据分析是十分方便的，不论是程序员还是金融或学术领域的研究者都很喜欢使用它。但是当Python遇到海量数据的时候，语言性能上的局限性就会逐渐浮现。首先，读取数据都会成为一个问题，因为对于庞大的数据文件，机器内存有时候都无法存下，或者可以存下但是速度十分缓慢。这篇笔记就讨论一些Python对于大文件读取的问题。</p>
 
-<p>通常来说对于数据分析任务，我们有三种方式读取数据：Python原生的文件接口、numpy和pandas，下面会分别进行说明。作为例子，我们准备读取的文件大小约是50GB，格式是csv，共有两千多万行，每行有两百多列。</p>
+<p>通常来说对于数据分析任务，我们有三种方式读取数据：Python原生的文件接口、numpy和pandas，下面分别进行说明。</p>
 
 <p>首先通过Python原生的方式进行读取，总的来说有三种处理的思路：逐行读取、分chunk读取、使用memory map，以及多次读取。</p>
 
@@ -49,7 +49,109 @@
 
 <h3 class="sigil_not_in_toc">分chunk读取</h3>
 
-<p></p>
+<p>对于大文件，一次需要读取一部分，但又无法一次全部读取到内存的，可以分chunk读取。只需要在.read(n)中提供需要读取的<b>字节数</b>即可。如果读取的是ASCII字符，那么n是多少就会读取多少字母。如果读取的是中文这种多字节的字符，那么就需要使用'rb'模式，首先读取二进制流，然后.decode()为相应的编码。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">chunk_generator</span>(size):
+    <span style="color: #006699; font-weight: bold">with</span> <span style="color: #336666">open</span>(<span style="color: #CC3300">&#39;test.txt&#39;</span>) <span style="color: #006699; font-weight: bold">as</span> f:
+        chunk <span style="color: #555555">=</span> f<span style="color: #555555">.</span>read(size)
+        <span style="color: #006699; font-weight: bold">yield</span> chunk
+        <span style="color: #006699; font-weight: bold">while</span> chunk:
+            chunk <span style="color: #555555">=</span> f<span style="color: #555555">.</span>read(size)
+            <span style="color: #006699; font-weight: bold">yield</span> chunk
+</pre></div>
+
+
+<p>在Python 3.8及以上的版本中，可以使用海象运算符:=的语法（将值赋给一个表达式中的变量，用起来有点像C的写法）。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">chunk_generator</span>(size):
+    <span style="color: #006699; font-weight: bold">with</span> <span style="color: #336666">open</span>(<span style="color: #CC3300">&#39;test.txt&#39;</span>) <span style="color: #006699; font-weight: bold">as</span> f:
+        <span style="color: #006699; font-weight: bold">while</span> chunk :<span style="color: #555555">=</span> f<span style="color: #555555">.</span>read(size):
+            <span style="color: #006699; font-weight: bold">yield</span> chunk
+</pre></div>
+
+<p>在使用时可以用for循环依次载入处理各个chunk：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">for</span> c <span style="color: #000000; font-weight: bold">in</span> chunk_generator(<span style="color: #FF6600">1000000</span>):
+    process(c)
+</pre></div>
+
+<p>或者通过next()一次读取一个：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">chunk_iter <span style="color: #555555">=</span> chunk_generator(<span style="color: #FF6600">1000000</span>)
+c <span style="color: #555555">=</span> <span style="color: #336666">next</span>(chunk_iter)
+</pre></div>
+
+<p>另一个函数f.readlines(n)和f.read()很类似，n也代表读取的<b>字节数</b>（注意不是行数），区别只在于readlines()会保证读的都是完整的行，会返回一个字符串数组。而还有一个函数f.readline()则是每调用一次就返回一行，注意不要混淆。</p>
+
+<h3 class="sigil_not_in_toc">Memory Map</h3>
+
+<p>Memory Map将一段硬盘空间映射为内存空间，典型适用场景是对大文件内容的搜索：无须将文件读入内存就能够进行查找，且支持re模块（需要用byte regex）。Memory Map也能够直接操作和修改硬盘文件，不过因为改动是字节级别的，需要格外的小心。</p>
+
+<p>下面举一个具体的例子，假设现在有这样一个需求，需要快速地读取某个文件的随机指定行，而这个文件非常大，无法存到内存当中。Memory Map在这个时候就非常的好用。我们首先将硬盘上的文件映射到内存，之后用正则匹配所有的行（注意正则表达式的前缀是rb，表示字节匹配），将每行开头和结尾的位置保存到一个数组中。比起存整个文件，存这个数组需要的空间是很小的。而当要读取某行的数据时，根据位置去slice映射就可以了。</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">mmap</span>
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">re</span>
+<span style="color: #006699; font-weight: bold">with</span> <span style="color: #336666">open</span>(<span style="color: #CC3300">"test.txt"</span>, <span style="color: #CC3300">'r+b'</span>) <span style="color: #006699; font-weight: bold">as</span> f:
+    <span style="color: #0099FF; font-style: italic"># 第二个参数是要映射是大小，0表示映射整个文件</span>
+    mm <span style="color: #555555">=</span> mmap<span style="color: #555555">.</span>mmap(f<span style="color: #555555">.</span>fileno(), <span style="color: #FF6600">0</span>)
+    span_list <span style="color: #555555">=</span> [match<span style="color: #555555">.</span>span() <span style="color: #006699; font-weight: bold">for</span> match <span style="color: #000000; font-weight: bold">in</span> re<span style="color: #555555">.</span>finditer(rb<span style="color: #CC3300">'(.+</span><span style="color: #CC3300; font-weight: bold">\n</span><span style="color: #CC3300">)'</span>, mm)]
+    <span style="color: #0099FF; font-style: italic"># 例如读取第10000行</span>
+    left, right <span style="color: #555555">=</span> span_list[<span style="color: #FF6600">10000</span>]
+    <span style="color: #336666">print</span>(mm[left:right])
+    mm<span style="color: #555555">.</span>close()
+</pre>
+</div>
+
+<h2 class="sigil_not_in_toc">通过numpy</h2>
+
+<p>numpy提供了两个从文件读取的方法，np.loadtxt()和np.genfromtxt()。这两个方法的区别在于，genfromtxt()提供了更多的选项，例如可以指定对缺失数据的处理方式等。而loadtxt()则适用于更加简单的数据，会快一些。</p>
+
+<p>这两个方法的输入参数都需要是文件（字节流或路径），是不接受字符串的。因此在分chunk读取时，不能先用f.readlines()之类的方式读成字符串再调用它们（除非再将字符串转换成StringIO，但这样就会占用两倍的内存）。我们可以用itertools.islice()直接对文件进行切分，以loadtxt()为例：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">from</span> <span style="color: #00CCFF; font-weight: bold">itertools</span> <span style="color: #006699; font-weight: bold">import</span> islice
+<span style="color: #006699; font-weight: bold">def</span> <span style="color: #CC00FF">chunk_generator</span>(size):
+    <span style="color: #006699; font-weight: bold">with</span> <span style="color: #336666">open</span>(<span style="color: #CC3300">&#39;test.txt&#39;</span>) <span style="color: #006699; font-weight: bold">as</span> f:
+        <span style="color: #006699; font-weight: bold">while</span> <span style="color: #006699; font-weight: bold">True</span>:
+            chunk <span style="color: #555555">=</span> islice(f, size)
+            ary <span style="color: #555555">=</span> np<span style="color: #555555">.</span>loadtxt(chunk, delimiter <span style="color: #555555">=</span> <span style="color: #CC3300">&#39;,&#39;</span>)
+            <span style="color: #006699; font-weight: bold">if</span> <span style="color: #336666">len</span>(ary) <span style="color: #555555">==</span> <span style="color: #FF6600">0</span>:
+                <span style="color: #006699; font-weight: bold">break</span>
+            <span style="color: #006699; font-weight: bold">else</span>:
+                <span style="color: #006699; font-weight: bold">yield</span> ary
+</pre></div>
+
+<p>但是总的来说，numpy读取数据的性能比pandas慢不少，所以在读取大数据文件的时候通常用pandas是更好的方法。</p>
+
+<h2>通过pandas</h2>
+
+<h3>抽样读取</h3>
+
+<p>pandas读大数据文件有几种思路，首先来看抽样读取，也就是随机地读一部分数据。适用于分析数据分布等需要了解数据整体情况的场景：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">pandas</span> <span style="color: #006699; font-weight: bold">as</span> <span style="color: #00CCFF; font-weight: bold">pd</span>
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">random</span>
+
+sample_rate <span style="color: #555555">=</span> <span style="color: #FF6600">0.1</span>
+df <span style="color: #555555">=</span> pd<span style="color: #555555">.</span>read_csv(<span style="color: #CC3300">&#39;test.csv&#39;</span>, delimiter <span style="color: #555555">=</span> <span style="color: #CC3300">&#39;</span><span style="color: #CC3300; font-weight: bold">\t</span><span style="color: #CC3300">&#39;</span>, error_bad_lines <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">False</span>,
+                 header <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>, skiprows <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">lambda</span> i: i <span style="color: #555555">&gt;</span> <span style="color: #FF6600">0</span> <span style="color: #000000; font-weight: bold">and</span> random<span style="color: #555555">.</span>random()<span style="color: #555555">&gt;</span>sample_rate)
+</pre></div>
+
+<p>在上面的例子中，我们从源文件中随机读取10%的记录到内存。这是通过skiprows参数提供一个callable实现的。其它一些设置包括：error_bad_lines设置为False使得格式异常的数据直接被跳过（而不是抛出异常）；header参数用来指定列名所在的行。</p>
+
+<p>还有一点需要注意的是，pd.read_csv()默认会使用速度较快的C引擎，但如果使用了某些C引擎不支持的设置，就会换成python引擎执行。为了避免fallback到python引擎，主要需要注意两点：一是不要使用"skipfooter"参数；二是"sep"参数的值不要多于一个字符，也不要用None：一个字符以上的sep会被认为是正则表达式，而None则表示由引擎猜测分隔符，都只能用python引擎执行。</p>
+
+<h3>分chunk读取</h3>
+
+<p>因为pandas内置了分chunk读取的功能，使用起来很方便：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">pandas</span> <span style="color: #006699; font-weight: bold">as</span> <span style="color: #00CCFF; font-weight: bold">pd</span>
+
+chunksize <span style="color: #555555">=</span> <span style="color: #FF6600">1000000</span>
+<span style="color: #006699; font-weight: bold">with</span> pd<span style="color: #555555">.</span>read_csv(<span style="color: #CC3300">&#39;text.csv&#39;</span>, chunksize<span style="color: #555555">=</span>chunksize) <span style="color: #006699; font-weight: bold">as</span> reader:
+    <span style="color: #006699; font-weight: bold">for</span> chunk <span style="color: #000000; font-weight: bold">in</span> reader:
+        process(chunk)
+</pre></div>
+
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.
