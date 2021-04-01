@@ -48,7 +48,7 @@ retry<span style="color: #555555">(</span>generateRandomDouble<span style="color
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">java.util.Random</span><span style="color: #555555">;</span>
 
-<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">generator</span> <span style="color: #555555">{</span>
+<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Generator</span> <span style="color: #555555">{</span>
     <span style="color: #007788; font-weight: bold">double</span> <span style="color: #CC00FF">generateRandomDouble</span><span style="color: #555555">()</span> <span style="color: #555555">{</span>
         Random rand <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Random<span style="color: #555555">();</span>
         <span style="color: #006699; font-weight: bold">return</span> rand<span style="color: #555555">.</span><span style="color: #330099">nextDouble</span><span style="color: #555555">();</span>
@@ -67,7 +67,7 @@ retry<span style="color: #555555">(</span>generateRandomDouble<span style="color
 
 <span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Example</span><span style="color: #555555">{</span>
     <span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">static</span> <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">main</span><span style="color: #555555">(</span>String<span style="color: #555555">[]</span> args<span style="color: #555555">)</span> <span style="color: #555555">{</span>
-        generator g <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> generator<span style="color: #555555">();</span>
+        Generator g <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Generator<span style="color: #555555">();</span>
         Retry retry <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Retry<span style="color: #555555">();</span>
         System<span style="color: #555555">.</span><span style="color: #330099">out</span><span style="color: #555555">.</span><span style="color: #330099">println</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> Retry<span style="color: #555555">.</span><span style="color: #330099">attempt</span><span style="color: #555555">(???));</span>
     <span style="color: #555555">}</span>
@@ -87,7 +87,7 @@ retry<span style="color: #555555">(</span>generateRandomDouble<span style="color
     <span style="color: #006699; font-weight: bold">abstract</span> <span style="color: #007788; font-weight: bold">double</span> <span style="color: #CC00FF">dummyMethod</span><span style="color: #555555">();</span>
 <span style="color: #555555">}</span>
 
-<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">generator</span> <span style="color: #555555">{</span>
+<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Generator</span> <span style="color: #555555">{</span>
     <span style="color: #007788; font-weight: bold">double</span> <span style="color: #CC00FF">generateRandomDouble</span><span style="color: #555555">()</span> <span style="color: #555555">{</span>
         Random rand <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Random<span style="color: #555555">();</span>
         <span style="color: #006699; font-weight: bold">return</span> rand<span style="color: #555555">.</span><span style="color: #330099">nextDouble</span><span style="color: #555555">();</span>
@@ -106,14 +106,14 @@ retry<span style="color: #555555">(</span>generateRandomDouble<span style="color
 
 <span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Example</span><span style="color: #555555">{</span>
     <span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">static</span> <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">main</span><span style="color: #555555">(</span>String<span style="color: #555555">[]</span> args<span style="color: #555555">)</span> <span style="color: #555555">{</span>
-        generator g <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> generator<span style="color: #555555">();</span>
+        Generator g <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Generator<span style="color: #555555">();</span>
         Retry retry <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Retry<span style="color: #555555">();</span>
         System<span style="color: #555555">.</span><span style="color: #330099">out</span><span style="color: #555555">.</span><span style="color: #330099">println</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> Retry<span style="color: #555555">().</span><span style="color: #330099">attempt</span><span style="color: #555555">(</span><span style="color: #9999FF">g:</span><span style="color: #555555">:</span>generateRandomDouble<span style="color: #555555">));</span>
     <span style="color: #555555">}</span>
 <span style="color: #555555">}</span>
 </pre></div>
 
-<p>因为实现FunctionalInterface的实际上是一个为了传递方法而临时创建的对象，所以我这个对象和方法起名为 <span class="code">dummyObj.dummyMethod()</span>。</p>
+<p>因为实现FunctionalInterface的实际上是一个为了传递方法而临时创建的对象，所以我将这个对象和方法起名为 <span class="code">dummyObj.dummyMethod()</span>。</p>
 
 <p>最后思考一点，因为需要创建一个临时对象去作方法的调用，Java是如何保证传递进去的方法和临时对象的方法的对应关系的？在我们的代码里面，并没有对这两者的方法名作任何的关联。如果FunctionalInterface里面定义了两个以上的抽象方法，比如<span class="code">dummyMethod1</span>和<span class="code">dummyMethod2</span>，Java是如何知道调用哪个方法才表示要调用<span class="code">g.generateRandomDouble()</span>呢？</p>
 
