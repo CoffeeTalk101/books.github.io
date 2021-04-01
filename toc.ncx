@@ -145,5 +145,11 @@
       </navLabel>
       <content src="Text/Section0022.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-23" playOrder="23">
+      <navLabel>
+        <text>Java中FunctionalInterface的使用</text>
+      </navLabel>
+      <content src="Text/Section0023.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
