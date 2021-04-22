@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>前端压缩JSON的思路和效果</title>
+  <meta name="keywords" content="BigData"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>前端压缩JSON的思路和效果</h1>
+
+<p class="date">2021-04-22</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>通常来说前端是不太需要压缩JSON的，因为一般业务使用JSON传输的数据量本身不会很大。不过在越来越深挖用户行为的现在，一些技术，例如行为生物识别（Behavioural Biometrics）要求能够准实时地分析细粒度的用户行为数据，如用户的触屏轨迹、压力（触点面积），以及握持、放置、携带手机的姿态（可能包括空间坐标、速度、加速度）等，就要求前端对这些数据进行持续的采集和上传。经过一些测试，在移动设备上对这些数据的采样频练一般能够达到0.1s，这意味着在较短的时间内就能采集到较大量的原始数据，而移动端对流量和网络通信速率是敏感的，如何压缩数据减少通信量也就成为了一个问题。</p>
+
+<p>即使不是上面的场景，在越发普遍大数据应用中，也可能会出现希望压缩JSON的需求。要怎么做呢？首先我们可以参考OLAP（面向分析型系统）在存储数据时的常用做法，把JSON从面向行改为面向列：</p>
+
+<p>例如有这样的一批JSON对象，它们的模式是固定的：</p>
+
+<pre>
+[{"id"=1,"time"=123,"event"=2,......},
+{"id"=2,"time"=125,"event"=1,......},
+{"id"=5,"time"=128,"event"=2,......},
+...]
+</pre>
+
+<p></p>
+
+<p>通常来说所谓的大数据，是从业务系统数据库（OLTP）提取-转换-加载（ETL）到数据仓库的。这是一个离线的过程，数据本身是业务系统已经准备好的。不过在越来越关注实时性和深挖用户行为的现在，从终端埋点直接采集并上传。</p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

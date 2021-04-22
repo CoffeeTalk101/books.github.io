@@ -18,7 +18,7 @@
 
 <p>关于FuntionalInterface的介绍很多是单纯从语言特性的角度讲解，其实我觉得结合具体场景和设计思路来理解会更清晰一些。比如说在开发中有一些场景，如果方法能够作为参数传递的话那就会十分的便利，在这种时候函数式接口的使用就显得很自然了。</p>
 
-<p>什么时候会有这个传递方法的需求呢，以一个业务场景来举例子：我们目前设计的系统后台需要对另一个系统进行操作，因为网络或者系统的波动，操作可能会失败，比如HTTP ERROR，或者对方系统返回的报错等等，出现这种情况时希望能够自动重试几次，当重试全部失败后才认为操作失败。</p>
+<p>什么时候会有这个传递方法的需求呢，以一个业务场景来举例子：我们目前设计的系统后台需要对另一个系统进行操作，因为网络或者系统的波动，操作可能会失败，比如HTTP ERROR，或者对方系统返回的报错等等，出现这种情况时希望能够自动重试几次，当重试全部失败后才认为操作失败。（从实践上说不一定是个很好的例子，因为这有点像是要在REST上包装一个RPC出来，不过就先用它吧）</p>
 
 <p>为了避免重复这个逻辑在不同的方法中重复出现，自然的想法是把它独立出来。一个既简单而又有很强泛用性的抽象逻辑是： <span class="code">retry(method, times)</span>。这里就需要把方法作为参数传递，也就是需要函数式的特性。这里插一句，用纯OOP的方式能不能实现呢，当然也是可以的。但是问题是，1.实现起来不简洁，2.泛用性不强（对类的继承关系有要求）。而Java内部的多线程Thread类，也是用了函数式接口，可以看出这种方法确实是很有优势的。</p>
 
@@ -38,9 +38,10 @@
 <span style="color: #555555">}</span>
 
 retry<span style="color: #555555">(</span>generateRandomDouble<span style="color: #555555">)</span>
-</pre></div>
+</pre>
+</div>
 
-<p>这里 <span class="code">generateRandomDouble()</span> 就是需要进行重试的方法，而重试的逻辑则在 <span class="code">retry()</span> 方法中。因此将方法传递给 <span class="code">retry()</span> 就可以完成重试。这里有两个值得注意的地方，一是传递进来的方法，它的类型的表示方式为 <span class="code">() => Double</span> ，因为在Scala中函数是一等公民，所以函数和变量一样，都有对应的类型表示方式，左边的空括号表示这个函数不接受参数，右边的Double表示它的返回类型。第二个值得注意的点是在函数体中对传递进来的函数的调用方式，非常简单，就是 <span class="code">method()</span> ，这是因为函数可以单独定义，所以可以直接这样调用。</p>
+<p>这里 <span class="code">generateRandomDouble()</span> 就是需要进行重试的方法，而重试的逻辑则在 <span class="code">retry()</span> 方法中。因此将方法传递给 <span class="code">retry()</span> 就可以完成重试。这里有两个值得注意的地方，一是传递进来的方法，它的类型的表示方式为 <span class="code">() =&gt; Double</span> ，因为在Scala中函数是一等公民，所以函数和变量一样，都有对应的类型表示方式，左边的空括号表示这个函数不接受参数，右边的Double表示它的返回类型。第二个值得注意的点是在函数体中对传递进来的函数的调用方式，非常简单，就是 <span class="code">method()</span> ，这是因为函数可以单独定义，所以可以直接这样调用。</p>
 
 <p>那么同样的逻辑，在Java中要怎样写呢。这里我们就遇到了两个和上面相对应的问题，一是在Java中，方法不是基本类型，作为参数传递的话没有办法表示方法的类型；二是Java中方法必须依附于类或者对象，无法直接通过“方法名()”去调用。</p>
 
@@ -72,11 +73,12 @@ retry<span style="color: #555555">(</span>generateRandomDouble<span style="color
         System<span style="color: #555555">.</span><span style="color: #330099">out</span><span style="color: #555555">.</span><span style="color: #330099">println</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> Retry<span style="color: #555555">.</span><span style="color: #330099">attempt</span><span style="color: #555555">(???));</span>
     <span style="color: #555555">}</span>
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 <p>类似的，我们定义了一个生成随机数的类，和一个进行重试的类Retry，但是有两个地方会报错，一是Retry类中attempt()方法的定义，另一个是main()中对attemp()方法的调用。</p>
 
-<p>首先解决调用时如何将方法作为参数传递的问题，我们知道Java8提供了lambda表达式，因此可以把对方法的调用写成 <span class="code">() -> g.generateRandomDouble()</span> 的形式。它表示这个lambda表达式不接受参数，直接返回随机数生成的结果。特别的，对这种不需要接受参数的lambda，Java提供了一个语法糖，我们可以把它写成 <span class="code">g::generateRandomDouble</span>。</p>
+<p>首先解决调用时如何将方法作为参数传递的问题，我们知道Java8提供了lambda表达式，因此可以把对方法的调用写成 <span class="code">() -&gt; g.generateRandomDouble()</span> 的形式。它表示这个lambda表达式不接受参数，直接返回随机数生成的结果。特别的，对这种不需要接受参数的lambda，Java提供了一个语法糖，我们可以把它写成 <span class="code">g::generateRandomDouble</span>。</p>
 
 <p>可以传递lambda表达式了，下面需要解决的问题就是接受的部分要如何去处理。这里就要用到FunctionalInterface：既然方法的传递必须要依附于对象，那就创建一个临时的对象，让它作为方法的载体。FunctionalInterface就是给这个对象实现的接口。而调用FunctionalInterface中定义的抽象方法，就等于调用了传递进来的方法。因此完整的程序可以写成这样：</p>
 
@@ -111,7 +113,8 @@ retry<span style="color: #555555">(</span>generateRandomDouble<span style="color
         System<span style="color: #555555">.</span><span style="color: #330099">out</span><span style="color: #555555">.</span><span style="color: #330099">println</span><span style="color: #555555">(</span><span style="color: #006699; font-weight: bold">new</span> Retry<span style="color: #555555">().</span><span style="color: #330099">attempt</span><span style="color: #555555">(</span><span style="color: #9999FF">g:</span><span style="color: #555555">:</span>generateRandomDouble<span style="color: #555555">));</span>
     <span style="color: #555555">}</span>
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 <p>因为实现FunctionalInterface的实际上是一个为了传递方法而临时创建的对象，所以我将这个对象和方法起名为 <span class="code">dummyObj.dummyMethod()</span>。</p>
 
