@@ -26,32 +26,26 @@
 
 <p>第一种是打开Anaconda Prompt，直接运行如下命令：</p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">conda create --name py27env <span style="color: #003333">python</span><span style="color: #555555">=</span>2.7 --offline
+<pre>conda create --name py27env python=2.7 --offline
 </pre>
-</div>
 
 <p>用这个命令创建的虚拟环境是干净的，Anaconda自带的包，如numpy等，不会自动被安装进来。</p>
 
 <p>第二种是在创建时给环境预装软件包，只需要将软件包的名字加入命令中。如果直接加上anaconda，则会预装上anaconda自带的所有包：</p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">conda create --name anaconda2full anaconda <span style="color: #003333">python</span><span style="color: #555555">=</span>2.7 --offline
+<pre>conda create --name anaconda2full anaconda python=2.7 --offline
 </pre>
-</div>
 
 <p>第三种是直接克隆现有的环境，如果希望把所有已经安装的软件包全都打包，可以用这种方式：</p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">conda create --name clone_of_base --clone root
+<pre>conda create --name clone_of_base --clone root
 </pre>
-</div>
 
+<p>前两种方式，命令中的 <span class="code">--offline</span> 参数指定了conda在不联网的情况下创建环境，另外需要注意的是，前面两种方式必须指定python的版本，例如 <span class="code">python=2.7</span>，这样才会在创建的虚拟环境目录中生成对应的python.exe文件。在运行命令时，程序会打印如下的提示，告诉我们虚拟环境的创建位置。可以记录下这个目录。</p>
 
-<p>前两种方式，命令中的 --offline 参数指定了conda在不联网的情况下创建环境，另外需要注意的是，前面两种方式必须指定python的版本，例如python=2.7，这样才会在创建的虚拟环境目录中生成对应的python.exe文件。在运行命令时，程序会打印如下的提示，告诉我们虚拟环境的创建位置。可以记录下这个目录。</p>
+<pre>## Package Plan ##
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">## Package Plan ##
-
-environment location: C:\Users\xxx\AppData\Local\Continuum\anaconda2\envs\anaconda2env
-</pre>
-</div>
+environment location: C:\Users\xxx\AppData\Local\Continuum\anaconda2\envs\anaconda2env</pre>
 
 <p>这里先提一下虚拟环境在Pycharm中的指定方式：在环境创建完成后，可以进入PyCharm，选择Add Interpreter，之后选择exsisting environment。在Interpreter这栏，输入虚拟环境目录中python.exe的路径，在Conda executable这栏，输入\anaconda2\Scripts\conda.exe的路径。之后我们可以勾选Make available to all projects，这样之后创建的项目也都可以使用这个虚拟环境了。</p>
 
@@ -59,11 +53,11 @@ environment location: C:\Users\xxx\AppData\Local\Continuum\anaconda2\envs\anacon
 
 <p>如果新创建的是干净的环境，Anaconda自带的一些包并不会在创建时自动装上。要离线将Anaconda安装时自带的工具包引入环境，可以加上--offline参数来使用conda install 命令，例如：</p>
 
-<p>conda install numpy --offline</p>
+<pre>conda install numpy --offline</pre>
 
 <p>如果要按照的包不是Anaconda安装时自带的，可以在联网的机器上使用 conda install --download-only 进行下载，下载的包会保存在 Anaconda root/pkgs 目录下。之后使用如下命令安装：</p>
 
-<p>conda install --offline /path/packagename.tar.bz2</p>
+<pre>conda install --offline /path/packagename.tar.bz2</pre>
 
 <h2 class="sigil_not_in_toc">使用conda pack转移虚拟环境</h2>
 
@@ -73,22 +67,28 @@ environment location: C:\Users\xxx\AppData\Local\Continuum\anaconda2\envs\anacon
 
 <p>首先在联网的机器上安装conda-pack：</p>
 
-<p>conda install conda-pack</p>
+<pre>conda install conda-pack</pre>
 
 <p>使用命令将已有的虚拟环境打包：</p>
 
-<p>conda pack -n env_name -o outname.tar.gz</p>
+<pre>conda pack -n env_name -o outname.tar.gz</pre>
 
 <p>复制创建的压缩包到离线机器上，解压到anaconda的envs目录下，比如Windiws下一般在：</p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">C:\Users\username\AppData\Local\Continuum\anaconda3\envs\env_name
+<pre>C:\Users\username\AppData\Local\Continuum\anaconda3\envs\env_name
 </pre>
-</div>
 
+<p>Linux则是在：</p>
 
-<p>接下来，如果是Linux机器，使用命令 source my_env/bin/activate 来激活虚拟环境；Windows机器，使用Anaconda promt运行 ...\env_name\scripts\activate.bat 激活虚拟环境</p>
+<pre>/anaconda3/envs/env_name</pre>
 
-<p>在虚拟环境中，执行命令 conda-unpack 。之后此环境就可以像在本机创建的环境一样使用。</p>
+<p>接下来，如果是Linux机器，使用命令 <span class="code">source my_env/bin/activate</span> 来激活虚拟环境；Windows机器，使用Anaconda promt运行 <span class="code">...\env_name\scripts\activate.bat</span> 激活虚拟环境</p>
+
+<p>注意只有使用conda-pack导入的虚拟环境才需要这样激活，在本机创建的虚拟环境直接使用 <span class="code">conda activate env_name</span> 激活，用 <span class="code">conda deactivate</span> 关闭就可以了。</p>
+
+<p>另外，注意上面的命令在Linux中一定要用 <span class="code">source</span> 去执行，用 <span class="code">./filename</span> 或 <span class="code">sh filename</span>执行的命令会新建立一个子shell，继承父shell的环境变量，但子shell新建的、改变的变量不会被带回父shell。而用 <span class="code">source filename</span> 不建立新的子shell，脚本里面所有新建、改变的环境变量都会保存在当前shell里面。</p>
+
+<p>在虚拟环境中，执行命令 <span class="code">conda-unpack</span> 。之后此环境就可以像在本机创建的环境一样使用。</p>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.
