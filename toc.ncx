@@ -157,5 +157,11 @@
       </navLabel>
       <content src="Text/Section0024.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-25" playOrder="25">
+      <navLabel>
+        <text>离线环境使用SSH登录CDSW远程开发</text>
+      </navLabel>
+      <content src="Text/Section0025.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
