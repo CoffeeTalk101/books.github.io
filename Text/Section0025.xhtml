@@ -72,7 +72,7 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>当然我们也可以使用其它的终端工具，例如secureCRT：新建一个连接，作如下的设置：</p>
 
-<p><img alt="屏幕截图 2021-05-21 135736" src="../Images/屏幕截图 2021-05-21 135736.png"/></p>
+<p><img alt="屏幕截图 2021-05-21 135736" src="../Images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-05-21%20135736.png"/></p>
 
 <p>注意把端口号替换成上面得到的端口号。之后secureCRT会让我们选择SSH公钥文件，也就是最开始创建的 id_rsa.pub 这个文件，之后输入配置的密码，连接就成功了。</p>
 
@@ -81,13 +81,13 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 <p><b>（补充）使用vscode连接：</b></p>
 <p>secureCRT的功能还是比较有限的，如果习惯使用vscode的话可以用vscode作为终端进行连接。</p>
 
-<p>因为环境是离线的，首先在 marketplace.visualstudio.com/vscode 下载需要的插件，我们需要Remote SSH和Remote SSH: Edting Configuration Files这两个，在页面的右边有&ldquo;download extension&rdquo;的链接。因为我们在CDSW平台主要使用python编码，可以顺便也安装python和jupyter这两个插件。</p>
+<p>因为环境是离线的，首先在 marketplace.visualstudio.com/vscode 下载需要的插件，我们需要Remote SSH和Remote SSH: Edting Configuration Files这两个，在页面的右边有“download extension”的链接。因为我们在CDSW平台主要使用python编码，可以顺便也安装python和jupyter这两个插件。</p>
 
 <p>下载好之后用 <span class="code">code --install-extension /path/xxx.vsix</span> 安装插件。</p>
 
 <p>在安装完成后，vscode的左侧会多出一个连接栏。点其中的齿轮图标，如下图：</p>
 
-<p><img alt="屏幕截图 2021-05-26 094755" src="../Images/屏幕截图 2021-05-26 094755.png"/></p>
+<p><img alt="屏幕截图 2021-05-26 094755" src="../Images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-05-26%20094755.png"/></p>
 
 <p>会让我们选择SSH配置文件的路径，第一次使用的话这个文件是不存在的，直接点弹出的地址的第一个，vscode会在相应位置自动创建一个默认的配置文件。</p>
 
@@ -100,7 +100,7 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>然后点窗口的图标建立一个连接：</p>
 
-<p><img alt="屏幕截图 2021-05-26 103231" src="../Images/屏幕截图 2021-05-26 103231.png"/></p>
+<p><img alt="屏幕截图 2021-05-26 103231" src="../Images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-05-26%20103231.png"/></p>
 
 <p>第一次连接会让我们选择远端的服务器系统，选Linux，如果设置了密码还需要再输入密码（私钥的passphrase；如果连接的不是CDSW平台而是普通服务器的话，这里需要输入的是用户名对应的密码）。目前连接肯定是会报错的，因为服务器端的插件没有安装。如果是如下的报错，则可进入下一步：</p>
 
@@ -120,7 +120,7 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>这是因为vscode本身的一个bug导致的（在选择远端的服务器系统的时候vscode自动取消了，导致getPlatformForHost失败），从菜单选择File--Preferences--Settings，点下图的按钮，打开vscode的json配置文件：</p>
 
-<p><img alt="屏幕截图 2021-05-26 113928" src="../Images/屏幕截图 2021-05-26 113928.png"/></p>
+<p><img alt="屏幕截图 2021-05-26 113928" src="../Images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-05-26%20113928.png"/></p>
 
 <p>在文件里面添加如下json内容：</p>
 
@@ -130,7 +130,7 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>里面的csdw是上面我们给host起的名字。之后应该就可以正常连接了。</p>
 
-<p>此外，如果连接时不断重试，不断打印 Acquiring lock on ...... 的信息，或者出现类似：failed to create hard link &lsquo;..........&rsquo;: File exists 的报错，首先可以在vscode的json配置文件中添加：</p>
+<p>此外，如果连接时不断重试，不断打印 Acquiring lock on ...... 的信息，或者出现类似：failed to create hard link ‘..........’: File exists 的报错，首先可以在vscode的json配置文件中添加：</p>
 
 <pre>"remote.SSH.useFlock": false</pre>
 
@@ -153,8 +153,8 @@ Get-Service ssh-agent</pre>
 
 <p>如果一切正常的话，这时候我们应该已经可以通过SSH key连接服务端并且不需要passphrase了。但是如果出现了以下报错：</p>
 
-<pre>[13:33:53.211] > warning: agent returned different signature type ssh-rsa (expected rsa-sha2-512)
-[13:33:53.228] > cdsw@localhost: Permission denied (publickey).</pre>
+<pre>[13:33:53.211] &gt; warning: agent returned different signature type ssh-rsa (expected rsa-sha2-512)
+[13:33:53.228] &gt; cdsw@localhost: Permission denied (publickey).</pre>
 
 <p>这是由于windows自带的Open SSH版本过低，使用的签名算法被服务器拒绝了而导致的（<a href="https://github.com/PowerShell/Win32-OpenSSH/issues/1263">相关issue</a>）。最新版本的Windows应该是解决了这个问题，如果没法更新版本的话，有一个workaround是使用RSA以外的加密方法。例如用 <span class="code">ssh-keygen -t ecdsa -b 521</span> 再创建一个key，重复一下前面的步骤，之后用这个key就可以连接了。</p>
 

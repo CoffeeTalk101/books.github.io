@@ -163,5 +163,11 @@
       </navLabel>
       <content src="Text/Section0025.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-26" playOrder="26">
+      <navLabel>
+        <text>VSCode Remote SSH终端显示延迟（卡顿）的解决方法</text>
+      </navLabel>
+      <content src="Text/Section0026.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
