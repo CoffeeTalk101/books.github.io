@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>多版本python共存的环境变量配置</title>
+  <meta name="keywords" content="Python"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>多版本python共存的环境变量配置</h1>
+
+<p class="date">2020-09-01</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>最近需要连一台比较旧的服务器，并没有python3，这篇笔记记录一下给python3配置环境变量，和python2共存的方法。</p>
+
+<p>（系统：CentOS，Shell：bash）</p>
+
+<p>首先我们需要确定是为一个用户配置，还是为所有用户配置。只为当前用户配置，需要修改的是 <span class="code">~/.bashrc</span> 这个文件；而为所有用户配置，需要修改的是 <span class="code">/etc/profile</span> 这个文件。</p>
+
+<p>打开上述对应的文件，在其中加入以下内容：</p>
+
+<pre>function python3{
+/path/to/python $1
+}</pre>
+
+<p>注意换行是必须的，不能写成一行。保存之后通过source命令使配置生效，比如为当前用户配置，就执行 <span class="code">source ~/.bashrc</span> 。关于source命令，在<a href="Section0010.xhtml">这篇笔记</a>的最后有解释过。</p>
+
+<p>最后，如果希望输入其它的名称，例如"py3"也能调用和"python3"相同的内容，可以在刚刚打开的文件中添加别名声明：</p>
+
+<pre>alias py3="python3"</pre>
+
+<p>需要特别注意的是，等于号的左右不能有空格。之后再用source命令激活，即可完成别名的配置。</p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>关于单例模式读配置文件的一些讨论</title>
+  <meta name="keywords" content="Others"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>关于单例模式读配置文件的一些讨论</h1>
+
+<p class="date">2021-06-11</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>读取配置文件是单例的一个典型应用，因为配置文件可能在程序的许多地方使用，但各处读取的都是相同的配置，我们只希望它被实例化一次。不过单例模式也有一些固有的缺点，这篇笔记记录一些对单例模式读配置文件的思考。</p>
+
+<p>单例模式有很多实现方式，这里以比较简单也线程安全的饿汉式为例，读取配置文件的典型写法是：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">AppConfig</span><span style="color: #555555">{</span>
+    <span style="color: #006699; font-weight: bold">private</span> <span style="color: #006699; font-weight: bold">static</span> AppConfig instance <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> AppConfig<span style="color: #555555">(</span><span style="color: #CC3300">&quot;config_filename&quot;</span><span style="color: #555555">);</span>
+    <span style="color: #006699; font-weight: bold">private</span> <span style="color: #CC00FF">AppConfig</span><span style="color: #555555">(</span>String filename<span style="color: #555555">){</span>
+        <span style="color: #0099FF; font-style: italic">// 具体读取文件的逻辑</span>
+    <span style="color: #555555">}</span>
+    <span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">static</span> AppConfig <span style="color: #CC00FF">getInstance</span><span style="color: #555555">(){</span>
+        <span style="color: #006699; font-weight: bold">return</span> instance<span style="color: #555555">;</span>
+    <span style="color: #555555">}</span>
+<span style="color: #555555">}</span>
+</pre></div>
+
+<p>这种写法最明显的一个缺点就是测试不友好。例如在测试阶段，我们希望用一些测试专用的配置去替代掉原本的配置文件，这是就会遇上麻烦：首先，配置文件的名称是写在单例这个类内部的，意味着如果我们使用另一个配置文件进行测试，就必须修改代码的内容，侵入性很强。</p>
+
+<p>如果继承这个单例的类再用测试配置去重写它呢，也不可行，因为代码中已经定义了使用 <span class="code">AppConfig.getInstance()</span> 的方式获取单例，重写的用于测试的子类并不能传递进去。</p>
+
+<p>那么读取配置文件到底要不要用单例模式，有没有兼具单例模式的优点又对测试友好的写法？这个问题在网上也是众说纷纭。比如StackOverflow的<a href="https://stackoverflow.com/questions/59210851/i-can-not-test-singleton-without-load-method">这个问题</a>下面就有一些讨论。</p>
+
+<p>其中一个方法是，可以保留单例模式，但是配置文件的名字（或路径）不写死在单例的类里，而是以 <span class="code">System.getProperty()</span> 的方式传递进去。这样就可以通过 <span class="code">java -D</span> 参数来指定使用不同的配置文件。这个方法确实解决了问题，也没有改变单例模式，但是在之后运行和测试的时候都需要带上参数。</p>
+
+<p>另一种能够保留单例的写法是，使用能够mock单例的测试库去进行测试。例如<a href="https://redchilliplus.wordpress.com/2010/06/08/unit-testing-in-java-with-easymock-and-powermock/">这篇文章介绍的内容</a>。这样的好处是完全不需要改动原来的代码，但是在测试的时候需要引入额外的库，并进行mock操作。</p>
+
+<p>也有一些建议是<a href="https://williamdurand.fr/2013/07/30/from-stupid-to-solid-code/#singleton">不要使用单例模式</a>。那么如果不用单例模式，有什么好的写法呢？</p>
+
+<p>一种比较好的思路是在应用的入口处（如初始化时）将配置文件读取好，作为一个对象传递到后续需要调用它的类。这样配置文件的路径就不必写死在代码中。举个例子：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">App</span><span style="color: #555555">{</span>
+    <span style="color: #006699; font-weight: bold">private</span> <span style="color: #006699; font-weight: bold">static</span> AppConfig config<span style="color: #555555">;</span>
+    <span style="color: #0099FF; font-style: italic">// 假设这个方法是应用的入口</span>
+    <span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">static</span> <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">start</span><span style="color: #555555">(</span>String configFilename<span style="color: #555555">){</span>
+        <span style="color: #0099FF; font-style: italic">// 在入口就将配置文件加载完成</span>
+        config <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> AppConfig<span style="color: #555555">(</span>configFilename<span style="color: #555555">);</span>
+        <span style="color: #0099FF; font-style: italic">// 例如Use这个类需要用到Config，就将对象传递给它</span>
+        Use u <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Use<span style="color: #555555">(</span>config<span style="color: #555555">);</span>
+    <span style="color: #555555">}</span>
+<span style="color: #555555">}</span>
+
+<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Use</span><span style="color: #555555">{</span>
+    <span style="color: #006699; font-weight: bold">private</span> <span style="color: #006699; font-weight: bold">final</span> AppConfig config<span style="color: #555555">;</span>
+    <span style="color: #0099FF; font-style: italic">// 在构造函数中保存对config对象的引用</span>
+    <span style="color: #006699; font-weight: bold">public</span> <span style="color: #CC00FF">Use</span><span style="color: #555555">(</span>AppConfig config<span style="color: #555555">){</span>
+        <span style="color: #006699; font-weight: bold">this</span><span style="color: #555555">.</span><span style="color: #330099">config</span> <span style="color: #555555">=</span> config<span style="color: #555555">;</span>
+    <span style="color: #555555">}</span>
+<span style="color: #555555">}</span>
+
+<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">AppConfig</span><span style="color: #555555">{</span>
+    AppConfig<span style="color: #555555">(</span>String configFilename<span style="color: #555555">){</span>
+        <span style="color: #0099FF; font-style: italic">// ...读取配置文件的逻辑</span>
+    <span style="color: #555555">}</span>
+<span style="color: #555555">}</span>
+</pre></div>
+
+
+<p>这样写能够解决问题，不过也可能变得有些繁琐：如果有多个配置文件，那么在入口处就需要挨个读取它们，而每个需要使用它们的类都要在构造函数中保存它们，如果这些类中又涉及到其它的类，还得继续一层层向下传递……</p>
+
+<p>为了简化这个过程，一些库提供了<b>依赖注入</b>的功能，例如Spring。当然，为了让Spring能够进行依赖注入，类必须要改写成Spring Bean。具体的方式可以参考官方文档。</p>
+
+<p>总结下来，如果是使用了Spring之类的框架，或者是较大型的项目，利用框架提供的依赖注入功能是很好的。如果不使用依赖注入，在配置文件不多的情况下，通过统一的对象传递依赖，我认为也是比较好的方法。虽然使用单例模式去读配置文件也能通过设置java -D系统属性，或者mock单例之类的方式进行测试，但这种方法更像是一种work around。总的来说，从测试友好的角度，似乎还是避免单例模式较好。</p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

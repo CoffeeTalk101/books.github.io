@@ -39,135 +39,147 @@
     </navPoint>
     <navPoint id="navPoint-5" playOrder="5">
       <navLabel>
+        <text>多版本python共存的环境变量配置</text>
+      </navLabel>
+      <content src="Text/Section0027.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-6" playOrder="6">
+      <navLabel>
         <text>XGBoost 简介（1）</text>
       </navLabel>
       <content src="Text/Section0002.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-6" playOrder="6">
+    <navPoint id="navPoint-7" playOrder="7">
       <navLabel>
         <text>XGBoost 简介（2）</text>
       </navLabel>
       <content src="Text/Section0007.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-7" playOrder="7">
+    <navPoint id="navPoint-8" playOrder="8">
       <navLabel>
         <text>实验：缺失值的处理对XGBoost模型效果的影响</text>
       </navLabel>
       <content src="Text/Section0011.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-8" playOrder="8">
+    <navPoint id="navPoint-9" playOrder="9">
       <navLabel>
         <text>MapReduce任务两种OOM问题的排查处理</text>
       </navLabel>
       <content src="Text/Section0012.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-9" playOrder="9">
+    <navPoint id="navPoint-10" playOrder="10">
       <navLabel>
         <text>调整正负样本比对模型评估指标的影响</text>
       </navLabel>
       <content src="Text/Section0001.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-10" playOrder="10">
+    <navPoint id="navPoint-11" playOrder="11">
       <navLabel>
         <text>Scala和Java混合开发和编译</text>
       </navLabel>
       <content src="Text/Section0003.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-11" playOrder="11">
+    <navPoint id="navPoint-12" playOrder="12">
       <navLabel>
         <text>快速了解Python Type Hint</text>
       </navLabel>
       <content src="Text/Section0004.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-12" playOrder="12">
+    <navPoint id="navPoint-13" playOrder="13">
       <navLabel>
         <text>AI项目规划中值得考虑的非技术因素</text>
       </navLabel>
       <content src="Text/Section0005.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-13" playOrder="13">
+    <navPoint id="navPoint-14" playOrder="14">
       <navLabel>
         <text>递归、尾递归 in Scala</text>
       </navLabel>
       <content src="Text/Section0006.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-14" playOrder="14">
+    <navPoint id="navPoint-15" playOrder="15">
       <navLabel>
         <text>SBT编译的注意点</text>
       </navLabel>
       <content src="Text/Section0014.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-15" playOrder="15">
+    <navPoint id="navPoint-16" playOrder="16">
       <navLabel>
         <text>Scala中的CBN、CBV和Currying</text>
       </navLabel>
       <content src="Text/Section0015.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-16" playOrder="16">
+    <navPoint id="navPoint-17" playOrder="17">
       <navLabel>
         <text>正则常用规则的备注</text>
       </navLabel>
       <content src="Text/Section0017.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-17" playOrder="17">
+    <navPoint id="navPoint-18" playOrder="18">
       <navLabel>
         <text>正则的执行方式</text>
       </navLabel>
       <content src="Text/Section0016.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-18" playOrder="18">
+    <navPoint id="navPoint-19" playOrder="19">
       <navLabel>
         <text>Scala中手动模拟实现基础类型</text>
       </navLabel>
       <content src="Text/Section0018.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-19" playOrder="19">
+    <navPoint id="navPoint-20" playOrder="20">
       <navLabel>
         <text>使用状态缓存优化Flink的输出性能</text>
       </navLabel>
       <content src="Text/Section0019.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-20" playOrder="20">
+    <navPoint id="navPoint-21" playOrder="21">
       <navLabel>
         <text>机器学习中对不平衡数据的基线模型选择</text>
       </navLabel>
       <content src="Text/Section0020.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-21" playOrder="21">
+    <navPoint id="navPoint-22" playOrder="22">
       <navLabel>
         <text>Python对大数据文件的读取</text>
       </navLabel>
       <content src="Text/Section0021.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-22" playOrder="22">
+    <navPoint id="navPoint-23" playOrder="23">
       <navLabel>
         <text>理解快速排序的空间复杂度</text>
       </navLabel>
       <content src="Text/Section0022.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-23" playOrder="23">
+    <navPoint id="navPoint-24" playOrder="24">
       <navLabel>
         <text>Java中FunctionalInterface的使用</text>
       </navLabel>
       <content src="Text/Section0023.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-24" playOrder="24">
+    <navPoint id="navPoint-25" playOrder="25">
       <navLabel>
         <text>联邦学习简介</text>
       </navLabel>
       <content src="Text/Section0024.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-25" playOrder="25">
+    <navPoint id="navPoint-26" playOrder="26">
       <navLabel>
         <text>离线环境使用SSH登录CDSW远程开发</text>
       </navLabel>
       <content src="Text/Section0025.xhtml"/>
     </navPoint>
-    <navPoint id="navPoint-26" playOrder="26">
+    <navPoint id="navPoint-27" playOrder="27">
       <navLabel>
         <text>VSCode Remote SSH终端显示延迟（卡顿）的解决方法</text>
       </navLabel>
       <content src="Text/Section0026.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-28" playOrder="28">
+      <navLabel>
+        <text>关于单例模式读配置文件的一些讨论</text>
+      </navLabel>
+      <content src="Text/Section0028.xhtml"/>
     </navPoint>
   </navMap>
 </ncx>
