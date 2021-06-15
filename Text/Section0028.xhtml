@@ -41,6 +41,17 @@
 
 <p>另一种能够保留单例的写法是，使用能够mock单例的测试库去进行测试。例如<a href="https://redchilliplus.wordpress.com/2010/06/08/unit-testing-in-java-with-easymock-and-powermock/">这篇文章介绍的内容</a>。这样的好处是完全不需要改动原来的代码，但是在测试的时候需要引入额外的库，并进行mock操作。</p>
 
+<p>还有一个能保留单例模式的折衷方法：将单例用get方法包装一层，测试时重写外层的类。举个例子：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">ConfigWrapper</span> <span style="color: #555555">{</span>
+    <span style="color: #006699; font-weight: bold">public</span> String <span style="color: #CC00FF">getName</span><span style="color: #555555">(){</span>
+        <span style="color: #006699; font-weight: bold">return</span> AppConfig<span style="color: #555555">.</span><span style="color: #330099">getInstance</span><span style="color: #555555">().</span><span style="color: #330099">getStringProperty</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;name&quot;</span><span style="color: #555555">);</span>
+    <span style="color: #555555">}</span>
+<span style="color: #555555">}</span>
+</pre></div>
+
+<p>这样在测试的时候去重写ConfigWrapper类里面的get方法就能够载入测试数据。这个方法在需要二次开发旧项目的时候比较好用：对功能的实现可以沿用旧代码中已经写好的单例，只对新增的部分再包装一层。缺点就是对每个属性都需要包装和重写对应的方法，增加了代码量。</p>
+
 <p>也有一些建议是<a href="https://williamdurand.fr/2013/07/30/from-stupid-to-solid-code/#singleton">不要使用单例模式</a>。那么如果不用单例模式，有什么好的写法呢？</p>
 
 <p>一种比较好的思路是在应用的入口处（如初始化时）将配置文件读取好，作为一个对象传递到后续需要调用它的类。这样配置文件的路径就不必写死在代码中。举个例子：</p>
