@@ -181,5 +181,11 @@
       </navLabel>
       <content src="Text/Section0028.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-29" playOrder="29">
+      <navLabel>
+        <text>Maven打包时Plugin的选择和其它一些知识点</text>
+      </navLabel>
+      <content src="Text/Section0029.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
