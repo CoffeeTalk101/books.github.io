@@ -63,7 +63,9 @@
 
 <p>那么进一步，pluginManagement所管理（manage）的范围是多大呢？实际上它用的是一个<b>向下继承且可被覆盖的机制</b>。首先，它可以配置在同一个pom中 build.plugins 标签下引入的插件；其次，在上面提到过，maven自带一些默认的配置，pluginManagement标签可以配置super pom中的这些默认插件，这就是子pom覆盖了父级（super）pom；最后，一个pom中pluginManagement规定的配置，除非被它的子pom覆盖了，否则在子pom中同样有效，这就是向下继承。</p>
 
-<p>网上的一些资料，有的只强调了pluginManagement有<a href="https://stackoverflow.com/a/37834245/7708392">覆盖super pom的作用</a>，有的只强调了它<a href="https://stackoverflow.com/questions/10483180/what-is-pluginmanagement-in-mavens-pom-xml">能被子pom向下继承</a>。实际上经过我的测试，它是同时具有这两种作用的。</p>
+<p>网上的一些资料，有的只强调了pluginManagement有<a href="https://stackoverflow.com/a/37834245/7708392">覆盖super pom的作用</a>，有的只强调了它<a href="https://stackoverflow.com/questions/10483180/what-is-pluginmanagement-in-mavens-pom-xml">能被子pom向下继承</a>。实际上它是同时具有这两种作用，只是向前覆盖的功能写在build.plugins标签里面效果也是一样的，所以比较少被提及。</p>
+
+<p>与之类似，maven的另一组标签dependencyManagement和dependencies在功能上也是同样的区别。</p>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.
