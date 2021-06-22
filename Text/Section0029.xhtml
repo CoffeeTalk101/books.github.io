@@ -71,6 +71,26 @@
 
 <p>另一个查看这些属性的实际值的方法是使用 <span class="code">mvn help:effective-pom</span> 命令查看。因为maven是COC的（convention over configuration），实际上它自带了一些默认的配置（叫super pom），而effective pom就是一个合并了默认pom、其它父级pom和当前module内pom的pom文件，也就是说，它才是在当前项目或当前module中实际产生作用的完整pom。在effective pom里，我们可以查看各种${...}被解释成的实际路径。</p>
 
+<p>补充一点，打包在jar包外面的资源文件要如何使用呢。例如我们将资源文件放在<span class="code">./resources</span>目录中，并且将其指定为classpath，用<span class="code">-cp xxx.jar:./resources</span>参数运行jar包。目录结构如下：</p>
+
+<pre>|- xxx.jar
+|- resources/
+|   |-config.properties</pre>
+
+<p>那么可以用如下的方法访问：</p>
+
+<pre>this.getClass().getClassLoader().getResourceAsStream("config.properties");</pre>
+
+<p>以及</p>
+
+<pre>Thread.currentThread().getContextClassLoader().getResource("config.properties")</pre>
+
+<p>或者</p>
+
+<pre>this.getClass().getResource("/config.properties")</pre>
+
+<p>注意前两个方法可以用相对路径，而第三个方法则必须指定绝对路径（在路径开头有“/”），这是因为第三个方法会以.class文件所在的目录为相对路径，而前两种则是接受相对于classpath root的路径。</p>
+
 <h2 class="sigil_not_in_toc">关于pluginManagement标签</h2>
 
 <p>最后补充一个知识点，之前有同事把插件的配置写在了build.pluginManagement.plugins标签下，导致插件实际上没有起作用。正确的位置应该是把插件放在build.plugins标签下，不需要pluginManagement标签。</p>
