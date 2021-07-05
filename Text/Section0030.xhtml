@@ -10,13 +10,13 @@
 </head>
 
 <body>
-<h1>Git实用操作分类备忘</h1>
+<h1>Git实用操作分场景整理备忘</h1>
 
 <p class="date">2021-06-28</p>
 
 <a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
 
-<p>按功能分类整理一些实用的Git操作。</p>
+<p>Git的一些操作如果从文档本身的描述去理解，虽然精确但是多少有些晦涩。这份笔记选择了一些实用的命令，按照各种实际使用场景进行组织，希望能够为理解和查找提供一些便利。</p>
 
 <h2 class="sigil_not_in_toc">初次配置Git</h2>
 
@@ -351,7 +351,7 @@ git commit --amend -m "an updated commit message"</pre>
 <pre>git checkout [commit_hash] [filename]
 git commit -m 'rollback single file'</pre>
 
-<p>注意和checkout commit不同，直接checkout文件并不会使HEAD游离，而是会直接将指定的文件版本覆盖到当前工作区。因此使用次命令需要小心。另外，这条命令会自动将文件添加到暂存区，因此再次commit之前不再需要add这个文件了。</p>
+<p>注意和checkout commit不同，直接checkout文件并不会使HEAD游离，而是会直接将指定的文件版本覆盖到当前工作区。因此使用此命令需要小心。另外，这条命令会自动将文件添加到暂存区，因此再次commit之前不再需要add这个文件了。</p>
 
 <p><b>情况四：回滚未commit的修改</b></p>
 
