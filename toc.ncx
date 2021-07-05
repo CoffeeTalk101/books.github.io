@@ -187,5 +187,11 @@
       </navLabel>
       <content src="Text/Section0029.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-30" playOrder="30">
+      <navLabel>
+        <text>Git实用操作分类备忘</text>
+      </navLabel>
+      <content src="Text/Section0030.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>

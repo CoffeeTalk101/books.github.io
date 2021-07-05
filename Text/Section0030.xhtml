@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Git实用操作备忘</title>
+  <meta name="keywords" content="Others"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>Git实用操作分类备忘</h1>
+
+<p class="date">2021-06-28</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>按功能分类整理一些实用的Git操作。</p>
+
+<h2 class="sigil_not_in_toc">初次配置Git</h2>
+
+<p>初次配置Git，本质上是配置gitconfig这个文件。使用<span class="code">--global</span>选项，读写的是 <span class="code">~/.gitconfig</span> 这个文件。</p>
+
+<p><b>1、配置name</b>，这个name是之后你的commits会显示的名字，和代码托管平台的用户名无关，可以使用任意的值：</p>
+
+<pre>git config --global user.name "Mona Lisa"</pre>
+
+<p><b>2、配置电子邮件地址</b>，和名字不同，这个地址一般需要和代码托管平台的账号下实际的邮件地址相对应。GitHub也提供了<a href="https://docs.github.com/en/github/setting-up-and-managing-your-github-user-account/managing-email-preferences/setting-your-commit-email-address">隐藏真实地址的方法</a>。</p>
+
+<pre>git config --global user.email "email@example.com"</pre>
+
+<p><b>3、配置密码缓存或使用SSH</b>，</p>
+
+<p>如果使用的是<b>HTTPS连接</b>，则可以配置密码缓存，Windows使用：</p>
+
+<pre>git config --global credential.helper wincred</pre>
+
+<p>Linux使用：</p>
+
+<pre>git config --global credential.helper cache
+git config --global credential.helper 'cache --timeout=3600'</pre>
+
+<p>如果要使用<b>SSH连接</b>，之前没有生成过SSHkey的情况，先用如下命令生成密钥（再弹出提示输入保存路径时直接回车，使用默认路径）：</p>
+
+<pre>ssh-keygen -t ed25519 -C "your_email@example.com"</pre>
+
+<p>如果用了passphrase，那么一般还会希望用一个SSH Agent去作管理。可以<a href="https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">参考这里</a>。</p>
+
+<p>将<span class="code">~/.ssh</span>目录下<span class="code">.pub</span>的公钥文件内容添加到代码托管平台。例如GitHub添加到<a href="https://github.com/settings/ssh/new">这里</a>。</p>
+
+<p>最后，使用以下命令测试SSH连接：</p>
+
+<pre>ssh -T git@github.com</pre>
+
+<p>如果看到这样的提示，说明设置成功：</p>
+
+<pre>Hi username! You've successfully authenticated, but GitHub does not provide shell access.</pre>
+
+<p>4、<b>配置全局Git hook</b>，一般来说hook放在单个项目的<span class="code"> .git/hooks </span>目录下即可，如果我们希望使用全局hook的话，则可以进行如下配置：</p>
+
+<pre>mkdir -p ~/.git_template/hooks
+cp commit-msg ~/.git_templage/hooks
+git config --golobal init.templatedir ~/.git_templage</pre>
+
+<p>5、<b>clone仓库</b>，使用：</p>
+
+<pre>git clone [url] [(optional) dir_name]</pre>
+
+<p>需要注意的是，如果使用ssh验证，那么在clone时也要使用ssh的协议（链接），如果使用了https的那么还是需要输入密码的。</p>
+
+<h2 class="sigil_not_in_toc">提交修改</h2>
+
+<p>查看当前git仓库工作区和暂存区的状态：</p>
+
+<pre>git status</pre>
+
+<p>将文件提交到暂存区：</p>
+
+<pre>git add [file_name/directory]</pre>
+
+<p>提交暂存区的修改：</p>
+
+<pre>git commit</pre>
+
+<p>可以使用 <span class="code">-m "write messages here"</span> 参数来指定commit message。也可以不加 <span class="code">-m</span> 参数，此时git会打开默认的文本编辑器让我们输入message。message的第一行会成为显示在GitHub等平台的message标题，而第一行后的所有行会成为详细信息（description）的内容。</p>
+
+<p>提交至远程仓库：</p>
+
+<pre>git push</pre>
+
+<p>完整的格式是：</p>
+
+<pre>git push [remote_repository_name] [branch_name]</pre>
+
+<p>例如：<span class="code">git push origin master</span>。其中origin所指向的链接是可以设置的，如：</p>
+
+<pre>git remote add origin 'https://github.com/xxx/repo_name.git'</pre>
+
+<p>可以用这个命令查看仓库所连接的远程地址（和别名）：</p>
+
+<pre>git remote -v</pre>
+
+<h2 class="sigil_not_in_toc">拉取+合并修改</h2>
+
+<p>从远程仓库拉取最新的状态（但不进行合并，不影响本地文件）：</p>
+
+<pre>git fetch</pre>
+
+<p>比较文件差异：</p>
+
+<pre>git diff master origin/master</pre>
+
+<p>可以省略当前所在的分支，简写成：</p>
+
+<pre>git diff origin/master</pre>
+
+<p>合并远程的修改：</p>
+
+<pre>git pull</pre>
+
+<p>和push类似，完整的格式其实是：<span class="code">git pull origin master</span>。</p>
+
+<h2 class="sigil_not_in_toc">拉取+合并修改（使用rebase）</h2>
+
+<p><span class="code">git pull</span>本质上是 <span class="code">git fetch</span> + <span class="code">git merge</span>，可以把上面的最后一步替换成：</p>
+
+<p><span class="code">git rebase</span>（完整格式为： <span class="code">git rebase origin master</span>）</p>
+
+<p>或者使用 <span class="code">git pull --rebase</span>，也是一样的效果。</p>
+
+<p>merge和rebase的区别：merge将远程和本地合并，保留所有commit的历史记录，并且合并这个操作本身也会成为一个commit；<b>rebase首先会缓存所有的本地更改，之后用远程覆盖本地，再在本地（此时已和远程一致）重放所有缓存起来的更改</b>。</p>
+
+<p>例如，下图为本地和远程的初始状态（这些图片来自于<a href="https://www.atlassian.com/git/tutorials/merging-vs-rebasing">atlassian</a>的教程）：</p>
+
+<p><img alt="01 A forked commit history" src="../Images/01 A forked commit history.svg"/></p>
+
+<p>使用pull（本质即merge），会保留所有commit历史，并创建一个合并的commit。它的特点是会形成一个“钻石型”的历史结构：</p>
+
+<p><img alt="02 Merging main into the feature branh" src="../Images/02 Merging main into the feature branh.svg"/></p>
+
+<p>而使用rebase，会缓存所有本地修改，之后用目标库（远程库）覆盖本地，再在本地重放缓存的修改。<b>这样所有本地的修改看起来都好像是发生在远程的最新修改之后的（追加）</b>，历史记录是线形结构：</p>
+
+<p><img alt="03 Rebasing the feature branch into main" src="../Images/03 Rebasing the feature branch into main.svg"/></p>
+
+<h2 class="sigil_not_in_toc">rebase的注意点</h2>
+
+<p>在使用rebase时，需要注意的是重放（也就是追加）的内容必须是我们私有的修改，不要反过来把公共的修改追加到自己的修改后面，像下图这样就会导致问题：</p>
+
+<p><img alt="05 Rebasing the main branch" src="../Images/05 Rebasing the main branch.svg"/></p>
+
+<h2 class="sigil_not_in_toc">使用rebase修改commits历史</h2>
+
+<p>rebase还有一个作用是它的interactive模式可以用来修改commits历史，经常用来合并commits。例如使用：</p>
+
+<pre>git rebase -i HEAD~3</pre>
+
+<p>其中的HEAD~3是位于HEAD前面的第3个commit的别名，这整条命令表示修改最后的3个commits。注意interactive模式其实相当于在普通的rebase之前增加了一个修改commits历史的步骤，因此<b>它仍然会完成rebase的基本功能</b>。如果我们在 <span class="code">git fetch</span> 之后再执行 <span class="code">git rebase -i</span>（实际上后面省略了<span class="code">origin master</span>），会和上面一样完成缓存本地修改、用master覆盖本地、重放修改这个过程。</p>
+
+<p>修改commits历史这个步骤通常是在push之前进行的，<b>在顺序上它可以替代原本提交流程中的pull</b>。我们知道，在push之前如果远程有改动，Git会要求我们先pull下来。而除了pull，我们在使用fetch+rebase之后也能完成push，用rebase的好处就是我们可以顺便编辑commits的历史。所以<b>rebase它其实起到了双重的作用</b>。</p>
+
+<p>具体的，在使用上面的命令之后，会弹出默认编辑器的编辑窗口，3次提交的信息会倒序排列。只需要把想压缩的commits前面的"pick"改为"squash"，就可以完成压缩了。如果出现了冲突，修改之后使用 <span class="code">git rebase continue</span> 可以继续压缩，或者用 <span class="code">git rebase --abort</span> 放弃压缩。</p>
+
+<p>除了pick和squash之外，还有一些可用的前缀，在我们编辑的时候会在下方以注释的形式显示出来。</p>
+
+<p>最后，和上面一样需要注意，不要用rebase修改已经提交到公共仓库的commits，会导致问题。</p>
+
+<h2 class="sigil_not_in_toc">使用rebase的onto参数指定范围</h2>
+
+<p>上面的命令会将所有的本地修改追加到指定分支的后面，rebase命令还可以指定只移动某个范围的commits，格式如下：</p>
+
+<pre>git rebase --onto [branchName] [startpoint(excluded)] [endpoint(included)]</pre>
+
+<p>startpoint和endpoint可以是分支名，也可以是commit的hash。例如下面的结构：</p>
+
+<pre>    o---o---o---o---o  master
+         \
+          o---o---o---o---o  next
+                           \
+                            o---o---o  topic</pre>
+
+<p>使用：</p>
+
+<pre>git rebase --onto master next topic</pre>
+
+<p>得到结构：</p>
+
+<pre>    o---o---o---o---o  master
+        |            \
+        |             o'--o'--o'  topic
+         \
+          o---o---o---o---o  next</pre>
+
+<p>再看一个例子，下面的结构：</p>
+
+<pre>                            H---I---J topicB
+                           /
+                  E---F---G  topicA
+                 /
+    A---B---C---D  master</pre>
+
+<p>使用：</p>
+
+<pre>git rebase --onto master topicA topicB</pre>
+
+<p>得到结构：</p>
+
+<pre>                 H'--I'--J'  topicB
+                /
+                | E---F---G  topicA
+                |/
+    A---B---C---D  master</pre>
+
+<p>理解了onto的作用之后，我们也就不难看出来， <span class="code">git rebase master</span> 这条简单命令的完整形式实际上是：</p>
+
+<pre>git rebase --onto master master current_branch</pre>
+
+<h2 class="sigil_not_in_toc">使用cherry pick合并部分提交</h2>
+
+<p>如果合并时我们不希望合并整个分支，只希望合并其中的某几次commtis，可以使用cherry-pick：</p>
+
+<pre>git cherry-pick [commit_hash]</pre>
+
+<p>如果有多个commtis需要合并，都写在后面用空格分隔即可。</p>
+
+<h2 class="sigil_not_in_toc">查看提交历史</h2>
+
+<p>使用 <span class="code">git log</span> 就可以打印commits历史。如果希望以树形的结构打印出来，达到像上面图片一样的效果，可以使用以下这条命令：</p>
+
+<pre>git log --all --decorate --oneline --graph</pre>
+
+<p>如果希望简略显示，可以使用oneline参数：</p>
+
+<pre>git log --oneline</pre>
+
+<h2 class="sigil_not_in_toc">分支操作</h2>
+
+<p>本地新建分支并提交到远程：</p>
+
+<pre>git checkout -b br2
+git push origin br2</pre>
+
+<p>其中的 <span class="code">checkout -b</span> 作用是新建分支并切换到新分支，也就是相当于：</p>
+
+<pre>git branch br2
+git checkout br2</pre>
+
+<p>（下面其它的 <span class="code">-b</span> 也是类似的，相当于同时做了 <span class="code">branch</span> 和）</p>
+
+<p>查看项目的分支情况：</p>
+
+<pre>git branch -av</pre>
+
+<p>可以给远程分支起别名，并切换进去：</p>
+
+<pre>git checkout -b br3 remotes/origin/br3</pre>
+
+<p>合并分支到主干（注意要先切换到主干）：</p>
+
+<pre>git checkout master
+git merge --no-ff -m "merge from branch1" br1</pre>
+
+<p>其中使用 <span class="code">--no-ff</span> 参数的目的是保证总是为merge产生一次commit（默认情况下，能够<a href="https://git-scm.com/docs/git-merge#Documentation/git-merge.txt---ff">fast-forward</a>的merge不会产生commit）。</p>
+
+<p>指定从某个commit创建分支：</p>
+
+<pre>git branch br4 [startpoint]</pre>
+
+<p>其中startpoint使用commit的hash值替换即可。</p>
+
+<h2 class="sigil_not_in_toc">打标签</h2>
+
+<p>用如下命令打标签：</p>
+
+<pre>git tag -a [tagname] -m "tag message"</pre>
+
+<p>指定为过去的某个commit打标签：</p>
+
+<pre>git tag -a [tagname] -m "tag message" [commit_hash]</pre>
+
+<p>推送标签到远程：</p>
+
+<pre>git push --tags</pre>
+
+<p>查看所有标签：</p>
+
+<pre>git tag</pre>
+
+<p>查看某个标签的具体信息：</p>
+
+<pre>git show [tagname]</pre>
+
+<h2 class="sigil_not_in_toc">缓存修改</h2>
+
+<p>可以通过 <span class="code">git stash</span> 来缓存当前的修改。之后使用 <span class="code">git stash pop</span> 将缓存堆栈中的第一个stash删除，并将对应修改应用到当前的工作目录下。</p>
+
+<p>可以使用 <span class="code">git stash list</span> 命令查看所有的stash，可以使用 <span class="code">git stash apply</span> 命令，将缓存堆栈中的stash应用到工作目录中，但并不删除stash拷贝。可以在后面加list得到的名字（如stash@{0}）指定使用哪个stash，默认使用最近的stash。可以使用<span class="code">git stash drop</span>命令删除指定的stash。</p>
+
+<h2 class="sigil_not_in_toc">回滚</h2>
+
+<p>很重要的一个功能就是在出现问题之后回退到之前的状态，有<a href="https://www.atlassian.com/git/tutorials/undoing-changes">很多种操作</a>能够达到这个目的。</p>
+
+<p><b>情况一：希望整体回退到之前某一次commit</b></p>
+
+<p>首先我们可以通过 <span class="code">checkout</span> 命令来查看之前的commit的内容：</p>
+
+<pre>git checkout [commit_hash]</pre>
+
+<p>此时 <span class="code">checkout</span> 接受的参数并不是一个分支名，因此也叫做HEAD游离（detached）模式。</p>
+
+<p>（补充）在游离模式下我们同样可以修改代码，但是并不会对现有的分支产生任何影响（在checkout到分支之后修改会被丢弃）。如果我们想把修改带出来，那么可以先进行commit（游离的commit），之后用上面讲到的方法，以这个游离的commit为基础建立一个新分支： <span class="code">git branch [branchName] [commit_hash]</span> </p>
+
+<p>通过直接从旧commit创建一个新分支，我们实际上借助这个新分支进行了“回退”。但这毕竟没有在我们原来的分支（例如主干）分支上实现回退的效果。我们可以使用 <span class="code">revert</span> 命令来完成：</p>
+
+<pre>git revert [commit_hash]</pre>
+
+<p>注意revert命令的参数是“需要取消的commit”，而不是“回退到某个commit”。因此 <span class="code">git revert HEAD</span> 的效果是撤销最后一条commit。如果我们想回退多个commit，只需要用空格连接全写在后面即可。</p>
+
+<p>使用revert命令回滚，会创建一个新的commit，从而体现回滚这个事件的历史。如果不希望回退本身成为一个commit，那么可以使用另一个命令，reset：</p>
+
+<pre>git reset --hard [commit_hash]</pre>
+
+<p>注意reset命令的参数是表示“回退到某个commit”，和revert不一致（和branch是一致的）。还需要注意使用 <span class="code">--hard</span> 参数会导致被回退的commit全部丢失，是不可逆的，因此必须格外小心。</p>
+
+<p>revert和reset的另一个区别是，revert能够方便地回滚已经提交到远程的进度，而如果使用reset，远程仓库则只会认为本地的版本落后于远程。此时如果要进行提交，就必须使用force参数了：</p>
+
+<pre>git push --force</pre>
+
+<p><b>情况二：只希望调整commit的内容，保留代码当前状态不变</b></p>
+
+<p>如果我们的代码并没有问题，只是之前commit组织的不是很好，那么可以只回退commit的历史，而保留代码不变。其实上面已经介绍了一种方法，就是在rebase的时候使用-i去编辑commits历史。但是这个方法有局限性，就是rebase必须得基于一个分支去做，因此它只能修改和目标分支之间存在差异的commits历史。</p>
+
+<p>要修改当前分支的所有commits历史，一种方法是使用 <span class="code">reset --soft</span>，它和reset的hard模式类似的地方在于，也是使commit历史回到某一个commit的状态，但是它会保留当前工作区的内容不变（之后我们重新commit即可）：</p>
+
+<pre>git reset --soft [commit_hash]
+git commit -m "replace with this new commit"</pre>
+
+<p>使用 <span class="code">--soft</span> 参数reset之后，重新提交时不需要重新add（当然如果又创建了新的文件还是需要add的），这是因为soft模式会自动将回滚涉及到的文件添加到暂存区。如果我们直接reset不加参数，实际上使用的是mixed模式，也就是：<span class="code">git reset --mixed [commit_hash]</span> ，这条命令不会把文件自动添加暂存区，因此需要我们再重新add。但除了这点之外，它和soft模式就是相同的了，它也不会覆盖当前工作区的内容。</p>
+
+<p>如果我们只是对上一个commit不满意，例如发现有一个小问题忘记改了，但是已经提交过commit，那么还有一个方法：</p>
+
+<pre>git add [file]
+git commit --amend -m "an updated commit message"</pre>
+
+<p>commit时使用amend参数会修改上一个commit，相当于用这次的commit去覆盖了上一次，因此如果不先做add的话就只会改变上一次commit的message。需要注意的是amend得到的commit和前一次的id是不一样的，它也是一个独立的commit。</p>
+
+<p><b>情况三：仅回滚单个文件</b></p>
+
+<p>如果只需要让单个文件回退到某个commit的状态，可以使用checkout单文件的方式：</p>
+
+<pre>git checkout [commit_hash] [filename]
+git commit -m 'rollback single file'</pre>
+
+<p>注意和checkout commit不同，直接checkout文件并不会使HEAD游离，而是会直接将指定的文件版本覆盖到当前工作区。因此使用次命令需要小心。另外，这条命令会自动将文件添加到暂存区，因此再次commit之前不再需要add这个文件了。</p>
+
+<p><b>情况四：回滚未commit的修改</b></p>
+
+<p>使用如下命令可以将工作区完全回退到上一次commit的状态：</p>
+
+<pre>git reset --hard
+git clean -df</pre>
+
+<p>第一句会回滚所有被tracked的更改，上面已经讲过。第二句clean则是专门用来回退untracked文件的命令。其中的-d参数表示递归文件夹。</p>
+
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

@@ -33,17 +33,18 @@
 <p>举一个典型的例子，Spring的各个jar包中有很多路径（META-INF）和名称（如spring.schemas等）相同的文件，但是它们的内容实际上是不一样的。Assembly和Shade插件在默认情况下只会保留其中的一个文件，会导致打包得到的uber jar在运行时报错，例如：Unable to locate Spring NamespaceHandler... 等等。对这种问题，就可以使用Shade Plugin的Transformers解决——规定相同文件彼此之间不进行覆盖，而是以追加的方式进行合并：</p>
 
 <!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #330099; font-weight: bold">&lt;transformers&gt;</span>
-    <span style="color: #330099; font-weight: bold">&lt;transformer</span> <span style="color: #330099">implementation=</span><span style="color: #CC3300">&quot;org.apache.maven.plugins.shade.resource.AppendingTransformer&quot;</span><span style="color: #330099; font-weight: bold">&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;transformer</span> <span style="color: #330099">implementation=</span><span style="color: #CC3300">"org.apache.maven.plugins.shade.resource.AppendingTransformer"</span><span style="color: #330099; font-weight: bold">&gt;</span>
         <span style="color: #330099; font-weight: bold">&lt;resource&gt;</span>META-INF/spring.handlers<span style="color: #330099; font-weight: bold">&lt;/resource&gt;</span>
     <span style="color: #330099; font-weight: bold">&lt;/transformer&gt;</span>
-    <span style="color: #330099; font-weight: bold">&lt;transformer</span> <span style="color: #330099">implementation=</span><span style="color: #CC3300">&quot;org.apache.maven.plugins.shade.resource.AppendingTransformer&quot;</span><span style="color: #330099; font-weight: bold">&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;transformer</span> <span style="color: #330099">implementation=</span><span style="color: #CC3300">"org.apache.maven.plugins.shade.resource.AppendingTransformer"</span><span style="color: #330099; font-weight: bold">&gt;</span>
         <span style="color: #330099; font-weight: bold">&lt;resource&gt;</span>META-INF/spring.schemas<span style="color: #330099; font-weight: bold">&lt;/resource&gt;</span>
     <span style="color: #330099; font-weight: bold">&lt;/transformer&gt;</span>
-    <span style="color: #330099; font-weight: bold">&lt;transformer</span> <span style="color: #330099">implementation=</span><span style="color: #CC3300">&quot;org.apache.maven.plugins.shade.resource.AppendingTransformer&quot;</span><span style="color: #330099; font-weight: bold">&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;transformer</span> <span style="color: #330099">implementation=</span><span style="color: #CC3300">"org.apache.maven.plugins.shade.resource.AppendingTransformer"</span><span style="color: #330099; font-weight: bold">&gt;</span>
         <span style="color: #330099; font-weight: bold">&lt;resource&gt;</span>META-INF/spring.factories<span style="color: #330099; font-weight: bold">&lt;/resource&gt;</span>
     <span style="color: #330099; font-weight: bold">&lt;/transformer&gt;</span>
 <span style="color: #330099; font-weight: bold">&lt;/transformers&gt;</span>
-</pre></div>
+</pre>
+</div>
 
 
 <p>那么话说回来，Assembly Plugin既然并不适合打包uber jar，它的功能是什么呢。其实它主要是为了提供各种对<b>项目本体</b>的灵活打包方式，例如将项目的源码、二进制等打包成tar.gz, tar.bz2, zip等格式，可以通过<a href="http://maven.apache.org/plugins/maven-assembly-plugin/assembly.html">Descriptor</a>对打包的方式进行丰富的自定义配置。</p>
