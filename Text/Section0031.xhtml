@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Flink任务多次启停内存泄露分析</title>
+  <meta name="keywords" content="BigData,Java"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>Flink任务多次启停内存泄露分析</h1>
+
+<p class="date">2121-07-13</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>在测试时发现，对开发的Flink Job多次启动/停止，会在一定次数后启动报错 java.lang.OutOfMemoryError: Metaspace。理论上来说多次提交的任务之间应该是独立的，那么为什么一开始几次都能正常启动，到达一定次数之后却发生了OOM呢。对这个问题进行了排查，记录如下。</p>
+
+<p>先说一点题外话，之前遇到Heapspace OOM的情况比较多，可以使用：</p>
+
+<pre>jmap -dump:live,file=dump.hprof [pid]</pre>
+
+<p>之后使用工具查看dump出来的heap文件进行分析，也可以直接用 <span class="code">jhat dump.hprof</span> 从网页进行分析。</p>
+
+<p>不过这里我们遇到的是metaspace而非heap的内存溢出，metaspace是用来存放jvm加载的类和相关内容的，和heap不同，存的并不是对象，因此也需要使用不同的方法进行分析。</p>
+
+<p>首先看一下metaspace的空间使用情况，使用 <span class="code">jps</span> 找到对应的pid，之后使用：</p>
+
+<pre>jstat -gc [pid]</pre>
+
+<p>其中打印出来的MC和MU两项分别代表 Metaspace capacity (kB) 和 Metaspace utilization (kB)。观察到的实际结果是，在第一次启动任务后，JobManager的MC为98496，MU为91877。</p>
+
+<p>在反复启停到第十次之后，MC变为164160，MU为155274，有非常明显的增长，并且在整个过程中是一直增长，没有被释放过。主动触发一次GC再观察，使用：</p>
+
+<pre>jstat [pid] GC.run</pre>
+
+<p>发现metaspace的空间使用几乎没有任何变化，因此随着任务的不断启停，必然会达到metaspace空间的上限导致OOM。至此我们确定了可以稳定复现这个问题。</p>
+
+<p>之后，使用</p>
+
+<p>可以在 <span class="code">flink/conf/flink-conf.yaml</span> 文件中添加java options，这里我们只需要加入：</p>
+
+<pre>env.java.opts: "-XX:+UnlockDiagnosticVMOptions"</pre>
+
+<p>其它一些常用的debug选项在<a href="https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/ops/debugging/application_profiling/">文档中也有介绍。</a></p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

@@ -133,21 +133,21 @@ git config --golobal init.templatedir ~/.git_templage</pre>
 
 <p>例如，下图为本地和远程的初始状态（这些图片来自于<a href="https://www.atlassian.com/git/tutorials/merging-vs-rebasing">atlassian</a>的教程）：</p>
 
-<p><img alt="01 A forked commit history" src="../Images/01 A forked commit history.svg"/></p>
+<p><img alt="01 A forked commit history" src="../Images/01%20A%20forked%20commit%20history.svg"/></p>
 
 <p>使用pull（本质即merge），会保留所有commit历史，并创建一个合并的commit。它的特点是会形成一个“钻石型”的历史结构：</p>
 
-<p><img alt="02 Merging main into the feature branh" src="../Images/02 Merging main into the feature branh.svg"/></p>
+<p><img alt="02 Merging main into the feature branh" src="../Images/02%20Merging%20main%20into%20the%20feature%20branh.svg"/></p>
 
 <p>而使用rebase，会缓存所有本地修改，之后用目标库（远程库）覆盖本地，再在本地重放缓存的修改。<b>这样所有本地的修改看起来都好像是发生在远程的最新修改之后的（追加）</b>，历史记录是线形结构：</p>
 
-<p><img alt="03 Rebasing the feature branch into main" src="../Images/03 Rebasing the feature branch into main.svg"/></p>
+<p><img alt="03 Rebasing the feature branch into main" src="../Images/03%20Rebasing%20the%20feature%20branch%20into%20main.svg"/></p>
 
 <h2 class="sigil_not_in_toc">rebase的注意点</h2>
 
 <p>在使用rebase时，需要注意的是重放（也就是追加）的内容必须是我们私有的修改，不要反过来把公共的修改追加到自己的修改后面，像下图这样就会导致问题：</p>
 
-<p><img alt="05 Rebasing the main branch" src="../Images/05 Rebasing the main branch.svg"/></p>
+<p><img alt="05 Rebasing the main branch" src="../Images/05%20Rebasing%20the%20main%20branch.svg"/></p>
 
 <h2 class="sigil_not_in_toc">使用rebase修改commits历史</h2>
 
