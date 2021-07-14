@@ -4,47 +4,83 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Flink任务多次启停内存泄露分析</title>
+  <title>Flink任务多次启停内存泄漏分析</title>
   <meta name="keywords" content="BigData,Java"/>
   <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
 </head>
 
 <body>
-<h1>Flink任务多次启停内存泄露分析</h1>
+<h1>Flink任务多次启停内存泄漏分析</h1>
 
-<p class="date">2121-07-13</p>
+<p class="date">2021-07-13</p>
 
 <a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
 
-<p>在测试时发现，对开发的Flink Job多次启动/停止，会在一定次数后启动报错 java.lang.OutOfMemoryError: Metaspace。理论上来说多次提交的任务之间应该是独立的，那么为什么一开始几次都能正常启动，到达一定次数之后却发生了OOM呢。对这个问题进行了排查，记录如下。</p>
+<p>在测试时发现，对开发的Flink Job多次启动/停止，会在一定次数后启动报错： java.lang.OutOfMemoryError: Metaspace。理论上来说多次提交的任务之间应该是独立的，那么为什么一开始几次都能正常启动，到达一定次数之后却发生了OOM呢。对这个问题进行了排查，记录如下。</p>
 
-<p>先说一点题外话，之前遇到Heapspace OOM的情况比较多，可以使用：</p>
-
-<pre>jmap -dump:live,file=dump.hprof [pid]</pre>
-
-<p>之后使用工具查看dump出来的heap文件进行分析，也可以直接用 <span class="code">jhat dump.hprof</span> 从网页进行分析。</p>
-
-<p>不过这里我们遇到的是metaspace而非heap的内存溢出，metaspace是用来存放jvm加载的类和相关内容的，和heap不同，存的并不是对象，因此也需要使用不同的方法进行分析。</p>
-
-<p>首先看一下metaspace的空间使用情况，使用 <span class="code">jps</span> 找到对应的pid，之后使用：</p>
+<p>metaspace是用来存放JVM加载的类和相关内容，首先看一下metaspace的空间使用情况，使用 <span class="code">jps</span> 找到对应的pid，之后使用：</p>
 
 <pre>jstat -gc [pid]</pre>
 
 <p>其中打印出来的MC和MU两项分别代表 Metaspace capacity (kB) 和 Metaspace utilization (kB)。观察到的实际结果是，在第一次启动任务后，JobManager的MC为98496，MU为91877。</p>
 
-<p>在反复启停到第十次之后，MC变为164160，MU为155274，有非常明显的增长，并且在整个过程中是一直增长，没有被释放过。主动触发一次GC再观察，使用：</p>
+<p>在反复启停到第十次之后，MC变为164160，MU为155274，有非常明显的增长，并且在整个过程中是一直增长，没有被释放过。主动触发一次full GC再观察，使用：</p>
 
-<pre>jstat [pid] GC.run</pre>
+<pre>jmap -histo:live [pid]</pre>
 
-<p>发现metaspace的空间使用几乎没有任何变化，因此随着任务的不断启停，必然会达到metaspace空间的上限导致OOM。至此我们确定了可以稳定复现这个问题。</p>
+<p>或者：</p>
 
-<p>之后，使用</p>
+<pre>jcmd [pid] GC.heap_dump filename.hprof</pre>
 
-<p>可以在 <span class="code">flink/conf/flink-conf.yaml</span> 文件中添加java options，这里我们只需要加入：</p>
+<p>注意为什么我们不使用 <span class="code">jstat [pid] GC.run</span>，这是因为 <span class="code">GC.run</span> 本质上只是调用了 <span class="code">java.lang.System.gc()</span>，这是一个对JVM的提示，实际上JVM可以忽略它且不进行GC。而上面列出的两条命令，第一条是打印heap中对象的实例数和占用空间，第二条是生成一个heap dump文件，它们都会顺便整理heap内所有对象的引用关系，因此full GC实际上是它们的“副作用”。详细介绍可以看<a href="https://stackoverflow.com/a/68373690/7708392">我在StackOverflow上写的一篇回答</a>。</p>
+
+<p>在通过上面的方法触发full GC之后，发现metaspace的空间使用几乎没有任何变化，因此随着任务的不断启停，必然会达到metaspace空间的上限导致OOM。至此我们确定了可以稳定复现这个问题。</p>
+
+<p>接下来就是对metaspace的内容和使用情况进行进一步的分析，这里可以有两种方法，其中一种是和 heapspace OOM一样，首先dump heap（下面这个用jmap -dump的方法和上面用jcmd GC.heap_dump的方法效果是一样的）：</p>
+
+<pre>jmap -dump:live,file=filename.hprof [pid]</pre>
+
+<p>之后使用工具查看dump出来的heap文件进行分析，简单的分析也可以直接用 <span class="code">jhat filename.hprof</span> 从网页去看。</p>
+
+<p>这里说一句，为什么 metaspace 的溢出也能从 heap dump 去查呢，这是因为 metaspace 载入的每个类在 heap 里面也会有一个相对应的 java.lang.Class 的实例，因此它能够反映 metaspace 的部分内容。</p>
+
+<p>不过 heap dump 虽然能看到载入了哪些类，但毕竟没法直接反映 metaspace 的空间使用情况，因此这里我们选择使用另外一种方法，就是直接去检查 metaspace。</p>
+
+<p>首先需要为程序打开相对应的调试选项。我们知道如果是一个我们自己启的jar包，java选项直接通过 <span class="code">java -XXoptname myApp</span> 就可以传递了。不过Flink并不是这样启动的，我们需要在 <span class="code">flink/conf/flink-conf.yaml</span> 文件中添加java options，针对检查 metaspace 的情况，需要加入：</p>
 
 <pre>env.java.opts: "-XX:+UnlockDiagnosticVMOptions"</pre>
 
-<p>其它一些常用的debug选项在<a href="https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/ops/debugging/application_profiling/">文档中也有介绍。</a></p>
+<p>其它一些常用的debug选项在<a href="https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/ops/debugging/application_profiling/">文档</a>中也有介绍。另外，如果Flink是YARN模式部署的，也可以在命令行启动时用 <span class="code">-yD env.java.opts="-XX:+UnlockDiagnosticVMOptions"</span> 的方式去传递。</p>
+
+<p>之后，通过 <span class="code">jps</span> 找到jobmanager的pid，在多次启停任务之后，使用：</p>
+
+<pre>jcmd [pid] GC.class_stats</pre>
+
+<p>打印加载的每个类详细内存使用情况。因为内容可能会非常多，最好把输出的内容重定向为一个文件，方便查阅。关于输出的每一列的涵义，在<a href="https://stackoverflow.com/a/51108334/7708392">这里</a>有一些介绍。我们主要需要关注的是InstBytes、KlassBytes、Total以及ClassName这几列。</p>
+
+<p>其中ClassName很明显就是类的名称，KlassBytes是这个类本身所占的字节大小，而InstBytes是这个类的所有实例所占的字节大小。Total这个字段是ROAll和RWAll两个字段的和，ROAll和RWAll分别表示可存储在内存中read-only区域和必须存储在read-write区域的class meta data的大小。可以注意到Total字段的大小是大于KlassBytes的，这是因为class meta data除了类本身之外还包括和类相关的其它一些信息。因此Total列的数值直接反映了类对metaspace的空间占用情况。</p>
+
+<p>从导出的文件中我们看到，有一些类被反复加载了多次，并且是任务启动过几次，就有多少条记录。典型的有 com.mysql.jdbc.* 等jdbc的相关类。这说明jdbc发生了内存泄漏，具体导致内存泄漏的原因是什么呢，这时候就需要用到 heap dump 去分析对象间的引用关系了。</p>
+
+<p>通过上面介绍的方法导出 heap dump，之后简单起见，我们直接用jhat给它host到网页上。虽然网页能提供的功能比较少，不过只要我们目标明确，使用网页分析并不困难：</p>
+
+<p>在网页里搜索 "com.mysql.jdbc.Driver" 这个类，打开之后在 Instances 这部分选择 "Exclude subclasses" 查看这个类的实例，发现只有一个实例 "com.mysql.jdbc.Driver@0x..."，点进这个实例，查看 References to this object，发现它被 "java.sql.DriverInfo@0x..." 这个对象引用，再点进去，查看对这个对象的应用，发现引用它的是一个 Array，这个数组的成员全都是 DriverInfo，而每个 DriverInfo 都存了一个不同的对 Driver 对象的引用。这时候我们其实已经可以猜到，它应该是 DriverManager 用来保存 Driver 的数组。</p>
+
+<p>为了验证我们的猜想，我们继续向上找对这个数组的引用，是一个 "java.util.concurrent.CopyOnWriteArrayList@0x..." 对象，再看是谁引用了这个对象，发现果然是 "java.sql.DriverManager"。查看这个 DriverManager 类的信息，发现它的 ClassLoader 是 null，<a href="https://stackoverflow.com/questions/1921238/getclass-getclassloader-is-null-why">也就代表它是从 BootStrap ClassLoader 加载的</a>。再回到最开始，查看 "com.mysql.jdbc.Driver" 类，发现是由 ChildFirstClassLoader 加载的。</p>
+
+<p>这里需要谈一下 ChildFirstClassLoader 是什么，有一篇<a href="https://www.jianshu.com/p/bc7309b03407">文章</a>对它做了很好的介绍。简单来说，它是 Flink 自定义的一个类加载器，专门用来载入用户 Job 中用到的类。它打破了 Java 的双亲委派模型，主要目的是为了避免 Flink 本身用到的依赖版本覆盖用户提交的 Job 中所带的依赖版本，导致 Job 运行时找到的依赖版本不正确而报错。</p>
+
+<p>因为 ChildFirstClassLoader 是专门给用户提交的 Job 使用的，那么在 Job 结束之后由它所载入的类和实例就应该被垃圾回收。那么为什么我们会看到这些 Driver 实例依然存在呢？</p>
+
+<p>其实原因已经很明显了，在上面我们看到了 DriverManager 类是从 BootStrap ClassLoader 加载的，它保存了对 Driver 的引用没有释放，因此导致 JVM 并没有对这些 Driver 实例进行垃圾回收，导致了内存泄漏。</p>
+
+<p>最后，如何解决这个问题呢。知道了原因，解决方案就很直观。一种方法是让会发生内存泄漏的依赖不再打包进 Job 一起提交，这样就不会从 ChildFirstClassLoader 加载。具体的，把有内存泄漏的依赖包从 uber jar里面去掉，单独放入 Flink 安装路径的 /lib 目录下即可。</p>
+
+<p>另一种方法，从配置文件指定对某些类不使用 ChildFirstClassLoader 加载，这样也可以避免问题。具体的方式是在 flink-conf.yaml 中加入：</p>
+
+<pre>classloader.parent-first-patterns.additional: com.mysql.jdbc</pre>
+
+<p>关于这个配置项，相关文档在<a href="https://ci.apache.org/projects/flink/flink-docs-master/docs/ops/debugging/debugging_classloading/#unloading-of-dynamically-loaded-classes-in-user-code">这里</a>。另外有一个与此相关的<a href="https://issues.apache.org/jira/browse/FLINK-19005">官方issue</a>，可以作为参考。</p>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.

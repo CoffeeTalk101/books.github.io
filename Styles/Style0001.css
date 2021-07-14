@@ -74,6 +74,8 @@ p
   margin: 1.0em 0 0 0;
   widows: 2;
   orphans: 2;
+  word-wrap: break-word;
+  text-align: justify;
 }
 
 /*==IMAGES==*/
@@ -109,12 +111,15 @@ pre
 {
   font-size: 1.3em;
   overflow:auto;
+  background-color: #f0f3f3;
 }
 span.code
 {
   font-family: monospace;
-  white-space: pre;
   font-size: 1.3em;
+  background-color: #f0f3f3;
+  white-space: normal;
+  word-break: break-all;
 }
 /* super small screen */
 @media (min-width: 576px)
