@@ -195,7 +195,7 @@
     </navPoint>
     <navPoint id="navPoint-31" playOrder="31">
       <navLabel>
-        <text>Flink任务多次启停内存泄露分析</text>
+        <text>Flink任务多次启停内存泄漏分析</text>
       </navLabel>
       <content src="Text/Section0031.xhtml"/>
     </navPoint>
