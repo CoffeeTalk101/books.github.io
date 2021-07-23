@@ -109,17 +109,16 @@ body
 }
 pre
 {
-  font-size: 1.3em;
   overflow:auto;
   background-color: #f0f3f3;
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
 }
 span.code
 {
-  font-family: monospace;
-  font-size: 1.3em;
   background-color: #f0f3f3;
   white-space: normal;
   word-break: break-all;
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
 }
 /* super small screen */
 @media (min-width: 576px)
@@ -153,7 +152,7 @@ span.code
   }
   pre
   {
-    font-size: 1.3em;
+    font-size: 1em;
   }
 }
 /* computer screen */
@@ -166,7 +165,7 @@ span.code
   }
   pre
   {
-    font-size: 1.3em;
+    font-size: 1em;
   }
 }
 
