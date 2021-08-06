@@ -24,11 +24,11 @@
 
 <p>打开上述对应的文件，在其中加入以下内容：</p>
 
-<pre>function python3{
+<pre>function python3 {
 /path/to/python $1
 }</pre>
 
-<p>注意换行是必须的，不能写成一行。保存之后通过source命令使配置生效，比如为当前用户配置，就执行 <span class="code">source ~/.bashrc</span> 。关于source命令，在<a href="Section0010.xhtml">这篇笔记</a>的最后有解释过。</p>
+<p>注意换行是必须的，不能写成一行。<b>左花括号前的空格也是必须的</b>。保存之后通过 <span class="code">source</span> 命令使配置生效，比如为当前用户配置，就执行 <span class="code">source ~/.bashrc</span> 。关于source命令，在<a href="Section0010.xhtml">这篇笔记</a>的最后有解释过。</p>
 
 <p>最后，如果希望输入其它的名称，例如"py3"也能调用和"python3"相同的内容，可以在刚刚打开的文件中添加别名声明：</p>
 
