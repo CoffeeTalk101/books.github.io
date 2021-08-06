@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>为云服务器添加图形化桌面并通过VNC连接</title>
+  <meta name="keywords" content="Others"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>为云服务器添加图形化桌面并通过VNC连接</h1>
+
+<p class="date">2021-08-06</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>Linux的服务器版很多是不带GUI的，不过对于我们个人自用的服务器，很多时候有一个GUI桌面会方便很多。这里记录一下如何为云服务器（例如我用的腾讯云）配置GUI并通过VNC软件远程连接。</p>
+
+<p>以debian系统为例，首先需要安装GUI软件，这里选择较主流的GNOME，<a href="https://wiki.debian.org/Gnome">参考此处</a>，执行：</p>
+
+<pre>apt-get install task-gnome-desktop</pre>
+
+<p>安装上之后，可以从网页登录云主机，选择VNC方式。之后执行 <span class="code">startx</span>，就能够打开GUI桌面环境。</p>
+
+<p>但是网页操作毕竟不方面，这时候就可以安装VNC专用的软件来连接了。</p>
+
+<p>在自己的电脑上，安装windows版本的<a href="https://www.tightvnc.com/download.php">TightVNC</a>。</p>
+
+<p>在云服务器上，安装TightVNC的Server端：</p>
+
+<pre>apt-get install tightvncserver</pre>
+
+<p>安装完成之后，运行 <span class="code">vncserver</span> 即可启动。首次启动时需要设置密码，注意密码必须是6-8位的长度。如果之后需要修改密码，可以使用 <span class="code">vncpasswd</span> 命令。</p>
+
+<p>在vncserver启动时，会在屏幕上显示日志文件的位置。查看日志文件，就能够看到vncserver所用的端口。默认应该是5901。</p>
+
+<p>在云服务器的安全组策略中，放通对应端口，如5901端口的入站和出站。</p>
+
+<p>此时打开windows机器上的TightVNC Viewer软件，在Remote Host栏输入远程服务器的ip和端口号（注意是端口号是两个冒号分割），之后点击Connect，就可以连接上了。</p>
+
+<p>这时可能会出现灰屏，没有任何画面。参考<a href="https://askubuntu.com/questions/800302/vncserver-grey-screen-ubuntu-16-04-lts">此处的解决方案</a>，首先用以下命令安装软件：</p>
+
+<pre>apt-get install gnome-panel gnome-settings-daemon metacity nautilus gnome-terminal</pre>
+
+<p>之后，打开 <span class="code">~/.vnc/xstartup</span> 文件，将以下内容加入到文件的末尾：</p>
+
+<pre>gnome-panel &amp;
+gnome-settings-daemon &amp;
+metacity &amp;
+nautilus &amp;</pre>
+
+<p>之后重启vncserver。首先关闭服务：</p>
+
+<pre>vncserver -kill :1</pre>
+
+<p>其中的:1是编号。默认是1，它在启动的时候是可以指定的，如 <span class="code">vncserver :2</span> 。</p>
+
+<p>在重启完之后，再次连接应该就能够看到图像了。但是此时分辨率太低，可以使用如下方式配置：</p>
+
+<p>首先<a href="https://cloud.tencent.com/document/product/213/44861?from=10680">参考此处</a>，修改系统配置：</p>
+
+<p>打开 <span class="code">/etc/default/grub</span> ，向参数 <span class="code">GRUB_CMDLINE_LINUX_DEFAULT </span> 的值添加 <span class="code">vga=871</span> （代表1920x1080分辨率）。之后执行：</p>
+
+<pre>grub-mkconfig -o /boot/grub/grub.cfg</pre>
+
+<p>以更新配置文件，并 <span class="code">reboot</span> 重启。</p>
+
+<p>重启后启动vncserver时，指定分辨率： <span class="code">vncserver -geometry 1920x1080</span> 即可。</p>
+
+<p>至此我们就可以方便地使用VNC连接云服务器的图形化桌面了。后续我们还可以将VNC的连接建立于SSH通道上，以及将其设置为一个系统服务，可以<a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-ubuntu-18-04">参考此处</a>。</p>
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

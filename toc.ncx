@@ -199,5 +199,11 @@
       </navLabel>
       <content src="Text/Section0031.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-32" playOrder="32">
+      <navLabel>
+        <text>为云服务器添加图形化桌面并通过VNC连接</text>
+      </navLabel>
+      <content src="Text/Section0032.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
