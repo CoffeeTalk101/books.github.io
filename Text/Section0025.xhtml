@@ -158,6 +158,8 @@ Get-Service ssh-agent</pre>
 
 <p>这是由于windows自带的Open SSH版本过低，使用的签名算法被服务器拒绝了而导致的（<a href="https://github.com/PowerShell/Win32-OpenSSH/issues/1263">相关issue</a>）。最新版本的Windows应该是解决了这个问题，如果没法更新版本的话，有一个workaround是使用RSA以外的加密方法。例如用 <span class="code">ssh-keygen -t ecdsa -b 521</span> 再创建一个key，重复一下前面的步骤，之后用这个key就可以连接了。</p>
 
+<p><b>（补充）vscode远程配置文件</b></p>
+
 <p>最后提一句，vscode在每一台远程机器上有独立的配置文件。F1或Ctrl+Shift+P打开命令栏之后输入：preferences: open remote settings，就可以打开远程机器上的JSON配置文件了。</p>
 
 <hr/>
