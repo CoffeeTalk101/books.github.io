@@ -72,7 +72,7 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>当然我们也可以使用其它的终端工具，例如secureCRT：新建一个连接，作如下的设置：</p>
 
-<p><img alt="屏幕截图 2021-05-21 135736" src="../Images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-05-21%20135736.png"/></p>
+<p><img alt="屏幕截图 2021-05-21 135736" src="../Images/屏幕截图%202021-05-21%20135736.png"/></p>
 
 <p>注意把端口号替换成上面得到的端口号。之后secureCRT会让我们选择SSH公钥文件，也就是最开始创建的 id_rsa.pub 这个文件，之后输入配置的密码，连接就成功了。（如果没有的话，可以自己手动配置，在Options-&gt;Global Options-&gt;SSH2当中的Public key栏）</p>
 
@@ -87,7 +87,7 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>在安装完成后，vscode的左侧会多出一个连接栏。点其中的齿轮图标，如下图：</p>
 
-<p><img alt="屏幕截图 2021-05-26 094755" src="../Images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-05-26%20094755.png"/></p>
+<p><img alt="屏幕截图 2021-05-26 094755" src="../Images/屏幕截图%202021-05-26%20094755.png"/></p>
 
 <p>会让我们选择SSH配置文件的路径，第一次使用的话这个文件是不存在的，直接点弹出的地址的第一个，vscode会在相应位置自动创建一个默认的配置文件。</p>
 
@@ -100,7 +100,7 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>然后点窗口的图标建立一个连接：</p>
 
-<p><img alt="屏幕截图 2021-05-26 103231" src="../Images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-05-26%20103231.png"/></p>
+<p><img alt="屏幕截图 2021-05-26 103231" src="../Images/屏幕截图%202021-05-26%20103231.png"/></p>
 
 <p>第一次连接会让我们选择远端的服务器系统，选Linux，如果设置了密码还需要再输入密码（私钥的passphrase；如果连接的不是CDSW平台而是普通服务器的话，这里需要输入的是用户名对应的密码）。目前连接肯定是会报错的，因为服务器端的插件没有安装。如果是如下的报错，则可进入下一步：</p>
 
@@ -120,7 +120,7 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>这是因为vscode本身的一个bug导致的（在选择远端的服务器系统的时候vscode自动取消了，导致getPlatformForHost失败），从菜单选择File--Preferences--Settings，点下图的按钮，打开vscode的json配置文件：</p>
 
-<p><img alt="屏幕截图 2021-05-26 113928" src="../Images/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202021-05-26%20113928.png"/></p>
+<p><img alt="屏幕截图 2021-05-26 113928" src="../Images/屏幕截图%202021-05-26%20113928.png"/></p>
 
 <p>在文件里面添加如下json内容：</p>
 
@@ -161,6 +161,28 @@ Get-Service ssh-agent</pre>
 <p><b>（补充）vscode远程配置文件</b></p>
 
 <p>最后提一句，vscode在每一台远程机器上有独立的配置文件。F1或Ctrl+Shift+P打开命令栏之后输入：preferences: open remote settings，就可以打开远程机器上的JSON配置文件了。</p>
+
+<p><b>（补充）remote ssh sudo</b></p>
+
+<p>如果第一次登录时使用的不是root用户，vscode会安装到普通用户下，而sudo会读取root的环境变量，导致 <span class="code">sudo code</span> 这个命令无效。</p>
+
+<p>目前来说虽然有一些work around，但最好的方法就是第一次登录时<a href="https://github.com/microsoft/vscode-remote-release/issues/4507#issuecomment-786346678">将vscode server安装到root</a>。</p>
+
+<p><a href="https://www.jianshu.com/p/648c48f146c6">以腾讯云为例</a>，需要以下步骤：</p>
+
+<p>（如果没有设置过）设置root密码：</p>
+
+<pre>sudo passwd root</pre>
+
+<p>ssh配置文件修改为允许root登录，打开 <span class="code">/etc/ssh/sshd_config</span> ，修改以下项目为yes：</p>
+
+<pre>PermitRootLogin yes</pre>
+
+<p>重启ssh服务：</p>
+
+<pre>sudo service ssh restart</pre>
+
+<p>之后通过和上面类似的步骤，使用vscode远程登录一次root用户。然后可以再次关闭root的ssh登录，此时其他用户也可以用 <span class="code">sudo code</span> 来打开文件了。</p>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.
