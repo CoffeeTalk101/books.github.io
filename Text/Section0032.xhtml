@@ -68,7 +68,19 @@ sudo apt install tasksel</pre>
 
 <pre>apt install tightvncserver</pre>
 
-<p>安装完成之后，首先进行必要的配置：</p>
+<p>安装完成后需要先启动一次，因为vncserver的配置文件必须先运行一次才会生成。执行：</p>
+
+<pre>vncserver</pre>
+
+<p>首次启动时需要设置密码，注意密码必须是6-8位的长度。如果之后需要修改密码，可以使用 <span class="code">vncpasswd</span> 命令。</p>
+
+<p>这个时候因为配置文件还没有配好，直接连接上去是无效的。先停止vncserver：</p>
+
+<pre>vncserver -kill :1</pre>
+
+<p>其中的:1是编号。默认是1，它在启动的时候是可以指定的，如 <span class="code">vncserver :2</span> 。</p>
+
+<p>现在开始进行必要的配置：</p>
 
 <h3 class="sigil_not_in_toc">* 配置xfce4</h3>
 
@@ -84,6 +96,8 @@ sudo apt install tasksel</pre>
 
 <pre>apt install gnome-panel gnome-settings-daemon metacity nautilus gnome-terminal</pre>
 
+
+
 <p>之后，打开 <span class="code">~/.vnc/xstartup</span> 文件，将以下内容加入到文件的末尾：</p>
 
 <pre>gnome-panel &amp;
@@ -97,19 +111,13 @@ nautilus &amp;</pre>
 
 <pre>vncserver :1 -geometry 1920x1080 -depth 16</pre>
 
-<p>即可启动，分辨率和色彩深度建议根据实际情况调整。测试发现色彩深度指定为8bit时部分程序的显示可能出现问题，因此建议不要低于16bit。首次启动时需要设置密码，注意密码必须是6-8位的长度。如果之后需要修改密码，可以使用 <span class="code">vncpasswd</span> 命令。</p>
+<p>即可启动，分辨率和色彩深度建议根据实际情况调整。测试发现色彩深度指定为8bit时部分程序的显示可能出现问题，因此建议不要低于16bit。</p>
 
 <p>在vncserver启动时，会在屏幕上显示日志文件的位置。查看日志文件，就能够看到vncserver所用的端口。默认应该是5901。</p>
 
 <p>在云服务器的安全组策略中，放通对应端口，如5901端口的入站和出站。</p>
 
 <p>此时打开windows机器上的TightVNC Viewer软件，在Remote Host栏输入远程服务器的ip和端口号（注意是端口号是两个冒号分割），之后点击Connect，就可以连接上了。</p>
-
-<p>关闭vncserver的方法：</p>
-
-<pre>vncserver -kill :1</pre>
-
-<p>其中的:1是编号。默认是1，它在启动的时候是可以指定的，如 <span class="code">vncserver :2</span> 。</p>
 
 <p>至此我们就可以方便地使用VNC连接云服务器的图形化桌面了。后续我们还可以将VNC的连接建立于SSH通道上，以及将其设置为一个系统服务，具体的方法可以<a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-ubuntu-18-04">参考此处</a>。</p>
 
