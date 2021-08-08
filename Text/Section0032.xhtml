@@ -123,7 +123,7 @@ nautilus &amp;</pre>
 
 <p>完成上面的步骤之后我们就可以方便地使用VNC连接云服务器的图形化桌面了。后续我们还可以将其设置为一个系统服务，在开机时自动启动。</p>
 
-<p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-debian-10">参考此处</a>，首先新建一个 <span class="code">/etc/systemd/system/vncserver.service</span> 文件，写入如下内容：</p>
+<p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-ubuntu-20-04">参考此处</a>，首先新建一个 <span class="code">/etc/systemd/system/vncserver.service</span> 文件，写入如下内容：</p>
 
 <pre>[Unit]
 Description=Start TightVNC server at startup
@@ -131,17 +131,18 @@ After=syslog.target network.target
 
 [Service]
 Type=forking
-User=<b>root</b>
-Group=<b>root</b>
-WorkingDirectory=/home
+User=<b>ubuntu</b>
+Group=<b>ubuntu</b>
+WorkingDirectory=/home/<b>ubuntu</b>
 
-PIDFile=/<b>root</b>/.vnc/%H:1.pid
+PIDFile=/home/<b>ubuntu</b>/.vnc/%H:1.pid
 ExecStartPre=-/usr/bin/vncserver -kill :1 > /dev/null 2>&amp;1
 ExecStart=/usr/bin/vncserver -geometry 1920x1080 -depth 16 :1
 ExecStop=/usr/bin/vncserver -kill :1
 
 [Install]
-WantedBy=multi-user.target</pre>
+WantedBy=multi-user.target
+</pre>
 
 <p>注意加粗的用户名根据实际情况修改。</p>
 
