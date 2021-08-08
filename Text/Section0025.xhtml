@@ -164,9 +164,9 @@ Get-Service ssh-agent</pre>
 
 <p><b>（补充）vscode remote ssh sudo</b></p>
 
-<p>如果第一次登录时使用的不是root用户，vscode会安装到普通用户下，而sudo会读取root的环境变量，导致 <span class="code">sudo code</span> 这个命令无效。</p>
+<p>当以普通用户的身份希望编辑root权限的文件时，会发现 <span class="code">su</span> 和 <span class="code">sudo code</span> 都是无效的。</p>
 
-<p>目前来说，vscode依然没有实现提权打开文件这个功能，这是<a href="https://github.com/microsoft/vscode/issues/48659">相关issue</a>。目前比较好的方法只有为root用户也安装一个vscode。</p>
+<p>这是因为目前vscode并没有实现提权打开文件这个功能，这是<a href="https://github.com/microsoft/vscode/issues/48659">相关issue</a>。目前比较好的方法只有为root用户也安装一个vscode。</p>
 
 <p><a href="https://www.jianshu.com/p/648c48f146c6">以腾讯云为例</a>，需要以下步骤：</p>
 
