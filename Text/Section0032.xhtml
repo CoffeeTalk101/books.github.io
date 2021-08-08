@@ -109,7 +109,7 @@ nautilus &amp;</pre>
 
 <p>执行如下命令：</p>
 
-<pre>vncserver :1 -geometry 1920x1080 -depth 16</pre>
+<pre>vncserver :1 -geometry 2560x1440 -depth 16</pre>
 
 <p>即可启动，分辨率和色彩深度建议根据实际情况调整。测试发现色彩深度指定为8bit时部分程序的显示可能出现问题，因此建议不要低于16bit。</p>
 
@@ -137,7 +137,7 @@ WorkingDirectory=/home/<b>ubuntu</b>
 
 PIDFile=/home/<b>ubuntu</b>/.vnc/%H:1.pid
 ExecStartPre=-/usr/bin/vncserver -kill :1 > /dev/null 2>&amp;1
-ExecStart=/usr/bin/vncserver -geometry 1920x1080 -depth 16 :1
+ExecStart=/usr/bin/vncserver -geometry 2560x1440 -depth 16 :1
 ExecStop=/usr/bin/vncserver -kill :1
 
 [Install]
@@ -148,12 +148,12 @@ WantedBy=multi-user.target
 
 <p>之后，刷新服务列表：</p>
 
-<pre>systemctl daemon-reload</pre>
+<pre>sudo systemctl daemon-reload</pre>
 
 <p>激活并启动服务：</p>
 
-<pre>systemctl enable vncserver.service
-systemctl start vncserver</pre>
+<pre>sudo systemctl enable vncserver.service
+sudo systemctl start vncserver</pre>
 
 <h2 class="sigil_not_in_toc">补充功能</h2>
 
