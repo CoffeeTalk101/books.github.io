@@ -133,16 +133,15 @@ After=syslog.target network.target
 Type=forking
 User=<b>root</b>
 Group=<b>root</b>
-WorkingDirectory=/<b>root</b>
+WorkingDirectory=/home
 
-PIDFile=/var/run/%H:1.pid
-ExecStartPre=-/usr/bin/vncserver -kill :1 &gt; /dev/null 2&gt;&amp;1
+PIDFile=/<b>root</b>/.vnc/%H:1.pid
+ExecStartPre=-/usr/bin/vncserver -kill :1 > /dev/null 2>&amp;1
 ExecStart=/usr/bin/vncserver -geometry 1920x1080 -depth 16 :1
 ExecStop=/usr/bin/vncserver -kill :1
 
 [Install]
-WantedBy=multi-user.target
-</pre>
+WantedBy=multi-user.target</pre>
 
 <p>注意加粗的用户名根据实际情况修改。</p>
 
