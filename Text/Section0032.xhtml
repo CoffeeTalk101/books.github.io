@@ -26,7 +26,7 @@
 
 <p>xfce是一个轻量级的桌面，它的资源占用少，配置也简单，用来安装在云主机上是很合适的：</p>
 
-<pre>sudo apt-get update
+<pre>sudo apt update
 sudo apt install xfce4 xfce4-goodies</pre>
 
 <p>上面的xfce4-goodies包含了一些常用的额外的桌面程序，因此也推荐安装。</p>
@@ -35,13 +35,13 @@ sudo apt install xfce4 xfce4-goodies</pre>
 
 <p>GNOME是一个很主流的桌面，也是ubuntu默认的桌面，<a href="https://wiki.debian.org/Gnome">参考此处</a>，执行：</p>
 
-<pre>apt-get install task-gnome-desktop</pre>
+<pre>apt install task-gnome-desktop</pre>
 
 <h3 class="sigil_not_in_toc">* 或安装GNOME（on ubuntu）</h3>
 
 <p>首先安装tasksel，这是一个用于帮助快速安装和部署软件包的工具：</p>
 
-<pre>sudo apt-get update
+<pre>sudo apt update
 sudo apt install tasksel</pre>
 
 <p>之后通过tasksel安装桌面GUI，也是以ubuntu默认的GNOME为例：</p>
@@ -66,7 +66,7 @@ sudo apt install tasksel</pre>
 
 <p>在云服务器上，安装TightVNC的Server端：</p>
 
-<pre>apt-get install tightvncserver</pre>
+<pre>apt install tightvncserver</pre>
 
 <p>安装完成之后，首先进行必要的配置：</p>
 
@@ -82,7 +82,7 @@ sudo apt install tasksel</pre>
 
 <p>参考<a href="https://askubuntu.com/questions/800302/vncserver-grey-screen-ubuntu-16-04-lts">此处</a>，首先用以下命令安装软件：</p>
 
-<pre>apt-get install gnome-panel gnome-settings-daemon metacity nautilus gnome-terminal</pre>
+<pre>apt install gnome-panel gnome-settings-daemon metacity nautilus gnome-terminal</pre>
 
 <p>之后，打开 <span class="code">~/.vnc/xstartup</span> 文件，将以下内容加入到文件的末尾：</p>
 
@@ -119,7 +119,7 @@ nautilus &amp;</pre>
 
 <p><a href="https://unix.stackexchange.com/questions/35030/how-can-i-copy-paste-data-to-and-from-the-windows-clipboard-to-an-opensuse-clipb">参考此处</a>，启动Windows机器和VNC之间的复制粘贴。首先安装：</p>
 
-<pre>sudo apt-get install autocutsel</pre>
+<pre>sudo apt install autocutsel</pre>
 
 <p>之后将如下内容加入 <span class="code">~/.vnc/xstartup</span> 文件：</p>
 

@@ -4,26 +4,26 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Snap和Coursier的安装和使用</title>
-  <meta name="keywords" content="Others,Java"/>
+  <title>Snap的安装和使用</title>
+  <meta name="keywords" content="Others"/>
   <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
 </head>
 
 <body>
-<h1>Snap和Coursier的安装和使用</h1>
+<h1>Snap的安装和使用</h1>
 
 <p class="date">2021-08-08</p>
 
 <a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
 
-<p>Snap和Coursier可以方便地帮助我们安装一些软件。Snap主要能够帮助安装一些相对大型的应用软件，如IDEA、Blender、Chromium等等，它的特点是内置的（强制）自动更新，这点在后面会进一步讨论；Coursier可以帮助安装和管理Java系的软件，包括各版本的JDK、scala相关的工具等。</p>
+<p>Snap主要能够帮助安装一些相对大型的应用软件，如IDEA、Blender、Chromium等等，它的特点是内置的（强制）自动更新，这点在后面会进一步讨论。</p>
 
 <h2 class="sigil_not_in_toc">安装Snap</h2>
 
 <p>Ubuntu等发行版自带了Snap，而其他很多Linux发行版则需要安装。具体可以参考<a href="https://snapcraft.io/docs/installing-snapd">此处</a>。这里以Debian10为例，使用如下命令安装：</p>
 
-<pre>apt-get update
-apt-get install snapd
+<pre>apt update
+apt install snapd
 snap install core</pre>
 
 <h2 class="sigil_not_in_toc">使用Snap</h2>
@@ -31,37 +31,6 @@ snap install core</pre>
 <p>在官网的<a href="https://snapcraft.io/store">Store</a>搜索到希望安装的软件后直接根据指引安装即可。一般来说对应的软件官网也会提供安装方式，如<a href="https://www.jetbrains.com/help/idea/installation-guide.html#snap">IDEA的安装方式</a>。</p>
 
 <p>Snap最大的特点是通过其安装的应用会自动更新。根据此处的<a href="https://snapcraft.io/docs/keeping-snaps-up-to-date">文档</a>，它每天会自动检查更新4次。上面提到，自动更新是Snap的设计逻辑，Windows等系统的更新推送现在也是基于这样的逻辑。强制的自动更新本身是Windows很受诟病的一点，而将这个机制引入Linux的包管理确实也是<a href="https://forum.snapcraft.io/t/disabling-automatic-refresh-for-snap-from-store/">饱受争议</a>。如果希望应用总能保持最新的话，Snap确实是一个不错的选择。而在其它情况下则值得斟酌。</p>
-
-<h2 class="sigil_not_in_toc">安装Coursier</h2>
-
-<p>Coursier提供的主要好处是能帮助安装管理多个版本的JDK，以及打包安装一些Scala工具，并且它会自动配置环境变量，省去一些麻烦。官方的安装过程我个人认为是有点蠢——首先下载一个binary，再通过这个包自己安装自己（目的是为了配置环境变量），这样就需要在安装过程中下载同样的内容两次。关于这点，我已经提了一个<a href="https://github.com/coursier/coursier/issues/2147">Issue</a>。不过在得到回应之前，就暂时继续使用官方推荐的方式吧：</p>
-
-<pre>curl -fLo cs https://git.io/coursier-cli-"$(uname | tr LD ld)"
-chmod +x cs
-./cs install cs
-rm cs</pre>
-
-<p>之后通过 <span class="code">cs setup</span> 即可自动安装上JVM、JDK和Scala。</p>
-
-<h2 class="sigil_not_in_toc">使用Coursier</h2>
-
-<p>目前来说Coursier自动安装的版本是Java8，<a href="https://get-coursier.io/docs/cli-java">这个文档</a>介绍了如何管理Java的版本。可以使用以下命令查看已安装的Java版本：</p>
-
-<pre>cs java --installed</pre>
-
-<p><span class="code">cs java</span> 用来安装和运行JVM。可以使用 <span class="code">--jvm</span> 参数指定需要的版本，如果这个版本已经安装，就直接运行，和直接使用 <span class="code">java</span> 命令是一个效果。而如果没有安装，就会先下载安装再运行。例如，在没有安装Java11时，运行以下命令：</p>
-
-<pre>cs java --jvm 11</pre>
-
-<p>就能够自动下载安装Java11。</p>
-
-<p>Java以外的软件包是通过 <span class="code">install</span> 命令进行安装的，如：</p>
-
-<pre>cs install scala</pre>
-
-<p>不过因为安装时进行过 <span class="code">cs setup</span> ，scala等软件在那时就已经装上，因此没有必要单独去install它。类似的，卸载和更新分别可以使用 <span class="code">uninstall</span> 和 <span class="code">update</span> 命令。Coursier可以自己更新自己：</p>
-
-<pre>cs update cs</pre>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.

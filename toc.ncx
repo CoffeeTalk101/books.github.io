@@ -207,9 +207,15 @@
     </navPoint>
     <navPoint id="navPoint-33" playOrder="33">
       <navLabel>
-        <text>Snap和Coursier的安装和使用</text>
+        <text>Snap的安装和使用</text>
       </navLabel>
       <content src="Text/Section0033.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-34" playOrder="34">
+      <navLabel>
+        <text>Coursier的安装和使用</text>
+      </navLabel>
+      <content src="Text/Section0034.xhtml"/>
     </navPoint>
   </navMap>
 </ncx>
