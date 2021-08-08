@@ -162,11 +162,11 @@ Get-Service ssh-agent</pre>
 
 <p>最后提一句，vscode在每一台远程机器上有独立的配置文件。F1或Ctrl+Shift+P打开命令栏之后输入：preferences: open remote settings，就可以打开远程机器上的JSON配置文件了。</p>
 
-<p><b>（补充）remote ssh sudo</b></p>
+<p><b>（补充）vscode remote ssh sudo</b></p>
 
 <p>如果第一次登录时使用的不是root用户，vscode会安装到普通用户下，而sudo会读取root的环境变量，导致 <span class="code">sudo code</span> 这个命令无效。</p>
 
-<p>目前来说虽然有一些work around，但最好的方法就是第一次登录时<a href="https://github.com/microsoft/vscode-remote-release/issues/4507#issuecomment-786346678">将vscode server安装到root</a>。</p>
+<p>目前来说，vscode依然没有实现提权打开文件这个功能，这是<a href="https://github.com/microsoft/vscode/issues/48659">相关issue</a>。目前比较好的方法只有为root用户也安装一个vscode。</p>
 
 <p><a href="https://www.jianshu.com/p/648c48f146c6">以腾讯云为例</a>，需要以下步骤：</p>
 
@@ -182,7 +182,7 @@ Get-Service ssh-agent</pre>
 
 <pre>sudo service ssh restart</pre>
 
-<p>之后通过和上面类似的步骤，使用vscode远程登录一次root用户。然后可以再次关闭root的ssh登录，此时其他用户也可以用 <span class="code">sudo code</span> 来打开文件了。</p>
+<p>之后通过和上面类似的步骤，使用vscode远程登录一次root用户就会给root安装上vscode server。</p>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.
