@@ -119,6 +119,24 @@ nautilus &amp;</pre>
 
 <p>此时打开windows机器上的TightVNC Viewer软件，在Remote Host栏输入远程服务器的ip和端口号（注意是端口号是两个冒号分割），之后点击Connect，就可以连接上了。</p>
 
+<h2>通过SSH连接</h2>
+
+<p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-ubuntu-20-04">参考此处</a>，因为tightvnc是一个老软件，它除了密码外的所有流量传输都是非加密的。为了安全地使用它，需要为其建立SSH隧道。</p>
+
+<p>首先Server端，在启动时加入一个参数 <span class="code">-localhost</span> ，使得vnc只接受来自本机的连接。因此命令变为：</p>
+
+<pre>vncserver -geometry 2560x1440 -depth 16 <b>-localhost</b></pre>
+
+<p>之后，在Windows机器上创建SSH隧道：</p>
+
+<pre>ssh -L [local_port]:localhost:[remote_port] -C -N -l [username] [server_ip]</pre>
+
+<p>其中 <span class="code">-L</span> 参数表示转发 <span class="code">[local_port]</span> 的流量至 <span class="code">[remote_port]</span> ， <span class="code">-C</span> 参数表示压缩传输， <span class="code">-N</span> 参数表示此连接不用于执行任何命令，只转发流量。下面是一个例子：</p>
+
+<pre>ssh -L 59000:localhost:5901 -C -N -l ubuntu xxx.xxx.xxx.xxx</pre>
+
+<p>之后在客户端中建立连接时，把需要连接的地址改为 <span class="code">localhost::[local_port]</span> 即可。如上面的例子中即改为 <span class="code">localhost::59000</span> 。</p>
+
 <h2 class="sigil_not_in_toc">创建系统服务</h2>
 
 <p>完成上面的步骤之后我们就可以方便地使用VNC连接云服务器的图形化桌面了。后续我们还可以将其设置为一个系统服务，在开机时自动启动。</p>
@@ -137,7 +155,7 @@ WorkingDirectory=/home/<b>ubuntu</b>
 
 PIDFile=/home/<b>ubuntu</b>/.vnc/%H:1.pid
 ExecStartPre=-/usr/bin/vncserver -kill :1 > /dev/null 2>&amp;1
-ExecStart=/usr/bin/vncserver -geometry 2560x1440 -depth 16 :1
+ExecStart=/usr/bin/vncserver -geometry 2560x1440 -depth 16 <b>-localhost</b> :1
 ExecStop=/usr/bin/vncserver -kill :1
 
 [Install]
