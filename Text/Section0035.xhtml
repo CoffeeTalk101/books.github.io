@@ -20,7 +20,7 @@
 
 <p>在进入正题之前想提一下，最后其实我还是在用VNC方式连接。虽然RDP有很多好处，例如自带加密，例如具有语义性，以及（理论上）更快的速度。但是尴尬的是，实际测试下来我发现RDP和VNC方式连接我的服务器都很卡（尽管我都设置了压缩，并且都只用了8bit色彩深度）。相比之下，VNC的卡仅仅是图像延迟，而RDP的卡则是感觉系统反应的迟钝，可能是因为底层优化的不好，语义性似乎反而有点成为拖累。</p>
 
-<p>而另一个原因是DRP的<a href="https://askubuntu.com/questions/1308551/xrdp-disconnects-immediately-after-correct-credentials">Session问题</a>，RDP（指Linux上使用较主流的XRDP）并没有提供Session管理的功能，因此不能保证是连接到之前使用的Session还是新Session（似乎和RDP的配置、软件和编译的版本都有关，网上的介绍比较模糊）。因此为了保证总是能连接到固定的Session，最好的方法就是启动一个VNC Server，用RDP连接到这个VNC Server的Session。但是这样似乎显得多次一举了，不如直接就用VNC连接，还更节省资源。</p>
+<p>而另一个原因是RDP的<a href="https://askubuntu.com/questions/1308551/xrdp-disconnects-immediately-after-correct-credentials">Session问题</a>，RDP（指Linux上使用较主流的XRDP）并没有提供Session管理的功能，因此不能保证是连接到之前使用的Session还是新Session（似乎和RDP的配置、软件和编译的版本都有关，网上的介绍比较模糊）。因此为了保证总是能连接到固定的Session，最好的方法就是启动一个VNC Server，用RDP连接到这个VNC Server的Session。但是这样似乎显得多次一举了，不如直接就用VNC连接，还更节省资源。</p>
 
 <p>下面进入正题。这里默认已经按照<a href="Section0032.xhtml">这篇笔记</a>的方式配置了Xfce4。首先安装XRDP：</p>
 
