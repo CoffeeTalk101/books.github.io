@@ -223,5 +223,11 @@
       </navLabel>
       <content src="Text/Section0035.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-36" playOrder="36">
+      <navLabel>
+        <text>Flink滑动窗口的一种优化</text>
+      </navLabel>
+      <content src="Text/Section0036.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
