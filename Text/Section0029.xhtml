@@ -46,8 +46,25 @@
 </pre>
 </div>
 
+<p>Shade Plugin还有很多其它的配置项。再举一个例子，有时候我们运行打包的uber jar的时候，会遇到这样的报错： <span class="code">java.lang.SecurityException: Invalid signature file digest for Manifest main attributes</span> 。这是因为有一些依赖自带了签名验证，在将jar包都合并到一起之后，之前文件的签名当然不再能验证通过。这时候最简单的方案就是<a href="https://stackoverflow.com/a/6743609/7708392">将签名文件在打包时去掉</a>。因此可以加入如下的配置：</p>
 
-<p>那么话说回来，Assembly Plugin既然并不适合打包uber jar，它的功能是什么呢。其实它主要是为了提供各种对<b>项目本体</b>的灵活打包方式，例如将项目的源码、二进制等打包成tar.gz, tar.bz2, zip等格式，可以通过<a href="http://maven.apache.org/plugins/maven-assembly-plugin/assembly.html">Descriptor</a>对打包的方式进行丰富的自定义配置。</p>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #330099; font-weight: bold">&lt;configuration&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;filters&gt;</span>
+        <span style="color: #330099; font-weight: bold">&lt;filter&gt;</span>
+            <span style="color: #330099; font-weight: bold">&lt;artifact&gt;</span>*:*<span style="color: #330099; font-weight: bold">&lt;/artifact&gt;</span>
+            <span style="color: #330099; font-weight: bold">&lt;excludes&gt;</span>
+                <span style="color: #330099; font-weight: bold">&lt;exclude&gt;</span>META-INF/*.SF<span style="color: #330099; font-weight: bold">&lt;/exclude&gt;</span>
+                <span style="color: #330099; font-weight: bold">&lt;exclude&gt;</span>META-INF/*.DSA<span style="color: #330099; font-weight: bold">&lt;/exclude&gt;</span>
+                <span style="color: #330099; font-weight: bold">&lt;exclude&gt;</span>META-INF/*.RSA<span style="color: #330099; font-weight: bold">&lt;/exclude&gt;</span>
+            <span style="color: #330099; font-weight: bold">&lt;/excludes&gt;</span>
+        <span style="color: #330099; font-weight: bold">&lt;/filter&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;/filters&gt;</span>
+    <span style="color: #0099FF; font-style: italic">&lt;!-- Additional configuration. --&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;/configuration&gt;</span>
+</pre></div>
+
+
+<p>话再说回来，Assembly Plugin既然并不适合打包uber jar，它的功能是什么呢。其实它主要是为了提供各种对<b>项目本体</b>的灵活打包方式，例如将项目的源码、二进制等打包成tar.gz, tar.bz2, zip等格式，可以通过<a href="http://maven.apache.org/plugins/maven-assembly-plugin/assembly.html">Descriptor</a>对打包的方式进行丰富的自定义配置。</p>
 
 <p>另外，既然提到了打包依赖，也应该说一说Dependency Plugin的 <a href="https://maven.apache.org/plugins/maven-dependency-plugin/examples/copying-project-dependencies.html">copy-dependencies</a> goal。它的功能并非是将依赖打包到一个jar中，而是将项目用到的依赖都复制到一个指定的目录，类似于“导出”。因为它不做复制以外的任何处理，最为松散，因此实际上提供了最大的自由度。例如，<a href="https://product.hubspot.com/blog/the-fault-in-our-jars-why-we-stopped-building-fat-jars">可以导出依赖后手动将build目录打成一个tar包，之后再上传部署</a>。</p>
 
