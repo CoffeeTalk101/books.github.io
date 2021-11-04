@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Title</title>
+  <title>使用腾讯云COS对象存储进行Eagle素材的云同步</title>
   <meta name="keywords" content="Others"/>
   <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
 </head>
@@ -16,7 +16,7 @@
 
 <a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
 
-<p>Eagle是设计领域常用的一个素材管理软件。它本身是一个单机软件，不过也支持把素材库放到云同步盘的目录来远程保存和同步素材。一般配合Eagle使用的是坚果云和OneDrive，但是都有各自的一些缺点：坚果云价格偏高且存储空间小，OneDrive的同步容易卡住、网络有时候不稳定。</p>
+<p>Eagle是设计领域常用的一个素材管理软件，虽然它本身没有提供云存储，但是支持把素材库放到云同步盘来远程保存和更新。一般配合Eagle使用的是坚果云和OneDrive，但是都有各自的一些缺点：坚果云价格偏高且存储空间小，OneDrive的同步容易卡住、网络有时候不稳定。</p>
 
 <p>是否存在另外的解决方案呢？这次我尝试了使用腾讯云COS对象存储+rclone的方式，将COS挂载为一块网络硬盘作为Eagle的保存目录。从结果上来说是可用的，但也存在一些问题，下面详细说说。</p>
 
