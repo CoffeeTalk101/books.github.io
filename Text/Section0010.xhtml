@@ -82,13 +82,17 @@ environment location: C:\Users\xxx\AppData\Local\Continuum\anaconda2\envs\anacon
 
 <pre>/anaconda3/envs/env_name</pre>
 
-<p>接下来，如果是Linux机器，使用命令 <span class="code">source my_env/bin/activate</span> 来激活虚拟环境；Windows机器，使用Anaconda promt运行 <span class="code">...\env_name\scripts\activate.bat</span> 激活虚拟环境</p>
+<p>接下来，如果是Linux机器，使用命令 <span class="code">source my_env/bin/activate</span> 来激活虚拟环境；Windows机器，使用Anaconda promt运行 <span class="code">...\env_name\scripts\activate.bat</span> 激活虚拟环境。</p>
+
+<p>在虚拟环境中，执行命令 <span class="code">conda-unpack</span> 。之后此环境就可以像在本机创建的环境一样使用。</p>
 
 <p>注意只有使用conda-pack导入的虚拟环境才需要这样激活，在本机创建的虚拟环境直接使用 <span class="code">conda activate env_name</span> 激活，用 <span class="code">conda deactivate</span> 关闭就可以了。</p>
 
 <p>另外，注意上面的命令在Linux中一定要用 <span class="code">source</span> 去执行，用 <span class="code">./filename</span> 或 <span class="code">sh filename</span>执行的命令会新建立一个子shell，继承父shell的环境变量，但子shell新建的、改变的变量不会被带回父shell。而用 <span class="code">source filename</span> 不建立新的子shell，脚本里面所有新建、改变的环境变量都会保存在当前shell里面。</p>
 
-<p>在虚拟环境中，执行命令 <span class="code">conda-unpack</span> 。之后此环境就可以像在本机创建的环境一样使用。</p>
+<p>补充：如果需要一个快捷的方式激活这样创建的虚拟环境，可以打开 <span class="code">~/.bashrc</span> 并添加以下内容，之后每次使用指令 <span class="code">myenv</span> 就可以直接切换到指定的虚拟环境了（修改之后需要  <span class="code">source ~/.bashrc</span> 使改动生效）：</p>
+
+<pre>alias myenv='source ~/anaconda3/envs/myenv/bin/activate'</pre>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.
