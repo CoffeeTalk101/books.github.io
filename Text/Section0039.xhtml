@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>不执行activate直接使用Python虚拟环境</title>
+  <meta name="keywords" content="Python"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>不执行activate直接使用Python虚拟环境</h1>
+
+<p class="date">2021-12-22</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>最近在开发时，有时希望能执行某个依赖于特定虚拟环境的脚本，但又不希望每次都执行activate将虚拟环境切换过去，这样来回切换会十分麻烦。那么要如何在不激活虚拟环境的情况下，直接运行依赖于虚拟环境的程序呢。</p>
+
+<p>其实观察虚拟环境的目录结构之后可以发现，每个虚拟环境都有各自的 <span class="code">/bin</span> 目录，这些程序也都是独立可运行的。例如，在虚拟环境中的默认 <span class="code">python</span> 为：</p>
+
+<pre>/home/user/anaconda3/envs/myenv/bin/python</pre>
+
+<p>那么用这个路径的python去执行脚本，大多数时候虚拟环境里面的依赖就直接可用。除了python以外，其它安装上去的程序也可以用这个方式运行。</p>
+
+<p>不过有时候也会遇到报错的情况，这是因为activate脚本当中其实还做了环境变量的替换。具体替换了哪些，可以打开activate去查看具体的内容。不过无论是哪种， <span class="code">PATH</span> 是必被替换的。我使用的是conda的虚拟环境，从脚本中能看到， <span class="code">CONDA_PREFIX</span> 和 <span class="code">_CONDA_PACK_OLD_PS1</span> 这两个环境变量也被替换了。根据网上看到的资料，其它虚拟环境，例如python自带的虚拟环境，可能会替换 <span class="code">PYTHONHOME</span> 、 <span class="code">VIRTUAL_ENV</span> 等变量。</p>
+
+<p>在知道那些变量会被替换之后，在命令前将需要设置的各个环境变量列出来，用空格分隔，最后附上需要执行的命令就可以了，例如：</p>
+
+<pre>PATH="/home/user/anaconda3/envs/myenv/bin/" CONDA_PREFIX="/home/user/anaconda3/envs/myenv" somecommand</pre>
+
+<p>最后，如果要用这种方法后续接多条命令，组成管道的话，直接用上面的语法，设置的环境变量可能只对第一条命令生效。这种情况可以参考<a href="https://stackoverflow.com/a/10856211/7708392">这篇回答</a>，使用如下的方法：</p>
+
+<pre>(export FOO=bar; somecommand someargs | somecommand2)</pre>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>
