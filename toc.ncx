@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"
- "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx version="2005-1" xmlns="http://www.daisy.org/z3986/2005/ncx/">
+   "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
   <head>
-    <meta content="urn:uuid:427eacb4-cc28-4e5b-ba4c-ae7e7add9adc" name="dtb:uid"/>
-    <meta content="1" name="dtb:depth"/>
-    <meta content="0" name="dtb:totalPageCount"/>
-    <meta content="0" name="dtb:maxPageNumber"/>
+    <meta name="dtb:uid" content="urn:uuid:427eacb4-cc28-4e5b-ba4c-ae7e7add9adc"/>
+    <meta name="dtb:depth" content="1"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
   </head>
   <docTitle>
     <text>CSY's Blog</text>
@@ -238,6 +240,12 @@
         <text>Maven离线编译方法</text>
       </navLabel>
       <content src="Text/Section0038.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-39" playOrder="39">
+      <navLabel>
+        <text>不执行activate直接使用Python虚拟环境</text>
+      </navLabel>
+      <content src="Text/Section0039.xhtml"/>
     </navPoint>
   </navMap>
 </ncx>
