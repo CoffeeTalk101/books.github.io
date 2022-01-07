@@ -247,5 +247,11 @@
       </navLabel>
       <content src="Text/Section0039.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-40" playOrder="40">
+      <navLabel>
+        <text>BTC交易打包至区块前的防伪和防篡改原理</text>
+      </navLabel>
+      <content src="Text/Section0040.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>

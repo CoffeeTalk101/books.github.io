@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>BTC交易打包至区块前的防伪和防篡改原理</title>
+  <meta name="keywords" content="Others"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>BTC交易打包至区块前的防伪和防篡改原理</h1>
+
+<p class="date">2022-01-06</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>网上对BTC的介绍中，大多都解释了区块链技术是如何避免对区块的篡改：每个区块的哈希值都基于前面的所有区块，这样已经打包好的数据就无人能动。但对一个可信的交易系统来说，只保护已有的账本并不是安全性的全部。在交易被打包存到链上之前，至少还有两个方面的安全问题需要考虑：如何验证付款方的身份真实且确实有足额的资金用于支付，以及如何保证记账人（矿工）不记假账。这篇笔记就来谈一谈这些问题。</p>
+
+<p>以验证付款方确实有足额的资金为例，也就是要避免一个人在使用比特币交易时“透支余额”。这看起来似乎不是一个问题，因为我们日常所使用的交易系统中都有“余额”的概念，只要 余额-支付金额>0，那就不会透支。但是，如果对比特币有一定了解的话，就会知道BTC是一个交易账本系统，它只做记账而不存余额（与之相对，以太坊则是记录账户余额的）。</p>
+
+<p>在比特币的账本里没有余额的概念，而是使用UTXO（unspent transaction output）：未使用的交易输出。这里的重点在于“<b>输出</b>”——即BTC交易并不是靠账户金额的加减，而是靠生成一个有效的输入和输出的组合完成的。具体来说，一条交易的内容包括：输入、输出、时间戳、版本号等。</p>
+
+<p>在一次转账中，<b>输入</b>主要包括如下的内容：</p>
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-fymr">字段</th>
+    <th class="tg-fymr">描述</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">交易识别号<br/>"txid"</td>
+    <td class="tg-0pky">指向引用的输出<br/>（除Coinbase交易外，一个输入必须引用一个输出）</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">输出索引<br/>"vout"</td>
+    <td class="tg-0pky">引用输出的索引号，因为一次交易中可能引用多个输入，从0开始</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">解锁脚本<br/>"scriptSig"</td>
+    <td class="tg-0pky">由付款方生成，<br/>执行此脚本后就得到付款方的签名和公钥。<br/>其中的签名是付款方对整个交易（<b>指签名外的其它所有交易内容，包含输入和输出在内</b>）的签名。</td>
+  </tr>
+</tbody>
+</table>
+
+<p><b>被引用的输出</b>主要包括如下内容：</p>
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-fymr">字段</th>
+    <th class="tg-fymr">描述</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">总量<br/>"value"</td>
+    <td class="tg-0pky">比特币值</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">锁定脚本<br/>"scriptPubKey"<br/>（以P2PKH类脚本为例）</td>
+    <td class="tg-0pky">执行此脚本能验证签名和公钥：<br/>只有<b>付款人</b>的签名和公钥能通过验证，<br/>而因为签名只能由其私钥创建，由此确定付款人持有这笔资金</td>
+  </tr>
+</tbody>
+</table>
+
+<p><b>输出</b>主要包括如下的内容：</p>
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-fymr">字段</th>
+    <th class="tg-fymr">描述</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">总量<br/>"value"</td>
+    <td class="tg-0pky">比特币值</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">锁定脚本<br/>"scriptPubKey"<br/>（以P2PKH类脚本为例）</td>
+    <td class="tg-0pky"><b>收款方提供出自己公钥的Hash值（也就是一般所称的BTC“地址”），之后由付款方生成此脚本</b>。<br/>执行此脚本能验证<b>收款方的</b>签名和公钥，从而使货币转移给收款方</td>
+  </tr>
+</tbody>
+</table>
+
+<p>这里还可以思考一下，如果我持有1个BTC，但这一个BTC是别人每次0.1，分10次转给我的。那么我想一次性将这1BTC花掉，需要提供几条输出呢？答案是10个，这10个输出每个都会被一个输入引用。因此，<b>一次交易的输入可以是多个</b>。另一种情况，别人一次性给我转了1BTC，但我只需要买一个0.1BTC的物品，这时我还是得使用那条1BTC的输出（就和用现金类似，你不能把一块钱硬币掰开用），从而会产生给收款人的0.1BTC的输出，和返回我自己的0.9BTC的找零，而找零记录在链上也是一条输出（因为在这次交易后，就不能再让你使用1BTC的那条输出了，需要在链上新建一条0.9BTC的输出给你。有些人也将这种过程称为BTC的“销毁”和“新建”）。可见，<b>一次交易的输出也可以是多个</b></p>
+
+<p>在付款方生成好输入和输出之后，下面就需要矿工的参与来将交易完成。我们知道，BTC是一个记账系统，矿工们进行算力竞争就是为了获得对一个区块的记账权。这里先补充一点，准确来说，矿工选择哪些交易记帐，甚至记不记帐都是他的自由：矿工可以选择不在这个区块记账，但这样也就拿不到GAS费（即记账的服务费）奖励，只会获得基础的区块奖励。所以大多数矿工都会挑出GAS费最高的交易，打包入区块之后再开始计算nonce（也就是要找的那个随机数），从而收益最大化。但实际上BTC链上确实存在着一些并没有记账的“空块”，主要存在于BTC用户还很少的早期。我们也可以想象，如果有一天所有人都不再做BTC交易了，矿工其实依然可以挖矿，但因为没有帐需要记，链上新增的都会是空块。</p>
+
+<p>那么问题来了，既然矿工负责记账，如何防止矿工伪造账目盗取资金，又或者记账出现错误？首先，让我们考虑矿工为了盗取资金可能使用的手段，存在以下这两种：伪造不存在的转入交易，或者将一笔转账的收款人篡改成自己。伪造不存在的转入交易可行吗？链上的UTXO（未使用的交易输出）都有锁定脚本，矿工没有私钥，就不能伪造一个有效的输入，使该输入的解锁脚本能够解开UTXO的锁定脚本，因此不可行。</p>
+
+<p>而篡改收款人（即替换一个交易中的输出部分）也是不可行的，因为输入部分的解锁脚本中包含了<b>付款人对整个交易的签名</b>。如果篡改了输出，交易的哈希值也会改变，签名就失效了。而因为矿工没有付款人的私钥，无法重新签名。如果矿工用自己的私钥重签呢？那么就无法解锁引用的UTXO的锁定脚本了。</p>
+
+<p>那记账出现错误呢，这个是可能的，相当于打包了一条无效的记录，而原本的那条消费则没有被记上去。但因为交易是广播的，之后会被记到其它的区块，因此不会导致金额损失和错账。</p>
+
+<p>矿工说完，再来考虑付款人作弊的可能性。付款人能盗用别人的资金吗？不能，所有UTXO都是由锁定脚本加锁的。付款人用自己的UTXO支付，但是在输出里填入大于UTXO的金额，或者引用一个已经被花出去的UTXO，有可能吗？也是不可行的，因为按照BTC的机制，矿工在收到交易后，会对交易的有效性进行检验。其中既包括了对金额的检验（输入≥输出+矿工费），也会验证被引用的UTXO没有在链上被使用过。如何验证呢，遍历UTXO向后的所有链上交易是一个方法，但这样效率太差了。因此，矿工通常会自己维护一个UTXO的数据库，用来在处理交易时快速查找和验证UTXO的“余额”。不过，这样仍然不能够避免付款人用同一个UTXO在短时间内做两笔或更多的交易，这就是所谓的“双花”问题。BTC采用了只认可最长链的机制避免这个问题，因此用户在一笔交易上链后，一般需要向后继续等待6个区块，才能最终确认交易。关于“双花”问题网上的介绍很多，在此就不再赘述。</p>
+
+<p>最后，如果有一个矿工不按照约定对交易进行检验，甚至他开始作弊，例如进行双花，或者打包输出大于输入的交易记录，会发生什么？其它遵守规则的矿工会对他广播的区块内容做检查，并拒绝有问题的区块。如果已经在有问题的区块上分叉，则整个分叉都会被丢弃（在版本升级时可能会出现这种情况，<a href="https://en.bitcoin.it/wiki/July_2015_chain_forks">未及时升级的分叉被整个丢弃</a>）。这其实就说明，矿工对收到的区块不仅需要验证算出的那个nonce是否正确，还会确认区块内的交易是否有效，以及区块的版本等等其它信息。</p>
+
+<p>那是否所有矿工都愿意去做交易验证呢，一般来说是的。上面提到过，矿工在本地会建UTXO的数据库，因此核对交易的有效性对他们来说很容易也很快就能完成。如果不做验证，挖出来的区块被别人发现是无效的，那就一无所获了。</p>
+
+<p>但历史上也出现过很多矿工未验证无效块，直接在上面继续开采导致分叉的情况（被称为SPV mining），上面提到的版本升级就是一个例子：因为BTC是去中心化的，版本的切换与否取决于全网络状态（例如规定当最新的1000个区块中有950个是新版本时，全网络切换到新版，旧版本区块无效）。但“<a href="https://bitcoin.org/en/alert/2015-07-04-spv-mining#cause">结果证明大约一半的网络哈希率在没有完全验证块的情况下进行挖掘，并在该无效块之上构建新块</a>”。基于无效块的分叉最后都被废弃了。</p>
+
+<p>由此可见，部分矿工确实可能进行不规范操作，并由此引发问题。但一般认为这些问题不会威胁到BTC体系本身，因为大部分的矿工仍会遵守约定，并及时发现这些问题，将其排除在BTC链外。这样的深层逻辑在于，<b>保护区块链的安全对矿工本身是有利的</b>——如果区块链上出现了错误，那BTC就不再具有价值，矿工们辛苦的努力就会全部变为白纸。这就是BTC这类区块链能够实现自我优化、自我监管的原因。</p>
+
+<p>参考资料：</p>
+
+<p><a href="https://www.liaoxuefeng.com/wiki/1207298049439968/1207298275932480">UTXO模型</a></p>
+<p><a href="https://developer.bitcoin.org/devguide/transactions.html">Transactions-BitcoinDeveloper</a></p>
+<p><a href="https://bitcoin.stackexchange.com/questions/45693/how-is-a-transactions-output-signed">How is a transaction's output signed?</a></p>
+<p><a href="https://bitcoin.stackexchange.com/questions/11732/how-is-a-transaction-protected-from-tampering-before-inclusion-in-a-block">How is a Transaction protected from tampering before inclusion in a Block?</a></p>
+
+<p><a href="https://blog.csdn.net/houcunlu/article/details/103323390">区块链比特币交易中锁定脚本与解锁脚本_P2PKH</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/33157713">比特币中的脚本系统</a></p>
+<p><a href="https://www.sohu.com/a/389879641_100217347">矿工的代理风险 </a></p>
+<p><a href="https://www.zhihu.com/question/65502781">怎样查询比特币的余额，查询的算法是怎样的 ？</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/34664715">一文读懂比特币交易原理</a></p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>
