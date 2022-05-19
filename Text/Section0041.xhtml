@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Title</title>
+  <meta name="keywords" content="BigData"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>Flink standalone on Kubernetes的部署流程</h1>
+
+<p class="date">2022-05-19</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>Flink除Standalone模式外，还支持YARN、Docker、k8s等多种配置方式，其中k8s部署又能分为standalone on Kubernetes和Native Kubernetes两种。这篇笔记记录一下standalone on Kubernetes方式的部署流程。</p>
+
+<p>使用`minikube`建立一个单机k8s集群。在这种方案下，k8s的安装主要包括以下三个组件：</p>
+
+<ul>
+    <li>Docker，作为k8s的驱动引擎</li>
+    <li><span class="code">kubectl</span>，k8s的命令行工具</li>
+    <li><span class="code">minikube</span>，k8s的单机集群工具</li>
+</ul>
+
+<h2>Docker的安装</h2>
+
+<p>选择手动下载RPM package进行安装，即使是在隔离互联网的系统也能够使用这种方式：</p>
+
+<p>首先根据Linux发行版本，可以选择相应的<a href="https://docs.docker.com/engine/install/">安装文档</a>作参考。</p>
+
+<p>以CentOS为例，可以<a href="https://download.docker.com/linux/centos/">在此处</a>浏览所有支持的CentOS版本和架构，选择合适的包下载</p>
+
+<p>Docker的完整安装包括四个包，其中三个包是必须的：<span class="code">docker-ce-cli</span>、<span class="code">docker-scan-plugin</span>、<span class="code">decker-ce</span></p>
+
+<p>另一个包<span class="code">docker-ce-rootless-extras</span>如果不需要rootless（非root安装）的话可以不下载</p>
+
+<p>安装使用如下命令：</p>
+
+<pre>sudo yum install /path/to/package.rpm
+# Start Docker
+sudo systemctl start docker
+</pre>
+
+<p>测试安装：</p>
+
+<pre>sudo docker run hello-world</pre>
+
+<p>执行此命令后如果是在有互联网的环境，会联网下载一个hello-world镜像并运行，能够运行就说明安装成功。</p>
+
+<h2>kubectl的安装</h2>
+
+<p>可以直接<a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/">从这里下载binary</a>，之后安装：</p>
+
+<pre>curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+mkdir -p ~/.local/bin/kubectl
+mv ./kubectl ~/.local/bin/kubectl
+# and then append (or prepend) ~/.local/bin to $PATH</pre>
+
+<h2>minikube的安装</h2>
+
+<p>minikube支持amd64、arm64等指令集，有<a href="https://minikube.sigs.k8s.io/docs/start/">不同的binary包</a></p>
+
+<p>例如安装amd64版本，可以使用：</p>
+
+<pre>curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube</pre>
+
+<p>安装完成后启动：</p>
+
+<pre>minikube start</pre>
+
+<h2>Flink Standalone 部署</h2>
+
+<p>在使用`minikube`部署时首先要运行：</p>
+
+<pre>minikube ssh 'sudo ip link set docker0 promisc on'</pre>
+
+<p>Standalone部署有两种可选模式：Application Mode、Session Mode，Application Mode模式下部署的集群只用于跑一个特定的应用（即jar包），而Session Mode部署模式则能够运行多任务、接受提交新任务。我们主要使用的应该是Session Mode，下面都以Session Mode为例。</p>
+
+<h3>non-HA部署</h3>
+
+<p>non-HA部署时需要提供四个配置文件，可以参考<a href="https://nightlies.apache.org/flink/flink-docs-release-1.14/docs/deployment/resource-providers/standalone/kubernetes/">官网的配置示例</a>。</p>
+
+<p>配置文件编辑完成后，启用四个配置文件：</p>
+
+<pre># Configuration and service definition
+kubectl create -f flink-configuration-configmap.yaml
+kubectl create -f jobmanager-service.yaml
+# Create the deployments for the cluster
+kubectl create -f jobmanager-session-deployment.yaml
+kubectl create -f taskmanager-session-deployment.yaml</pre>
+
+<p>完成之后可以用 <span class="code">kubectl get deployments</span> 命令来查看部署的情况。</p>
+
+<p>可以用 <span class="code">kubectl get pods</span> 命令来查看 pods 的信息。</p>
+
+<p>因为k8s容器的网络和外部默认是隔离的，使用 <span class="code">kubectl port-forward jobmanager-pod的名称 8081:8081</span> 命令，创建一个端口转发，这样就可以从 http://localhost:8081 访问到flink默认的控制台页面。通过REST API，可以完成任务的提交和控制。</p>
+
+<h3>HA高可用的部署</h3>
+
+<p>首先删除刚刚创建的non-HA的部署：</p>
+
+<pre>kubectl delete deploy flink-jobmanager
+kubectl delete deploy flink-taskmanager
+kubectl delete configmap flink-config
+kubectl delete serivce flink-jobmanager</pre>
+
+<p>HA部署需要三个配置文件，可以参考官网编辑相应的内容，之后使用类似的方法应用。</p>
+
+<p>需要注意的是如果开启HA，则k8s的runtime必须连接到对应的HA存储，并且需要pods的service accounts具有创建修改和删除ConfigMaps的权限。<a href="https://nightlies.apache.org/flink/flink-docs-release-1.14/docs/deployment/resource-providers/standalone/kubernetes/#high-availability-with-standalone-kubernetes">参考此处</a>。</p>
+
+<h3>部署的扩缩</h3>
+
+<p>Standalone模式不支持由Flink自动发起对task manager数量的调节，但通过k8s，可以方便地对task manager做手动扩缩：</p>
+
+<pre>kubectl scale deploy flink-taskmanager --replicas=3</pre>
+
+<p>这条命令就将task manager的数量调整为3。再运行 <span class="code">kubectl get pods</span> ，会显示更新的信息。</p>
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>
