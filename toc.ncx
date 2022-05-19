@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"
- "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx version="2005-1" xmlns="http://www.daisy.org/z3986/2005/ncx/">
+   "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
   <head>
-    <meta content="urn:uuid:427eacb4-cc28-4e5b-ba4c-ae7e7add9adc" name="dtb:uid"/>
-    <meta content="1" name="dtb:depth"/>
-    <meta content="0" name="dtb:totalPageCount"/>
-    <meta content="0" name="dtb:maxPageNumber"/>
+    <meta name="dtb:uid" content="urn:uuid:427eacb4-cc28-4e5b-ba4c-ae7e7add9adc"/>
+    <meta name="dtb:depth" content="1"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
   </head>
   <docTitle>
     <text>CSY's Blog</text>
@@ -250,6 +252,12 @@
         <text>BTC交易打包至区块前的防伪和防篡改原理</text>
       </navLabel>
       <content src="Text/Section0040.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-41" playOrder="41">
+      <navLabel>
+        <text>Flink standalone on Kubernetes的部署流程</text>
+      </navLabel>
+      <content src="Text/Section0041.xhtml"/>
     </navPoint>
   </navMap>
 </ncx>
