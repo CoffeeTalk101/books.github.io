@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Linux软件常用命令整理自用</title>
+  <meta name="keywords" content="Others"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>Linux软件常用命令整理自用</h1>
+
+<p class="date">2022-07-08</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>整理一些常用的Linux命令。并不系统，自用。感觉有必要记录一下的就会放进来，持续更新。</p>
+
+<p>ls</p>
+
+<pre># 查看修改时间和MB为单位的大小
+ls -lt --time-style=long-iso --block-size=M
+# 查看目录权限
+ls -ld</pre>
+
+<p>chmod</p>
+
+<pre># r=4, w=2, x=1
+# 三个数字以此为UGO
+# U：文件的拥有者(owner)或者创建者
+# G：在文件的所属组（默认是创建文件的用户的主组）里的用户
+# O：既不是文件的创建者，也不在文件属组里的用户，其他人
+chmod 755 *
+</pre>
+
+<p>passwd</p>
+
+<pre>passwd [username]</pre>
+
+<p>history</p>
+
+<pre># 删除历史
+history -c
+# 显示最近n条历史
+history n
+</pre>
+
+<p>tar</p>
+
+<pre># p == preserve permissions
+# v == verbose (print names while making tar)
+# z == gzip
+# f == tar file name
+tar -czvpf test.tar.gz ./test
+tar -xzvpf test.tar.gz -C /home</pre>
+
+<p>Java</p>
+
+<pre>java -cp [classpath1:classpath2:...] -D[jvm_arguments] [main_class] [program_args]
+# 例如
+java -cp ./xxx.jar:./lib -Djava.library.path="." com.example.main.MainClass --parameter 0000</pre>
+
+<p>nohup</p>
+
+<pre>nohup [command] > /dev/null 2>&amp;1 &amp;</pre>
+
+<p>Mysql</p>
+
+<pre>mysql -h [mysql_server_ip] -u [username] -p -P [port]</pre>
+
+<p>Redis</p>
+
+<pre>redis-cli -h [redis_server_ip] -p [prot] -a [redis_auth]</pre>
+
+<p>Vim</p>
+
+<pre>【移动】
+$:  将光标移动到当前行的行尾
+0:  将光标移动到当前行的行首
+xG:  跳转到指定的第x行，G移动到文件按末尾，``（2次单引号)返回到跳转前的位置
+gg:  移动到文件开头
+
+【复制粘贴】
+y:  复制，p:粘贴
+复制文本块
+    1.首先进入visual模式：v
+    2.移动光标选择文本
+    3.复制与粘贴的操作
+
+【查找与替换】
+/string   正向查找
+?string   反向查找
+按n查找下一个, N查找上一个
+:s/old/new   将当前行的第一个字符串old替换为new
+:s/old/new/g   将当前行的所有字符串old替换为new
+:90s/old/new/g  将指定行的所有字符串old替换为new
+:%s/old/new/g   将文本中所有的字符串old替换为new
+
+【撤销与保存】
+u:  撤销上一步的操作
+:q  若文件没有修改，直接退出
+:q!  文件已经被修改，放弃修改退出
+:wq  文件已经被修改，保存修改并退出
+:e!  放弃修改，重新回到文件打开时的状态
+</pre>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

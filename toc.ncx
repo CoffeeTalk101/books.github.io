@@ -259,5 +259,11 @@
       </navLabel>
       <content src="Text/Section0041.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-42" playOrder="42">
+      <navLabel>
+        <text>Linux软件常用命令整理自用</text>
+      </navLabel>
+      <content src="Text/Section0042.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
