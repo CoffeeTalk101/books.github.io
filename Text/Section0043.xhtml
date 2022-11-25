@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>EPUB作为笔记格式</title>
+  <meta name="keywords" content="Others"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>EPUB作为笔记格式</h1>
+
+<p class="date">2022-11-25</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>用EPUB作为笔记的格式已经有5年了，写了四五本笔记，这本是其中之一。我对EPUB作为笔记的体验还是很满意的，记录一下选择EPUB格式来记笔记的优缺点，以及一些实用的使用技巧。</p>
+
+<p>DOCX格式的问题：</p>
+
+<ol>
+    <li>尽管DOCX的底层是XML的，但只能使用富文本编辑，导致文本的格式不清晰，容易存在隐藏的问题.</li>
+    <li>默认设置会压缩图片质量，且提取图片要靠一张一张手动另存为.</li>
+    <li>阅读和编辑不分离，在阅读时容易误改文件内容.</li>
+</ol>
+
+
+<p>markdown格式（以及部分md笔记软件）的问题：</p>
+
+<ol>
+    <li>表达能力有限，以至于很多时候还是需要用上HTML.</li>
+    <li>方言过多，且很多markdown笔记软件独立添加功能、采用自研的格式等，导致笔记和商业软件事实上强绑定.</li>
+    <li>图片和文本分离，移动、重命名时容易导致问题.</li>
+    <li>并不是很适合中文的书写逻辑（个人感受）.</li>
+</ol>
+
+<p>EPUB格式的一些优点：</p>
+
+<ol>
+    <li>EPUB本质是zip打包的XHTML（和对应的资源文件），格式都在内容当中显式声明，不会出现富文本编辑的隐式格式乱套的问题.</li>
+    <li>支持自定义CSS样式，做好一套CSS之后，套用十分方便.</li>
+    <li>图片等压缩保存于同一文件，紧凑.</li>
+    <li>支持完全离线的存储、编辑、阅读.</li>
+    <li>阅读和编辑分离，阅读时避免误改.</li>
+    <li>大多数配套工具开源，没有商业支持停止的问题.</li>
+</ol>
+
+<p>EPUB格式的一些缺点：</p>
+
+<ol>
+    <li>阅读器的实现五花八门，体验不统一.</li>
+    <li>资源打包成一个文件，版本控制不方便.</li>
+    <li>需要手写XHTML.</li>
+    <li>准备CSS等的前期成本较大.</li>
+</ol>
+
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

@@ -64,7 +64,7 @@ java -cp ./xxx.jar:./lib -Djava.library.path="." com.example.main.MainClass --pa
 
 <p>nohup</p>
 
-<pre>nohup [command] > /dev/null 2>&amp;1 &amp;</pre>
+<pre>nohup [command] &gt; /dev/null 2&gt;&amp;1 &amp;</pre>
 
 <p>Mysql</p>
 
@@ -81,6 +81,8 @@ $:  将光标移动到当前行的行尾
 0:  将光标移动到当前行的行首
 xG:  跳转到指定的第x行，G移动到文件按末尾，``（2次单引号)返回到跳转前的位置
 gg:  移动到文件开头
+ctr+f ：向后翻整页
+ctr+b ：向前翻整页
 
 【复制粘贴】
 y:  复制，p:粘贴
@@ -105,6 +107,11 @@ u:  撤销上一步的操作
 :wq  文件已经被修改，保存修改并退出
 :e!  放弃修改，重新回到文件打开时的状态
 </pre>
+
+<p>环境变量</p>
+
+<pre># disables timeout
+TMOUT=0</pre>
 
 <hr/>
 <p class="footer">This blog is written in  EPUB.

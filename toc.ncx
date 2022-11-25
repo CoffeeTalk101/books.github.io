@@ -265,5 +265,11 @@
       </navLabel>
       <content src="Text/Section0042.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-43" playOrder="43">
+      <navLabel>
+        <text>EPUB作为笔记格式</text>
+      </navLabel>
+      <content src="Text/Section0043.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
