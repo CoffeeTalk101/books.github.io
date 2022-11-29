@@ -267,7 +267,25 @@
     </navPoint>
     <navPoint id="navPoint-43" playOrder="43">
       <navLabel>
-        <text>EPUB作为笔记格式</text>
+        <text>Flink大型集群响应缓慢问题分析及解决方案</text>
+      </navLabel>
+      <content src="Text/Section0044.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-44" playOrder="44">
+      <navLabel>
+        <text>Flink内存机制及资源评估方法</text>
+      </navLabel>
+      <content src="Text/Section0045.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-45" playOrder="45">
+      <navLabel>
+        <text>Kafka-Flink性能压测方法</text>
+      </navLabel>
+      <content src="Text/Section0046.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-46" playOrder="46">
+      <navLabel>
+        <text>使用EPUB格式写笔记的体验</text>
       </navLabel>
       <content src="Text/Section0043.xhtml"/>
     </navPoint>
