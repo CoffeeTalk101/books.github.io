@@ -91,6 +91,18 @@
 
 <p>可以总结出写递归是有两种思路的。一种是首先考虑最外层需要做什么，之后使用相同的逻辑，把剩下的部分再当作输入。例如统计一个n长度的字符串中某个字符的个数，那么很明显，最外层只需要判断第一个字符，之后还剩下n-1长度，就再把这剩下的部分当作已经写好的最外层逻辑的输入。</p>
 
+<p>再讲清楚一点，这里所说的“最外层”，就是<b>指递归在得到结果前的最后一次执行，即“临门一脚”。而这之前的执行结果，都可以当作已经处理完成，用调用同一个函数的方式写出</b>。在统计字符个数的例子中，最外层就是前n-1个字符都处理完毕之后，对剩下的最后一个字符的处理。把对前n-1个字符的处理结果，用 <span class="code">count(x.init, target)</span> 表示，那么在“最后一步”，我们要做的就是判断 <span class="code">x.last</span>，并且把结果加上去：</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #006699; font-weight: bold">def</span> count<span style="color: #555555">(</span>s<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">String</span><span style="color: #555555">,</span> target<span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Char</span><span style="color: #555555">)</span><span style="color: #006699; font-weight: bold">:</span> <span style="color: #007788; font-weight: bold">Int</span> <span style="color: #555555">=</span> <span style="color: #555555">{</span>
+  <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>s<span style="color: #555555">.</span>length <span style="color: #555555">==</span> <span style="color: #FF6600">0</span><span style="color: #555555">)</span> <span style="color: #FF6600">0</span>  <span style="color: #0099FF; font-style: italic">// 终止条件</span>
+  <span style="color: #006699; font-weight: bold">else</span>
+    <span style="color: #006699; font-weight: bold">if</span> <span style="color: #555555">(</span>s<span style="color: #555555">.</span>last<span style="color: #555555">.</span>equals<span style="color: #555555">(</span>target<span style="color: #555555">))</span>  <span style="color: #0099FF; font-style: italic">// 判断字符串的最后一个字符，即s.last</span>
+      <span style="color: #FF6600">1</span> <span style="color: #555555">+</span> count<span style="color: #555555">(</span>s<span style="color: #555555">.</span>init<span style="color: #555555">,</span> target<span style="color: #555555">)</span>  <span style="color: #0099FF; font-style: italic">// 加到对剩余字符，即s.init的判断结果当中去</span>
+    <span style="color: #006699; font-weight: bold">else</span> count<span style="color: #555555">(</span>s<span style="color: #555555">.</span>init<span style="color: #555555">,</span> target<span style="color: #555555">)</span>
+<span style="color: #555555">}</span>
+</pre></div>
+
+
 <p><b>这种思路写出来的递归，很有可能是尾递归，是对同一段逻辑的重复利用。</b>这种递归在工程开发中用处是比较大的，比如对字符串、文件之类的处理上面，用到比较多。它的好处是，比起在循环里使用循环变量（循环变量的边界问题常常比较麻烦），而递归里只考虑单次的逻辑+停止条件，思路上常常会更加清晰，写起来也更顺手一些。当然，这类递归要改成循环也是比较方便的。</p>
 
 <p>那么另一种思路，就是函数式的递归。用指令式的思路去看这种递归，第一眼常常会觉得有点神奇。<a href="https://oi-wiki.org/basic/divide-and-conquer/">这篇文章</a>里有一个很形象的说法“写递归的要点：明白一个函数的作用并相信它能完成这个任务，千万不要跳进这个函数里面企图探究更多细节”。这是一种很直觉的理解，也是很正确的。跳进调用栈里去尝试理解这类递归是很难的。</p>
