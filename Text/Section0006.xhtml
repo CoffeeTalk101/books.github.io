@@ -100,7 +100,8 @@
       <span style="color: #FF6600">1</span> <span style="color: #555555">+</span> count<span style="color: #555555">(</span>s<span style="color: #555555">.</span>init<span style="color: #555555">,</span> target<span style="color: #555555">)</span>  <span style="color: #0099FF; font-style: italic">// 加到对剩余字符，即s.init的判断结果当中去</span>
     <span style="color: #006699; font-weight: bold">else</span> count<span style="color: #555555">(</span>s<span style="color: #555555">.</span>init<span style="color: #555555">,</span> target<span style="color: #555555">)</span>
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 
 <p><b>这种思路写出来的递归，很有可能是尾递归，是对同一段逻辑的重复利用。</b>这种递归在工程开发中用处是比较大的，比如对字符串、文件之类的处理上面，用到比较多。它的好处是，比起在循环里使用循环变量（循环变量的边界问题常常比较麻烦），而递归里只考虑单次的逻辑+停止条件，思路上常常会更加清晰，写起来也更顺手一些。当然，这类递归要改成循环也是比较方便的。</p>

@@ -42,9 +42,9 @@
    <span style="color: #006699; font-weight: bold">try</span> <span style="color: #555555">{</span>
       fqdnHostName <span style="color: #555555">=</span> inetAddress<span style="color: #555555">.</span><span style="color: #330099">getCanonicalHostName</span><span style="color: #555555">();</span>
    <span style="color: #555555">}</span> <span style="color: #006699; font-weight: bold">catch</span> <span style="color: #555555">(</span>Throwable t<span style="color: #555555">)</span> <span style="color: #555555">{</span>
-      LOG<span style="color: #555555">.</span><span style="color: #330099">warn</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;Unable to determine the canonical hostname. Input split assignment (such as &quot;</span> <span style="color: #555555">+</span>
-         <span style="color: #CC3300">&quot;for HDFS files) may be non-local when the canonical hostname is missing.&quot;</span><span style="color: #555555">);</span>
-      LOG<span style="color: #555555">.</span><span style="color: #330099">debug</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;getCanonicalHostName() Exception:&quot;</span><span style="color: #555555">,</span> t<span style="color: #555555">);</span>
+      LOG<span style="color: #555555">.</span><span style="color: #330099">warn</span><span style="color: #555555">(</span><span style="color: #CC3300">"Unable to determine the canonical hostname. Input split assignment (such as "</span> <span style="color: #555555">+</span>
+         <span style="color: #CC3300">"for HDFS files) may be non-local when the canonical hostname is missing."</span><span style="color: #555555">);</span>
+      LOG<span style="color: #555555">.</span><span style="color: #330099">debug</span><span style="color: #555555">(</span><span style="color: #CC3300">"getCanonicalHostName() Exception:"</span><span style="color: #555555">,</span> t<span style="color: #555555">);</span>
       fqdnHostName <span style="color: #555555">=</span> inetAddress<span style="color: #555555">.</span><span style="color: #330099">getHostAddress</span><span style="color: #555555">();</span>
    <span style="color: #555555">}</span>
 
@@ -66,15 +66,16 @@
       <span style="color: #0099FF; font-style: italic">// or because no hostname can be found for the address</span>
       <span style="color: #0099FF; font-style: italic">// take IP textual representation</span>
       hostName <span style="color: #555555">=</span> fqdnHostName<span style="color: #555555">;</span>
-      LOG<span style="color: #555555">.</span><span style="color: #330099">warn</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;No hostname could be resolved for the IP address {}, using IP address as host name. &quot;</span>
-         <span style="color: #555555">+</span> <span style="color: #CC3300">&quot;Local input split assignment (such as for HDFS files) may be impacted.&quot;</span><span style="color: #555555">,</span> inetAddress<span style="color: #555555">.</span><span style="color: #330099">getHostAddress</span><span style="color: #555555">());</span>
+      LOG<span style="color: #555555">.</span><span style="color: #330099">warn</span><span style="color: #555555">(</span><span style="color: #CC3300">"No hostname could be resolved for the IP address {}, using IP address as host name. "</span>
+         <span style="color: #555555">+</span> <span style="color: #CC3300">"Local input split assignment (such as for HDFS files) may be impacted."</span><span style="color: #555555">,</span> inetAddress<span style="color: #555555">.</span><span style="color: #330099">getHostAddress</span><span style="color: #555555">());</span>
    <span style="color: #555555">}</span> <span style="color: #006699; font-weight: bold">else</span> <span style="color: #555555">{</span>
       hostName <span style="color: #555555">=</span> NetUtils<span style="color: #555555">.</span><span style="color: #330099">getHostnameFromFQDN</span><span style="color: #555555">(</span>fqdnHostName<span style="color: #555555">);</span>
    <span style="color: #555555">}</span>
 
    <span style="color: #006699; font-weight: bold">return</span> hostName<span style="color: #555555">;</span>
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 <p>通过自己写一个简单的验证程序，可以重现这个问题：</p>
 
@@ -85,14 +86,15 @@
     <span style="color: #006699; font-weight: bold">public</span> <span style="color: #006699; font-weight: bold">static</span> <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">main</span><span style="color: #555555">(</span>String<span style="color: #555555">[]</span> args<span style="color: #555555">)</span> <span style="color: #006699; font-weight: bold">throws</span> UnknownHostException <span style="color: #555555">{</span>
 
         String ip <span style="color: #555555">=</span> args<span style="color: #555555">[</span><span style="color: #FF6600">0</span><span style="color: #555555">];</span>
-        System<span style="color: #555555">.</span><span style="color: #330099">out</span><span style="color: #555555">.</span><span style="color: #330099">println</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;Hostname for ip &quot;</span> <span style="color: #555555">+</span> ip <span style="color: #555555">+</span> <span style="color: #CC3300">&quot; is:&quot;</span><span style="color: #555555">);</span>
+        System<span style="color: #555555">.</span><span style="color: #330099">out</span><span style="color: #555555">.</span><span style="color: #330099">println</span><span style="color: #555555">(</span><span style="color: #CC3300">"Hostname for ip "</span> <span style="color: #555555">+</span> ip <span style="color: #555555">+</span> <span style="color: #CC3300">" is:"</span><span style="color: #555555">);</span>
 
         String hostname <span style="color: #555555">=</span> InetAddress<span style="color: #555555">.</span><span style="color: #330099">getByName</span><span style="color: #555555">(</span>ip<span style="color: #555555">).</span><span style="color: #330099">getCanonicalHostName</span><span style="color: #555555">();</span>
         System<span style="color: #555555">.</span><span style="color: #330099">out</span><span style="color: #555555">.</span><span style="color: #330099">println</span><span style="color: #555555">(</span>hostname<span style="color: #555555">);</span>
 
     <span style="color: #555555">}</span>
 <span style="color: #555555">}</span>
-</pre></div>
+</pre>
+</div>
 
 <p>运行这个程序，查询未知 ip 的主机名，可以观察到明显的卡顿。同时利用它，也可以方便地验证解决办法：将 ip 和主机名的对应关系添加到本机的 /etc/hosts 文件中之后，卡顿消失，程序会立即返回hosts文件中指定的主机名。</p>
 

@@ -289,5 +289,11 @@
       </navLabel>
       <content src="Text/Section0043.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-47" playOrder="47">
+      <navLabel>
+        <text>在GitLab CI/CD中push回原仓库的一些细节</text>
+      </navLabel>
+      <content src="Text/Section0047.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>

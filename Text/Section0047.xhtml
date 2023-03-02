@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>在GitLab CICD中push回原仓库的一些细节</title>
+  <meta name="keywords" content="Others"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>在GitLab CI/CD中push回原仓库的一些细节</h1>
+
+<p class="date">2023-03-02</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>最近写了一个小工具，让它在每次commit之后，自动统计仓库里面的一些内容，并且在仓库内生成一份新的统计文件。查询资料之后，了解到在GitLab的CI/CD Runner中，是可以使用git命令的，能够实现这样的功能。下面记录一些容易遇到问题的细节。</p>
+
+<p>首先，需要为项目生成一个 <span class="code">Project Access Token</span> ，在项目左侧的Settings-Access Tokens里面操作。注意这个token是必须设定一个过期日期的。</p>
+
+<p>在拿到这个token之后，在项目的 <span class="code">.gitlab-ci.yml</span> 文件中，push时使用这样的配置：</p>
+
+<pre>git push http://[任意一个用户名]:[生成的token]@[gitlab地址]/具体仓库路径.git HEAD:master</pre>
+
+<p>注意点有几个。一是看一下本地的GitLab有没有启用 <span class="code">https</span> ，如果用的是 <span class="code">http</span> 的话，使用 <span class="code">https</span> 连接就会遇到443报错： <span class="code">git failed to connect to port 443</span>。另一个点是用户名<a href="https://stackoverflow.com/a/72777241/7708392">可以是任意的</a>，不一定是自己的账户名称/仓库名称。例如：</p>
+
+<pre>git push http://anything:tokenxxxxxxxxx@127.0.0.1/user/repo.git HEAD:master
+</pre>
+
+<p>在提交的时候还有一个注意点。因为我们不希望这次CI当中的自动commit再次触发CI（那样就会无限循环），因此需要指定跳过CI的配置。虽然GitLab提供了 <span class="code">git push -o ci.skip</span> 的选项，但这个选项有两个缺点。其一是 <span class="code">-o ci.skip</span> <a href="https://stackoverflow.com/a/73426417/7708392">在进行Merge Request是时候是不触发的</a>，其二是<a href="https://stackoverflow.com/a/72693962/7708392">旧版本的GitLab并不支持这个选项</a>。更方便的方法是在commit message中标明 <span class="code">[skip ci]</span> 。方法非常简单，直接写在message里面就行：</p>
+
+<pre>git commit -m "xxxxxx [skip ci]"</pre>
+
+<p>在实践中还遇到了一个问题，CI/CD流水线前几次都能正常运行，但一定次数之后就开始报错：</p>
+
+<pre>fatal: git fetch-pack: expected shallow list
+fatal: The remote end hung up unexpectedly</pre>
+
+<p><a href="https://stackoverflow.com/questions/56663096/gitlab-runner-doesnt-work-on-a-specific-project">查阅资料之后</a>发现这是因为GitLab的CI/CD runner中的git版本太旧，不支持 <span class="code">fetch-pack</span> 命令。最简单的修复方法是在yml文件中增加如下配置：</p>
+
+<pre>variables:
+  GIT_STRATEGY: clone</pre>
+
+<p>最后，我们希望这个CI只在某个文件被改动时触发，其它文件改动时不触发，可以使用如下的配置：</p>
+
+<pre>rules:
+  - changes:
+    - filename</pre>
+
+<p>总结上面这些点之后，以下是一份运行成功的 <span class="code">.gitlab-ci.yml</span> 模板：</p>
+
+<pre>image: python:latest
+
+variables:
+  GIT_STRATEGY: clone
+
+before_script:
+  - python --version
+  - git --version
+
+run:
+  script:
+    - python do_something.py
+    - git config user.email "xxx@mail.com"
+    - git config user.name "bot"
+    - git add .
+    - git commit -m "auto push back [skip ci]"
+    - git push http://anything:tokenxxxxxxxxx@127.0.0.1/user/repo.git HEAD:master
+
+rules:
+  - changes:
+    - filename</pre>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>
