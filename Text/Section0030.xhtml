@@ -320,7 +320,7 @@ git merge --no-ff -m "merge from branch1" br1</pre>
 
 <pre>git reset --hard [commit_hash]</pre>
 
-<p>注意reset命令的参数是表示“回退到某个commit”，和revert不一致（和branch是一致的）。还需要注意使用 <span class="code">--hard</span> 参数会导致被回退的commit全部丢失，是不可逆的，因此必须格外小心。</p>
+<p>注意reset命令的参数是表示“回退到某个commit”，和revert不一致（和checkout是一致的）。还需要注意使用 <span class="code">--hard</span> 参数会导致被回退的commit全部丢失，是不可逆的，因此必须格外小心。</p>
 
 <p>revert和reset的另一个区别是，revert能够方便地回滚已经提交到远程的进度，而如果使用reset，远程仓库则只会认为本地的版本落后于远程。此时如果要进行提交，就必须使用force参数了：</p>
 
