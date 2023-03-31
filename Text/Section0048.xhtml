@@ -29,7 +29,7 @@ WARN akka.remote.ReliableDeliverySupervisor [] - Association with remote system 
 INFO org.apache.flink.runtime.taskexecutor.TaskExecutor [] - Could not resolve ResourceManager address akka.tcp://flink@localhost:6123/user/rpc/resourcemanager_*, retrying in 10000 ms: Could not connect to rpc endpoint under address akka.tcp://flink@localhost:6123/user/rpc/resourcemanager_*.
 </pre>
 
-<p>解决方法：在<span class="code">flink-conf.yaml</span>文件中，配置 <span class="code">jobmanager.rpc.address</span> 为实际的jobmanagerip即可。
+<p>解决方法：在<span class="code">flink-conf.yaml</span>文件中，配置 <span class="code">jobmanager.rpc.address</span> 为每台机器的实际本机ip即可（不需要配置为集群中实际的jobmanager ip，因为它的含义是当此机器作为jobmanager时，host到的地址）。
 </p>
 
 <hr/>
