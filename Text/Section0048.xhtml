@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Flink jm和tm地址配置的一些问题</title>
+  <meta name="keywords" content="Java, BigData"/>
+  <link href="../Styles/Style0001.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<h1>Flink jm和tm地址配置的一些问题</h1>
+
+<p class="date">2023-03-31</p>
+
+<a class="home" href="https://xdcsy.github.io/">&lt; view all posts</a>
+
+<p>在Flink集群配置的时候，遇到一些和tm、jm地址没有配置正确而导致的一些问题，这里对问题现象和解决方法做一些记录。</p>
+
+<p>一是Flink集群能够启动，但是拉起任务时报错。检查Flink控制台页面，发现taskmamager注册的地址为127.0.0.1，而正常情况下，taskmanager应该以实际ip地址注册到jobmanager。</p>
+
+<p>解决办法：在  <span class="code">flink-conf.yaml</span> 这个配置文件的最后加一行 <span class="code">taskmanager.host: xxx.xxx.xxx.xxx</span>，其中指定taskmanager的实际本机ip。 </p>
+
+<p>另一个问题，在taskmanager拉起时出现如下报错：</p>
+
+<pre>WARN akka.remote.transport.netty.NettyTransport [] - Remote connection to [null] failed with java.net.ConnectException: Connection refused: taskmanager/xxxx:6123
+WARN akka.remote.ReliableDeliverySupervisor [] - Association with remote system [akka.tcp://flink@localhost:6123] has failed, address is now gated for [50] ms. Reason: [Association failed with [akka.tcp://flink@localhost:6123]] Caused by: [java.net.ConnectException: Connection refused: taskmanager/xxxx:6123]
+INFO org.apache.flink.runtime.taskexecutor.TaskExecutor [] - Could not resolve ResourceManager address akka.tcp://flink@localhost:6123/user/rpc/resourcemanager_*, retrying in 10000 ms: Could not connect to rpc endpoint under address akka.tcp://flink@localhost:6123/user/rpc/resourcemanager_*.
+</pre>
+
+<p>解决方法：在<span class="code">flink-conf.yaml</span>文件中，配置 <span class="code">jobmanager.rpc.address</span> 为实际的jobmanagerip即可。
+</p>
+
+<hr/>
+<p class="footer">This blog is written in  EPUB.
+The original file is available for <a href="https://github.com/XDcsy/XDcsy.github.io/raw/main/blog.epub">download</a>.</p>
+<p class="footer">Feel free to comment by <a href="https://github.com/XDcsy/XDcsy.github.io/issues/new">raising an issue <img alt="GitHub-Mark-32px" src="../Images/GitHub-Mark-32px.png" class="github"/></a>.</p>
+</body>
+</html>

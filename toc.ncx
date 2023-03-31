@@ -295,5 +295,11 @@
       </navLabel>
       <content src="Text/Section0047.xhtml"/>
     </navPoint>
+    <navPoint id="navPoint-48" playOrder="48">
+      <navLabel>
+        <text>Flink jm和tm地址配置的一些问题</text>
+      </navLabel>
+      <content src="Text/Section0048.xhtml"/>
+    </navPoint>
   </navMap>
 </ncx>
