@@ -297,9 +297,15 @@
     </navPoint>
     <navPoint id="navPoint-48" playOrder="48">
       <navLabel>
-        <text>Flink jm和tm地址配置的一些问题</text>
+        <text>Flink JobManager 和 TaskManager 地址配置的一些问题</text>
       </navLabel>
       <content src="Text/Section0048.xhtml"/>
+    </navPoint>
+    <navPoint id="navPoint-49" playOrder="49">
+      <navLabel>
+        <text>多级pom配置方法</text>
+      </navLabel>
+      <content src="Text/Section0049.xhtml"/>
     </navPoint>
   </navMap>
 </ncx>
