@@ -27,7 +27,7 @@
 
 <p>进一步分析，可以定位到问题的原因是 Flink 在注册 Taskmanager 时，会调用 inetAddress.getCanonicalHostName() 方法获取每个 tm 机器的 hostname，这个方法会查询 inetAddress IP 地址的主机名，如果查询不到，就会卡在这里。并进行大量重试，导致 Taskmanager 数量较多时页面卡顿。</p>
 
-<p>这是<a href="https://issues.apache.org/jira/browse/FLINK-19677">Flink 1.12 及之前版本中的一个缺陷</a>，反查主机名应该设计为异步的，或者lazy的，但是代码中却以同步的方式调用，导致 TaskManager 的注册被堵塞。</p>
+<p>这是<a href="https://issues.apache.org/jira/browse/FLINK-19677">Flink 1.12 及之前版本中的一个缺陷</a>，在这篇腾讯云的开发者博客中也有记录：<a href="https://cloud.tencent.com/developer/article/1744631">《修复 Flink Kubernetes 资源分配慢》</a>：反查主机名应该设计为异步的，或者lazy的，但是代码中却以同步的方式调用，导致 TaskManager 的注册被堵塞。</p>
 
 <p>与之相关的具体代码在 flink-runtime model 源代码的 TaskManagerLocation 当中：</p>
 
