@@ -58,9 +58,9 @@ tar -xzvpf test.tar.gz -C /home</pre>
 
 <p>Java</p>
 
-<pre>java -cp [classpath1:classpath2:...] -D[jvm_arguments] [main_class] [program_args（main函数的参数）]
+<pre>java -cp [classpath1:classpath2:...] [jvm_arguments(<a href="https://stackoverflow.com/a/44745314">-D -X -XX</a>)] [main_class] [program_args（main函数的参数）]
 # 例如
-java -cp ./xxx.jar:./lib -Djava.library.path="." com.example.main.MainClass --parameter 0000</pre>
+java -cp ./xxx.jar:./lib -Xms1024m -Xmx13312m -Djava.library.path="." com.example.main.MainClass --parameter 0000</pre>
 
 <p>nohup</p>
 
