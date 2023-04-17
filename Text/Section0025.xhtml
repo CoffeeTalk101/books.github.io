@@ -136,6 +136,8 @@ chmod 600 ~/.ssh/authorized_keys</pre>
 
 <p>之后删除掉报错信息中提到的文件，名字一般是~/.vscode-server/bin/${commitid}/vscode-remote-link... ，以及同一个目录里同名的 .target 文件，再连接就可以了。（能成功连接之后最好再把remote.SSH.useFlock重新打开）</p>
 
+<p>再补充一点，使用remote-ssh插件需要在服务器上在 <span class="code">/etc/ssh/sshd_config</span> 文件中配置 <span class="code">AllowTcpForwarding yes</span> 。而如果我们没有root权限，可用参考<a href="https://stackoverflow.com/a/72071085/7708392">这个方法设置一个自定义的sshd server来解决</a>。</p>
+
 <p><b>（补充）配置SSH Agent：</b></p>
 
 <p>配置到这里，还有一个不方便的地方，就是每次连接的时候我们都要输入SSH passphrase。可以配置 SSH Agent来免去这个验证。</p>
